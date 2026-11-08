@@ -1,0 +1,46 @@
+{
+  "time": "2026-11-08T04:45:26.238Z",
+  "source": [
+    {
+      "repo": "macrozheng/mall-swarm",
+      "commit": "04c442fe318356bae4445a109dde7af297ce1e84",
+      "date": "2026-05-21T07:19:12Z"
+    },
+    {
+      "repo": "macrozheng/mall-admin-web",
+      "commit": "81fc17e5a19f452bd854b106a9d59fa1ed5c7eac",
+      "date": "2026-05-14T07:11:39Z"
+    },
+    {
+      "repo": "macrozheng/mall-app-web",
+      "commit": "b1eb3cde1d74fbf62e72195bafd9322c8149f4c8",
+      "date": "2026-05-13T02:52:57Z"
+    }
+  ],
+  "jars": [
+    {
+      "file": "mall-admin.jar",
+      "sha256": "a76850f7bbfb372dcde87e49a5ec8a83cc27b77d8476ce83bdbc68b1a06825cc"
+    },
+    {
+      "file": "mall-auth.jar",
+      "sha256": "e465b87882192655ea680aed54940ca6dbb483f721bcfaae211ee85fe57256f4"
+    },
+    {
+      "file": "mall-gateway.jar",
+      "sha256": "8b64383f8d103013320e2daecf00644511befbcbcb5a1bfb8ecf77f02fc9d5fd"
+    },
+    {
+      "file": "mall-monitor.jar",
+      "sha256": "bff6e74581eb23579fa82e424a43013e8c5e609370c5593d7eaec8b27b68c36f"
+    },
+    {
+      "file": "mall-portal.jar",
+      "sha256": "acf322dbc5dbb367416b9342a4ba6a9acccc6c321317bcae22a473023ff1af8f"
+    },
+    {
+      "file": "mall-search.jar",
+      "sha256": "389976553daede54dff40a7dec8dff27b50924b47570a1b899e51114c4459197"
+    }
+  ]
+}

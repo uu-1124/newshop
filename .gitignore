@@ -2,6 +2,12 @@
 **/target/
 **/dist/
 deployment/secrets.json
+deployment/compose.yaml
+**/.env.production.local
+**/.env.development.local
+deployment/.dev-ssh.json
+deployment/.run/
+deployment/node_modules/
 deployment/config/
 deployment/init/02-demo-accounts.sql
 deployment/jars/
@@ -9,3 +15,5 @@ deployment/web/
 deployment/es-ik/
 deployment/*.tar.gz
 deployment/evidence/
+deployment/minio-runtime/minio
+deployment/minio-runtime/minio.sha256
