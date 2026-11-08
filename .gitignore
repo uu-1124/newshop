@@ -1,0 +1,11 @@
+**/node_modules/
+**/target/
+**/dist/
+deployment/secrets.json
+deployment/config/
+deployment/init/02-demo-accounts.sql
+deployment/jars/
+deployment/web/
+deployment/es-ik/
+deployment/*.tar.gz
+deployment/evidence/
