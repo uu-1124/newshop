@@ -461,10 +461,9 @@ class Trace:
 
 
 class StreamMonitor:
-    def __init__(self, base_url, streams, auth, evidence, stop, timeout, run_id=None):
+    def __init__(self, base_url, streams, auth, evidence, stop, timeout):
         self.base_url, self.streams, self.auth = base_url, streams, auth
         self.evidence, self.stop, self.timeout = evidence, stop, timeout
-        self.run_id = str(UUID(run_id)) if run_id is not None else None
         self.stage = "startup"
         self.closing = False
         self.tasks = []
@@ -477,10 +476,6 @@ class StreamMonitor:
                 "duplicate_events": 0,
                 "unexpected_disconnects": 0,
                 "error": None,
-                "request_id": None,
-                "lines_received": 0,
-                "last_line_at": None,
-                "maximum_line_gap_ms": 0.0,
             }
             for s in streams
         }
@@ -490,18 +485,13 @@ class StreamMonitor:
         state = self.states[stream.name]
         seen = set()
         try:
-            timeout = httpx.Timeout(
-                max(90, self.timeout * 2), connect=self.timeout, write=self.timeout, pool=self.timeout
-            )
-            request_id = str(uuid4())
-            state["request_id"] = request_id
-            headers = {"Authorization": self.auth[stream.actor_key], "X-Request-ID": request_id}
-            if self.run_id is not None:
-                headers["X-Performance-Run"] = self.run_id
+            timeout = httpx.Timeout(None, connect=self.timeout, write=self.timeout, pool=self.timeout)
             async with httpx.AsyncClient(
                 base_url=self.base_url, trust_env=False, timeout=timeout, follow_redirects=False
             ) as client:
-                async with client.stream("GET", stream.path, headers=headers) as response:
+                async with client.stream(
+                    "GET", stream.path, headers={"Authorization": self.auth[stream.actor_key]}
+                ) as response:
                     if response.status_code != 200 or not response.headers.get("content-type", "").startswith(
                         "text/event-stream"
                     ):
@@ -511,16 +501,8 @@ class StreamMonitor:
                     state["connections"] += 1
                     state["connected"] = True
                     self.ready[stream.name].set()
-                    last_line = time.monotonic()
                     event_id, data, data_size = None, [], 0
                     async for line in response.aiter_lines():
-                        now = time.monotonic()
-                        state["lines_received"] += 1
-                        state["last_line_at"] = datetime.now(UTC).isoformat()
-                        state["maximum_line_gap_ms"] = round(
-                            max(state["maximum_line_gap_ms"], (now - last_line) * 1000), 3
-                        )
-                        last_line = now
                         if len(line) > 262144:
                             state["error"] = "stream_event_too_large"
                             self.stop.set()
@@ -728,9 +710,7 @@ async def run_phase(args):
     evidence = Evidence(args.output_dir / "requests.jsonl")
     stream_evidence = Evidence(args.output_dir / "streams.jsonl")
     stop = asyncio.Event()
-    monitor = StreamMonitor(
-        plan["base_url"], streams, auth, stream_evidence, stop, plan["timeout_seconds"], run_id=run_id
-    )
+    monitor = StreamMonitor(plan["base_url"], streams, auth, stream_evidence, stop, plan["timeout_seconds"])
     clients = {}
     summary = {
         "schema_version": 1,
