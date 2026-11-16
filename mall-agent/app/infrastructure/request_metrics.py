@@ -4,6 +4,7 @@ import logging
 import time
 from uuid import UUID, uuid4
 
+from app.infrastructure.performance_timing import phase
 from app.infrastructure.postgres.database import execute
 
 log = logging.getLogger(__name__)
@@ -24,18 +25,19 @@ async def record_request(request, status, started):
     try:
         # One atomic INSERT needs no multi-statement transaction. Persist before
         # returning, without extra BEGIN/COMMIT round trips over the SSH tunnel.
-        async with svc.db.connection("AUTOCOMMIT") as conn:
-            await execute(
-                conn,
-                """INSERT INTO ag_request_metric(id,request_id,operation,method,status_code,duration_ms)
-                VALUES(:id,:request,:operation,:method,:status,:duration)""",
-                id=uuid4(),
-                request=UUID(request.state.request_id),
-                operation=operation,
-                method=request.method,
-                status=status,
-                duration=duration,
-            )
+        with phase("metrics_write_ms"):
+            async with svc.db.connection("AUTOCOMMIT") as conn:
+                await execute(
+                    conn,
+                    """INSERT INTO ag_request_metric(id,request_id,operation,method,status_code,duration_ms)
+                    VALUES(:id,:request,:operation,:method,:status,:duration)""",
+                    id=uuid4(),
+                    request=UUID(request.state.request_id),
+                    operation=operation,
+                    method=request.method,
+                    status=status,
+                    duration=duration,
+                )
     except Exception as error:
         # Metrics failure never changes an already-committed business response.
         log.warning("request metrics unavailable type=%s", type(error).__name__)
