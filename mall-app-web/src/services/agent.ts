@@ -46,6 +46,7 @@ export type ProductFilters = {
 }
 export type Conversation = {
   id: string
+  entry_context: { kind: 'GENERAL' } | { kind: 'PRODUCT'; product_id: string } | { kind: 'ORDER'; order_id: string }
   title: string
   last_message_preview: string
   unread_count: number

@@ -104,6 +104,7 @@ onMounted(load)
         active || '正在读取'
       }}。金额按订单明细实付计算，退款保持演示。已发布版本不可修改，需调整时发布新版本。
     </p>
+    <p>读取或发布规则会核对知识依据。绑定旧规则版本的资料停止用于新回答，原文和历史版本保留；新资料仍须由知识管理员审核发布。计划生效时按生效时间切换。</p>
     <el-button :loading="busy" @click="load">刷新规则</el-button>
     <p v-if="error" class="error" role="alert">{{ error }}</p>
     <p v-if="notice" role="status">{{ notice }}</p>

@@ -377,6 +377,22 @@ class AgentOrderDatabaseTest {
     @Test void orderResourcesAndOperationRollbackTogether(){JsonNode q=quote();String op=UUID.randomUUID().toString();JsonNode receipt=receipt(op,q);var tx=new TransactionTemplate(ctx.getBean(DataSourceTransactionManager.class));assertThrows(IllegalStateException.class,()->tx.execute(s->{service.execute(member(),input(op,q),receipt);throw new IllegalStateException("injected failure before commit");}));assertEquals(0,count("oms_order"));assertEquals(0,count("oms_agent_operation"));assertEquals(5000,member().getIntegration());assertEquals(0,db.queryForObject("SELECT lock_stock FROM pms_sku_stock WHERE id=?",Integer.class,sku));assertEquals(0,db.queryForObject("SELECT use_status FROM sms_coupon_history WHERE id=1",Integer.class));}
     @Test void foreignAddressCannotBeQuoted(){db.update("UPDATE ums_member_receive_address SET member_id=? WHERE id=1",MEMBER+1);assertThrows(AgentCartService.Rejected.class,this::quote);assertEquals(0,count("oms_order"));}
 
+    @Test void batchedOrderReadsMatchDetailAndPreserveOwnershipAndPerOrderLimit() {
+        JsonNode q=quote();String op=UUID.randomUUID().toString();
+        long oid=service.execute(member(),input(op,q),receipt(op,q)).path("business_id").asLong();
+        var store=ctx.getBean(com.macro.mall.order.AgentAfterSaleStore.class);
+        assertEquals(store.orderSummary(MEMBER,oid),store.orderSummaries(MEMBER,List.of(oid)).get(0));
+        assertTrue(store.orderSummaries(MEMBER,List.of()).isEmpty());
+        assertThrows(com.macro.mall.order.AgentAfterSaleStore.Rejected.class,()->store.orderSummaries(MEMBER+1,List.of(oid)));
+        assertThrows(com.macro.mall.order.AgentAfterSaleStore.Rejected.class,()->store.orderSummaries(MEMBER,List.of(oid,oid)));
+        long item=db.queryForObject("SELECT MIN(id) FROM oms_order_item WHERE order_id=?",Long.class,oid);
+        for(int n=0;n<102;n++)db.update("INSERT INTO oms_order_item(order_id,product_id,product_sku_id,product_name,product_quantity,product_price,real_amount) SELECT order_id,product_id,product_sku_id,product_name,product_quantity,product_price,real_amount FROM oms_order_item WHERE id=?",item);
+        assertEquals(100,((List<?>)store.orderSummaries(MEMBER,List.of(oid)).get(0).get("lines")).size());
+        assertEquals(store.orderSummary(MEMBER,oid),store.orderSummaries(MEMBER,List.of(oid)).get(0));
+        db.update("UPDATE oms_order SET delete_status=1 WHERE id=?",oid);
+        assertThrows(com.macro.mall.order.AgentAfterSaleStore.Rejected.class,()->store.orderSummaries(MEMBER,List.of(oid)));
+    }
+
     @Test void residualCentsSurviveRealOrderPersistenceAndResourceRollback() {
         db.update("UPDATE pms_sku_stock SET price=1 WHERE id=?",sku);
         db.update("UPDATE oms_cart_item SET quantity=3 WHERE id=1");

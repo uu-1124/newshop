@@ -1,0 +1,129 @@
+{
+  "verified_on": "2026-11-16",
+  "region": "cn-beijing",
+  "currency": "CNY",
+  "source": "https://help.aliyun.com/zh/model-studio/model-pricing",
+  "source_sha256": "bee150f4e1abf79624ad7f11a934e6dfe8c1a146ec55233b128026b52e113777",
+  "basis": "Public synchronous on-demand list price; excludes free quota, discounts, taxes and supplier invoice adjustments. Applies to future calls only. Fusheng prices are USD per million tokens, group multiplier fixed to 1 by operator instruction on 2026-11-16; currencies are reported separately.",
+  "rules": [
+    {
+      "capability": "EMBEDDING",
+      "model_name": "text-embedding-v4",
+      "unit": "INPUT_TOKEN",
+      "price": "0.5",
+      "per_units": 1000000
+    },
+    {
+      "capability": "RERANK",
+      "model_name": "qwen3-rerank",
+      "unit": "TOKEN",
+      "price": "0.5",
+      "per_units": 1000000
+    },
+    {
+      "capability": "ASR",
+      "model_name": "qwen3-asr-flash",
+      "unit": "SECOND",
+      "price": "0.00022",
+      "per_units": 1
+    },
+    {
+      "capability": "TTS",
+      "model_name": "qwen3-tts-flash",
+      "unit": "CHARACTER",
+      "price": "0.8",
+      "per_units": 10000
+    },
+    {
+      "capability": "DIALOG",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "UNCACHED_INPUT_TOKEN",
+      "price": "2",
+      "per_units": 1000000
+    },
+    {
+      "capability": "DIALOG",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "OUTPUT_TOKEN",
+      "price": "10",
+      "per_units": 1000000
+    },
+    {
+      "capability": "DIALOG",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "CACHE_READ_TOKEN",
+      "price": "0.1",
+      "per_units": 1000000
+    },
+    {
+      "capability": "DIALOG",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "CACHE_WRITE_TOKEN",
+      "price": "2.5",
+      "per_units": 1000000
+    },
+    {
+      "capability": "VISION",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "UNCACHED_INPUT_TOKEN",
+      "price": "2",
+      "per_units": 1000000
+    },
+    {
+      "capability": "VISION",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "OUTPUT_TOKEN",
+      "price": "10",
+      "per_units": 1000000
+    },
+    {
+      "capability": "VISION",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "CACHE_READ_TOKEN",
+      "price": "0.1",
+      "per_units": 1000000
+    },
+    {
+      "capability": "VISION",
+      "model_name": "gpt-6.1-sol",
+      "provider": "gpt",
+      "currency": "USD",
+      "source": "https://fushengyunsuan.cn/api/pricing",
+      "unit": "CACHE_WRITE_TOKEN",
+      "price": "2.5",
+      "per_units": 1000000
+    }
+  ],
+  "unresolved": [],
+  "fusheng": {
+    "source": "https://fushengyunsuan.cn/api/pricing",
+    "pricing_version": "a42d372ccf0b5dd13ecf71203521f9d2",
+    "expression": "tier(\"subscription\", p * 2 + c * 10 + cr * 0.1 + cc * 2.5)",
+    "units_source": "https://fushengyunsuan.cn/pricing",
+    "public_ui_sha256": "00af5666fbcb1aa4505356b71f0307122d2268e731c0847796cb2a9207dd7b82",
+    "group_multiplier": "1",
+    "currency": "USD",
+    "cache_basis": "p excludes separately priced cache read/create tokens. Unknown cache breakdown leaves estimated cost unknown."
+  }
+}

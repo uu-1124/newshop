@@ -51,10 +51,22 @@ class QuotaLimit(Input):
 class ModelPrice(Input):
     profile_id: UUID | None = None
     capability: Literal["DIALOG", "VISION", "EMBEDDING", "RERANK", "ASR", "TTS"]
-    unit: Literal["REQUEST", "INPUT_TOKEN", "OUTPUT_TOKEN", "TOKEN", "CHARACTER", "SECOND"]
+    unit: Literal[
+        "REQUEST",
+        "INPUT_TOKEN",
+        "OUTPUT_TOKEN",
+        "TOKEN",
+        "CHARACTER",
+        "SECOND",
+        "UNCACHED_INPUT_TOKEN",
+        "CACHE_READ_TOKEN",
+        "CACHE_WRITE_TOKEN",
+    ]
     currency: Literal["CNY", "USD"]
     price: str = Field(pattern=r"^(0|[1-9][0-9]{0,7})(?:\.[0-9]{1,8})?$")
     per_units: int = Field(default=1000000, ge=1, le=1000000000, strict=True)
+    model_name: str | None = Field(default=None, min_length=1, max_length=160)
+    source_ref: str | None = Field(default=None, min_length=1, max_length=500)
 
 
 class UsageSettlement(Input):
@@ -62,6 +74,8 @@ class UsageSettlement(Input):
     input_tokens: int | None = Field(default=None, ge=0, le=1000000000000, strict=True)
     output_tokens: int | None = Field(default=None, ge=0, le=1000000000000, strict=True)
     total_tokens: int | None = Field(default=None, ge=0, le=1000000000000, strict=True)
+    cache_read_tokens: int | None = Field(default=None, ge=0, le=1000000000000, strict=True)
+    cache_write_tokens: int | None = Field(default=None, ge=0, le=1000000000000, strict=True)
     characters: int | None = Field(default=None, ge=0, le=1000000000000, strict=True)
     seconds: str | None = Field(default=None, pattern=r"^(0|[1-9][0-9]{0,7})(?:\.[0-9]{1,6})?$")
     statement_ref: str = Field(min_length=1, max_length=160)
@@ -74,6 +88,11 @@ class UsageSettlement(Input):
         if self.total_tokens is not None and self.input_tokens is not None and self.output_tokens is not None:
             if self.total_tokens != self.input_tokens + self.output_tokens:
                 raise ValueError("总令牌量与输入输出不一致")
+        if self.cache_read_tokens is not None or self.cache_write_tokens is not None:
+            if self.input_tokens is None or self.cache_read_tokens is None or self.cache_write_tokens is None:
+                raise ValueError("缓存计量须同时提供输入、缓存读取与写入令牌量")
+            if self.cache_read_tokens + self.cache_write_tokens > self.input_tokens:
+                raise ValueError("缓存令牌量超过输入令牌量")
         return self
 
 
@@ -104,10 +123,28 @@ class PublicPolicy(Input):
         for profile, capability in {(p.profile_id, p.capability) for p in self.model_prices}:
             rules = [p for p in self.model_prices if p.profile_id == profile and p.capability == capability]
             units = {p.unit for p in rules}
-            if len({p.currency for p in rules}) > 1 or (
-                "TOKEN" in units and units & {"INPUT_TOKEN", "OUTPUT_TOKEN"}
+            if (
+                len({p.currency for p in rules}) > 1
+                or (
+                    "TOKEN" in units
+                    and units
+                    & {
+                        "INPUT_TOKEN",
+                        "OUTPUT_TOKEN",
+                        "UNCACHED_INPUT_TOKEN",
+                        "CACHE_READ_TOKEN",
+                        "CACHE_WRITE_TOKEN",
+                    }
+                )
+                or (
+                    "INPUT_TOKEN" in units
+                    and units & {"UNCACHED_INPUT_TOKEN", "CACHE_READ_TOKEN", "CACHE_WRITE_TOKEN"}
+                )
             ):
                 raise ValueError("同一计价配置不能混币种或重复计算令牌")
+            split = {"UNCACHED_INPUT_TOKEN", "CACHE_READ_TOKEN", "CACHE_WRITE_TOKEN"}
+            if units & split and not split <= units:
+                raise ValueError("缓存计价须同时配置普通输入、缓存读取与写入价格")
         return self
 
 
@@ -164,6 +201,21 @@ class Governance:
             old = await read_policy(conn, lock=True)
             if old["version"] != expected_version:
                 raise DomainError("VERSION_CONFLICT", "设置版本已变化，请刷新", 409)
+            for price in proposed["model_prices"]:
+                if price["profile_id"]:
+                    profile = await one(
+                        conn,
+                        "SELECT capability,model_name FROM ag_model_profile WHERE id=:id",
+                        id=price["profile_id"],
+                    )
+                    if (
+                        not profile
+                        or profile["capability"] != price["capability"]
+                        or (price.get("model_name") and price["model_name"] != profile["model_name"])
+                    ):
+                        raise DomainError(
+                            "PRICE_PROFILE_MISMATCH", "价格规则与模型配置不匹配，请刷新核对", 422
+                        )
             shortening = any(
                 proposed[name] < old["value"][name] for name in proposed if name.endswith("_retention_days")
             )
@@ -548,7 +600,16 @@ class Governance:
             usage = {
                 k: v
                 for k, v in wire.items()
-                if k in {"input_tokens", "output_tokens", "total_tokens", "characters", "seconds"}
+                if k
+                in {
+                    "input_tokens",
+                    "output_tokens",
+                    "total_tokens",
+                    "characters",
+                    "seconds",
+                    "cache_read_tokens",
+                    "cache_write_tokens",
+                }
                 and v is not None
             }
             if {r["unit_kind"] for r in pending} - set(actual_units(usage)):

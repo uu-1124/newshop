@@ -128,7 +128,28 @@ public class AgentAfterSaleStore {
     public Map<String,Object> orderSummary(long member,long oid){
         var o=order(member,oid,false);
         var rules=parse(activeRule(false).get("rules_json"));
-        List<Map<String,Object>> lines=db.queryForList("SELECT i.*,COALESCE((SELECT SUM(x.quantity) FROM oms_agent_return x WHERE x.order_item_id=i.id AND x.stage<>'REJECTED'),0) applied,EXISTS(SELECT 1 FROM oms_order_return_apply a LEFT JOIN oms_agent_return x ON x.return_id=a.id WHERE a.order_id=i.order_id AND a.product_id=i.product_id AND a.status<>3 AND x.return_id IS NULL) ambiguous FROM oms_order_item i WHERE i.order_id=? ORDER BY i.id LIMIT 100",oid).stream().map(i->{
+        var items=db.queryForList("SELECT i.*,COALESCE((SELECT SUM(x.quantity) FROM oms_agent_return x WHERE x.order_item_id=i.id AND x.stage<>'REJECTED'),0) applied,EXISTS(SELECT 1 FROM oms_order_return_apply a LEFT JOIN oms_agent_return x ON x.return_id=a.id WHERE a.order_id=i.order_id AND a.product_id=i.product_id AND a.status<>3 AND x.return_id IS NULL) ambiguous FROM oms_order_item i WHERE i.order_id=? ORDER BY i.id LIMIT 100",oid);
+        return summary(o,rules,items,returns(member,oid));
+    }
+    /** A page uses four reads, retaining member ownership and per-order limits. */
+    @Transactional(readOnly=true)
+    public List<Map<String,Object>> orderSummaries(long member,List<Long> ids){
+        if(ids.isEmpty())return List.of();
+        if(ids.size()>100 || new HashSet<>(ids).size()!=ids.size())throw new Rejected("VALIDATION_ERROR",422);
+        String placeholders=String.join(",",Collections.nCopies(ids.size(),"?"));
+        List<Object> ownerArgs=new ArrayList<>();ownerArgs.add(member);ownerArgs.addAll(ids);
+        var orders=db.queryForList("SELECT * FROM oms_order WHERE member_id=? AND delete_status=0 AND id IN ("+placeholders+")",ownerArgs.toArray());
+        if(orders.size()!=ids.size())throw new Rejected("NOT_FOUND",404);
+        var rules=parse(activeRule(false).get("rules_json"));
+        var items=db.queryForList("SELECT ranked.* FROM (SELECT i.*,COALESCE((SELECT SUM(x.quantity) FROM oms_agent_return x WHERE x.order_item_id=i.id AND x.stage<>'REJECTED'),0) applied,EXISTS(SELECT 1 FROM oms_order_return_apply a LEFT JOIN oms_agent_return x ON x.return_id=a.id WHERE a.order_id=i.order_id AND a.product_id=i.product_id AND a.status<>3 AND x.return_id IS NULL) ambiguous,ROW_NUMBER() OVER(PARTITION BY i.order_id ORDER BY i.id) page_row FROM oms_order_item i WHERE i.order_id IN ("+placeholders+")) ranked WHERE page_row<=100 ORDER BY order_id,id",ids.toArray());
+        String returnPage=returnSql().replace(" FROM oms_order_return_apply",",ROW_NUMBER() OVER(PARTITION BY a.order_id ORDER BY a.id DESC) page_row FROM oms_order_return_apply");
+        var returned=db.queryForList("SELECT ranked.* FROM ("+returnPage+" WHERE a.order_id IN ("+placeholders+")) ranked WHERE page_row<=100 ORDER BY order_id,id DESC",ids.toArray());
+        Map<Long,Map<String,Object>> byId=new HashMap<>();for(var o:orders)byId.put(number(o.get("id")),o);
+        return ids.stream().map(id->summary(byId.get(id),rules,items.stream().filter(i->number(i.get("order_id"))==id).toList(),returned.stream().filter(r->number(r.get("order_id"))==id).map(this::returnSummary).toList())).toList();
+    }
+    private Map<String,Object> summary(Map<String,Object> o,JsonNode rules,List<Map<String,Object>> items,List<Map<String,Object>> returns){
+        long oid=number(o.get("id"));
+        List<Map<String,Object>> lines=items.stream().map(i->{
             int quantity=((Number)i.get("product_quantity")).intValue();int orderStatus=((Number)o.get("status")).intValue();
             boolean eligible=((orderStatus==2 && rules.path("allow_shipped").asBoolean()) || (orderStatus==3 && o.get("receive_time")!=null && withinWindow(Instant.parse(legacyTime(o.get("receive_time"))),Instant.now(),rules.path("return_window_hours").asLong()))) && ((Number)i.get("ambiguous")).intValue()==0;
             long remaining=Math.max(0L,quantity-number(i.get("applied")));
@@ -141,7 +162,7 @@ public class AgentAfterSaleStore {
         String address=Objects.toString(o.get("receiver_name"),"")+" "+phone+" "+Objects.toString(o.get("receiver_province"),"")+Objects.toString(o.get("receiver_city"),"")+Objects.toString(o.get("receiver_region"),"");
         return map("id",Long.toString(oid),"order_sn",o.get("order_sn"),"status",status,"status_label",status>=0&&status<labels.length?labels[status]:"未知状态",
             "pay_amount",money(o.get("pay_amount")),"created_at",legacyTime(o.get("create_time")),"receive_time",legacyTime(o.get("receive_time")),"address_summary",address,
-            "lines",lines,"returns",returns(member,oid),"detail_path","/pages/order/orderDetail?orderId="+oid,"payment_path",status==0?"/pages/money/pay?orderId="+oid:null,"is_simulated",true);
+            "lines",lines,"returns",returns,"detail_path","/pages/order/orderDetail?orderId="+oid,"payment_path",status==0?"/pages/money/pay?orderId="+oid:null,"is_simulated",true);
     }
     public Map<String,Object> logistics(long member,long oid){
         var o=order(member,oid,false);var s=first("SELECT * FROM oms_agent_shipment WHERE order_id=?",oid);

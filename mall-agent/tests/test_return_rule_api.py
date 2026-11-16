@@ -48,7 +48,14 @@ async def test_rule_facade_checks_permissions_and_forwards_utc_and_original_idem
         return principal
 
     app.dependency_overrides[staff] = current
-    svc.bridge.get = AsyncMock(return_value={"items": [], "active_rule_version": "ITEM_NET_DEMO_V2"})
+    svc.bridge.get = AsyncMock(
+        return_value={
+            "items": [
+                {"version_no": 2, "rule_version": "ITEM_NET_DEMO_V2", "effective_at": "2026-11-14T12:00:00Z"}
+            ],
+            "active_rule_version": "ITEM_NET_DEMO_V2",
+        }
+    )
     svc.extensions.after_sale.implementation = type(
         "AfterSale", (), {"staff_transition": AsyncMock(return_value={"id": "2", "version_no": 2})}
     )()

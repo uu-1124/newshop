@@ -155,19 +155,22 @@ async def messages_projection(conn, messages):
 
     current_sources, available_attachments, current_actions = {}, set(), {}
     if sources:
+        from app.application.return_knowledge import RULE_CURRENT_SQL
+
         current_sources = {
             tuple(str(row[name]) for name in ("message_id", "document_id", "version_id", "chunk_id")): bool(
                 row["available"]
             )
             for row in await rows(
                 conn,
-                """SELECT r.*, EXISTS(SELECT 1 FROM ag_kb_citation k
+                f"""SELECT r.*, EXISTS(SELECT 1 FROM ag_kb_citation k
                     JOIN ag_kb_document d ON d.id=k.document_id
                     JOIN ag_kb_version v ON v.id=k.version_id JOIN ag_kb_chunk c ON c.id=k.chunk_id
                     WHERE k.message_id=r.message_id AND k.document_id=r.document_id
                     AND k.version_id=r.version_id AND k.chunk_id=r.chunk_id
                     AND d.enabled AND d.visibility='MEMBER' AND d.active_version_id=v.id
                     AND v.state='READY' AND v.published_at IS NOT NULL
+                    AND {RULE_CURRENT_SQL}
                     AND encode(sha256(convert_to(c.content,'UTF8')),'hex')=k.content_sha256) AS available
                 FROM jsonb_to_recordset(CAST(:refs AS jsonb))
                     AS r(message_id uuid,document_id uuid,version_id uuid,chunk_id uuid)""",

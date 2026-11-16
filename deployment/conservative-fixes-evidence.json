@@ -1,0 +1,494 @@
+{
+  "schema_version": 1,
+  "accepted_on": "2026-11-16",
+  "baseline_commit": "8be20c0e0a9959c74b6a188cb2c0e7326a06a14e",
+  "verification_scope": "Five screenshot issues; performance improvement is partial, no claim of zero bugs or completed blueprint.",
+  "tests": {
+    "python": {
+      "passed": 601,
+      "failed": 0,
+      "seconds": 2495.14
+    },
+    "java_related": {
+      "passed": 36,
+      "failed": 0,
+      "build": "SUCCESS"
+    },
+    "buyer": {
+      "passed": 71,
+      "failed": 0,
+      "types": "passed",
+      "h5_build": "passed"
+    },
+    "admin": {
+      "passed": 4,
+      "failed": 0,
+      "types": "passed",
+      "build": "passed"
+    },
+    "deployment": {
+      "passed": 5,
+      "failed": 0
+    },
+    "ruff": "passed",
+    "web_contracts": "passed",
+    "framework_offline": {
+      "modules": 20,
+      "operations": 135,
+      "active_python_operations": 103,
+      "workflow_nodes": 12
+    },
+    "post_test_source_change": "one formatting-only blank line in views.py; documentation and read-only release verifier added"
+  },
+  "ordinary_queries": {
+    "samples_per_path": 8,
+    "before": {
+      "/mall-agent/v1/member/conversations?limit=20": {
+        "samples": 8,
+        "p50_ms": 1239.83,
+        "p95_ms": 1811.95
+      },
+      "/mall-agent/v1/member/orders?limit=5": {
+        "samples": 8,
+        "p50_ms": 3454.23,
+        "p95_ms": 3550.91
+      },
+      "/mall-agent/v1/member/me": {
+        "samples": 8,
+        "p50_ms": 628.36,
+        "p95_ms": 709.48
+      }
+    },
+    "after": {
+      "/mall-agent/v1/member/conversations?limit=20": {
+        "samples": 8,
+        "p50_ms": 1187.41,
+        "p95_ms": 1448.7
+      },
+      "/mall-agent/v1/member/orders?limit=5": {
+        "samples": 8,
+        "p50_ms": 2070.56,
+        "p95_ms": 2099.9
+      },
+      "/mall-agent/v1/member/me": {
+        "samples": 8,
+        "p50_ms": 609.14,
+        "p95_ms": 654.05
+      }
+    }
+  },
+  "database_diagnostics": {
+    "cold_acquisition_ms": 1214.29,
+    "warm_acquisition": {
+      "samples": 11,
+      "p50_ms": 0.21,
+      "p95_ms": 0.25
+    },
+    "select_one_roundtrip": {
+      "samples": 12,
+      "p50_ms": 179.91,
+      "p95_ms": 189.82
+    },
+    "note": "SELECT 1 includes driver/network/server time; isolated pool acquisition is not live contention."
+  },
+  "continuous_capacity": {
+    "before": {
+      "id": "8ef17267-4d65-4a27-9b8e-60d0b8ae4bd8",
+      "created_at": "2026-11-16T05:01:40.009281+00:00",
+      "result": "A08_CONTINUOUS_WORKLOAD_PASSED",
+      "required_seconds": 900,
+      "actual_seconds": 925.4,
+      "http": {
+        "member_history": {
+          "samples": 339,
+          "p50_ms": 1604.81,
+          "p95_ms": 2418.01,
+          "p99_ms": 2760.5
+        },
+        "member_send": {
+          "samples": 236,
+          "p50_ms": 2268.86,
+          "p95_ms": 3083.18,
+          "p99_ms": 3255.58
+        },
+        "member_list": {
+          "samples": 111,
+          "p50_ms": 1167.56,
+          "p95_ms": 2214.6,
+          "p99_ms": 2559.0
+        },
+        "member_replay": {
+          "samples": 49,
+          "p50_ms": 1871.82,
+          "p95_ms": 2437.86,
+          "p99_ms": 2656.97
+        },
+        "member_orders": {
+          "samples": 111,
+          "p50_ms": 1451.33,
+          "p95_ms": 1965.72,
+          "p99_ms": 2096.02
+        },
+        "staff_send": {
+          "samples": 229,
+          "p50_ms": 2708.24,
+          "p95_ms": 3337.92,
+          "p99_ms": 3690.0
+        },
+        "staff_heartbeat": {
+          "samples": 159,
+          "p50_ms": 1823.71,
+          "p95_ms": 2964.65,
+          "p99_ms": 3339.28
+        },
+        "staff_history": {
+          "samples": 77,
+          "p50_ms": 1699.09,
+          "p95_ms": 2188.56,
+          "p99_ms": 2556.17
+        },
+        "original_order_read": {
+          "samples": 11,
+          "p50_ms": 1498.55,
+          "p95_ms": 2186.86,
+          "p99_ms": 2186.86
+        },
+        "original_return_read": {
+          "samples": 11,
+          "p50_ms": 1247.9,
+          "p95_ms": 1481.52,
+          "p99_ms": 1481.52
+        },
+        "staff_image_send": {
+          "samples": 3,
+          "p50_ms": 2124.2,
+          "p95_ms": 3226.58,
+          "p99_ms": 3226.58
+        },
+        "staff_note": {
+          "samples": 3,
+          "p50_ms": 2527.33,
+          "p95_ms": 3109.4,
+          "p99_ms": 3109.4
+        },
+        "member_snapshot": {
+          "samples": 6,
+          "p50_ms": 1462.55,
+          "p95_ms": 3000.55,
+          "p99_ms": 3000.55
+        }
+      },
+      "messages_verified": 484,
+      "expected_messages_verified": 475,
+      "errors": [],
+      "cleanup_errors": [],
+      "business_confirmations": 0,
+      "real_financial_calls": 0,
+      "buyers": 10,
+      "staff": 3,
+      "stream_count": 13,
+      "all_periodic_sse_connected": 13,
+      "model_tasks": 9,
+      "runtime_samples": 29,
+      "attribution": {
+        "supplier_stages": {
+          "DIALOG:workflow-router": {
+            "samples": 9,
+            "p50_ms": 2845,
+            "p95_ms": 4430
+          },
+          "EMBEDDING:adapter": {
+            "samples": 9,
+            "p50_ms": 589,
+            "p95_ms": 1983
+          },
+          "RERANK:adapter": {
+            "samples": 9,
+            "p50_ms": 470,
+            "p95_ms": 524
+          },
+          "DIALOG:fact-selector": {
+            "samples": 9,
+            "p50_ms": 10216,
+            "p95_ms": 14579
+          }
+        },
+        "queue": {
+          "samples": 9,
+          "p50_ms": 2063.44,
+          "p95_ms": 3430.31
+        },
+        "first_text": {
+          "samples": 9,
+          "p50_ms": 23854.57,
+          "p95_ms": 26305.59
+        },
+        "total": {
+          "samples": 9,
+          "p50_ms": 29046.29,
+          "p95_ms": 38573.98
+        }
+      }
+    },
+    "after": {
+      "id": "a5eb99f3-81d9-4305-8146-67ef6881d2ff",
+      "created_at": "2026-11-16T05:59:42.503785+00:00",
+      "result": "A08_CONTINUOUS_WORKLOAD_PASSED",
+      "required_seconds": 900,
+      "actual_seconds": 923.85,
+      "http": {
+        "member_history": {
+          "samples": 340,
+          "p50_ms": 1604.07,
+          "p95_ms": 2511.91,
+          "p99_ms": 2712.75
+        },
+        "member_send": {
+          "samples": 238,
+          "p50_ms": 2195.82,
+          "p95_ms": 3099.62,
+          "p99_ms": 3431.5
+        },
+        "member_list": {
+          "samples": 110,
+          "p50_ms": 1281.15,
+          "p95_ms": 1993.1,
+          "p99_ms": 2202.57
+        },
+        "member_replay": {
+          "samples": 49,
+          "p50_ms": 1706.41,
+          "p95_ms": 2836.35,
+          "p99_ms": 3006.39
+        },
+        "member_orders": {
+          "samples": 110,
+          "p50_ms": 1725.28,
+          "p95_ms": 2277.47,
+          "p99_ms": 2576.43
+        },
+        "staff_send": {
+          "samples": 231,
+          "p50_ms": 2577.13,
+          "p95_ms": 3410.55,
+          "p99_ms": 3551.72
+        },
+        "staff_heartbeat": {
+          "samples": 158,
+          "p50_ms": 1938.82,
+          "p95_ms": 3014.2,
+          "p99_ms": 3584.37
+        },
+        "staff_history": {
+          "samples": 77,
+          "p50_ms": 1438.73,
+          "p95_ms": 2269.12,
+          "p99_ms": 2866.77
+        },
+        "original_order_read": {
+          "samples": 11,
+          "p50_ms": 1424.24,
+          "p95_ms": 1740.35,
+          "p99_ms": 1740.35
+        },
+        "original_return_read": {
+          "samples": 11,
+          "p50_ms": 1241.04,
+          "p95_ms": 1747.8,
+          "p99_ms": 1747.8
+        },
+        "staff_image_send": {
+          "samples": 3,
+          "p50_ms": 2089.22,
+          "p95_ms": 2980.82,
+          "p99_ms": 2980.82
+        },
+        "staff_note": {
+          "samples": 3,
+          "p50_ms": 2447.7,
+          "p95_ms": 3264.48,
+          "p99_ms": 3264.48
+        },
+        "member_snapshot": {
+          "samples": 6,
+          "p50_ms": 2362.46,
+          "p95_ms": 2532.32,
+          "p99_ms": 2532.32
+        }
+      },
+      "messages_verified": 486,
+      "expected_messages_verified": 477,
+      "errors": [],
+      "cleanup_errors": [],
+      "business_confirmations": 0,
+      "real_financial_calls": 0,
+      "buyers": 10,
+      "staff": 3,
+      "stream_count": 13,
+      "all_periodic_sse_connected": 13,
+      "model_tasks": 9,
+      "runtime_samples": 29,
+      "attribution": {
+        "supplier_stages": {
+          "DIALOG:workflow-router": {
+            "samples": 9,
+            "p50_ms": 3487,
+            "p95_ms": 5118
+          },
+          "EMBEDDING:adapter": {
+            "samples": 9,
+            "p50_ms": 396,
+            "p95_ms": 560
+          },
+          "RERANK:adapter": {
+            "samples": 9,
+            "p50_ms": 220,
+            "p95_ms": 263
+          },
+          "DIALOG:fact-selector": {
+            "samples": 9,
+            "p50_ms": 9192,
+            "p95_ms": 14323
+          }
+        },
+        "queue": {
+          "samples": 9,
+          "p50_ms": 1918.47,
+          "p95_ms": 3458.37
+        },
+        "first_text": {
+          "samples": 9,
+          "p50_ms": 22623.17,
+          "p95_ms": 26004.18
+        },
+        "total": {
+          "samples": 9,
+          "p50_ms": 28163.63,
+          "p95_ms": 36260.63
+        }
+      }
+    }
+  },
+  "runtime": {
+    "checked_at": "2026-11-16T06:25:36.764266+00:00",
+    "runtime_python_operations": 107,
+    "document": {
+      "id": "fd22c144-65c8-4562-b061-1cba7c46ce07",
+      "active_version_id": "a02bad03-b65e-47b3-bbff-03b5ac60824b",
+      "enabled": true,
+      "version": 7
+    },
+    "policy": {
+      "version": 6,
+      "price_count": 12
+    },
+    "unknown_count": 6,
+    "pending_actions": 0,
+    "versions": [
+      {
+        "id": "1549da68-1f5e-449d-acaa-c3f207bd69be",
+        "state": "RETIRED",
+        "published_at": "2026-11-13 04:48:51.739785+00:00"
+      },
+      {
+        "id": "a02bad03-b65e-47b3-bbff-03b5ac60824b",
+        "state": "READY",
+        "published_at": "2026-11-16 05:56:55.967344+00:00"
+      }
+    ],
+    "source_checks": [
+      {
+        "version_id": "1549da68-1f5e-449d-acaa-c3f207bd69be",
+        "available": false
+      },
+      {
+        "version_id": "a02bad03-b65e-47b3-bbff-03b5ac60824b",
+        "available": true
+      }
+    ],
+    "priced_calls": [
+      {
+        "capability": "DIALOG",
+        "status": "SUCCEEDED",
+        "currency": "USD",
+        "usage_state": "REPORTED",
+        "n": 20,
+        "estimated": 20
+      },
+      {
+        "capability": "EMBEDDING",
+        "status": "SUCCEEDED",
+        "currency": "CNY",
+        "usage_state": "REPORTED",
+        "n": 11,
+        "estimated": 11
+      },
+      {
+        "capability": "RERANK",
+        "status": "SUCCEEDED",
+        "currency": "CNY",
+        "usage_state": "REPORTED",
+        "n": 10,
+        "estimated": 10
+      }
+    ],
+    "product_context": {
+      "kind": "PRODUCT",
+      "product_id": "40"
+    },
+    "knowledge_run_id": "8c9d520a-0fe3-4457-aca1-fde1b13828d1",
+    "knowledge_citations": [
+      {
+        "document_id": "fd22c144-65c8-4562-b061-1cba7c46ce07",
+        "version_id": "a02bad03-b65e-47b3-bbff-03b5ac60824b",
+        "chunk_id": "1f6cf684-2452-5cc2-bb5a-15487d769d46"
+      }
+    ],
+    "citation_readbacks": [
+      {
+        "document_id": "fd22c144-65c8-4562-b061-1cba7c46ce07",
+        "version_id": "a02bad03-b65e-47b3-bbff-03b5ac60824b",
+        "chunk_id": "1f6cf684-2452-5cc2-bb5a-15487d769d46",
+        "title": "[演示规则] 演示明细退货规则",
+        "section": "正文片段1",
+        "page_start": null,
+        "page_end": null,
+        "available": true
+      }
+    ],
+    "cleanup": "only the dedicated acceptance conversation deleted",
+    "result": "passed"
+  },
+  "deployment": {
+    "postgres_migration": "0011",
+    "python_processes": [
+      "api",
+      "generation",
+      "scheduler",
+      "jobs",
+      "outbox",
+      "backups",
+      "observability"
+    ],
+    "cloud_containers_restarted": false,
+    "schema_migrations_added": false
+  },
+  "pricing": {
+    "rules": 12,
+    "currencies_separate": [
+      "CNY",
+      "USD"
+    ],
+    "fusheng_multiplier": "1",
+    "effective_calls": "future snapshots only",
+    "historical_unknown_preserved": 6,
+    "catalogue": "deployment/model-prices-20261116.json"
+  },
+  "limits": [
+    "AI first-text P95 remains 26004.18ms under tested load; some HTTP categories regress.",
+    "Isolated warm pool timings do not measure live contention.",
+    "No additional paid VISION/ASR/TTS verification this round.",
+    "Public list-price estimate is not a supplier invoice.",
+    "Retained evidence does not prove all possible future inputs."
+  ]
+}

@@ -25,7 +25,7 @@ public class AgentOrderQueries {
         var ids=db.queryForList("SELECT id FROM oms_order WHERE member_id=? AND delete_status=0 AND id<? AND (?='' OR order_sn=?) AND (? IS NULL OR status=?) ORDER BY id DESC LIMIT ?",Long.class,member,after,sn,sn,status,status,limit+1);
         boolean more=ids.size()>limit;var page=ids.subList(0,Math.min(limit,ids.size()));String next=null;
         if(more){byte[] payload=store.encode(Map.of("scope",scope,"id",page.get(page.size()-1))).getBytes(StandardCharsets.UTF_8);next=Base64.getUrlEncoder().withoutPadding().encodeToString(payload)+"."+Base64.getUrlEncoder().withoutPadding().encodeToString(mac(payload));}
-        return AgentAfterSaleStore.map("items",page.stream().map(id->store.orderSummary(member,id)).toList(),"next_cursor",next,"has_more",more);
+        return AgentAfterSaleStore.map("items",store.orderSummaries(member,page),"next_cursor",next,"has_more",more);
     }
     private byte[] mac(byte[] raw){try{if(secret.length()<32)throw new IllegalStateException();Mac m=Mac.getInstance("HmacSHA256");m.init(new SecretKeySpec(("order-cursor-v1:"+secret).getBytes(StandardCharsets.UTF_8),"HmacSHA256"));return m.doFinal(raw);}catch(Exception e){throw new IllegalStateException("Order cursor unavailable",e);}}
 }

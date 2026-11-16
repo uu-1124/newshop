@@ -1,8 +1,16 @@
 """Frozen pricing and actual supplier units. Unknown cost is never recorded as zero."""
 
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 from app.infrastructure.postgres.database import encoded, execute, one, rows
+
+
+def quantity(raw):
+    try:
+        value = Decimal(str(raw))
+        return value if value.is_finite() and value >= 0 and not isinstance(raw, bool) else None
+    except (InvalidOperation, ValueError, TypeError):
+        return None
 
 
 def actual_units(usage):
@@ -15,15 +23,29 @@ def actual_units(usage):
     ):
         raw = usage.get(key, usage.get(alternative))
         if raw is not None:
-            value = Decimal(str(raw))
-            if value.is_finite() and value >= 0:
+            value = quantity(raw)
+            if value is not None:
                 values[unit] = value
     if "INPUT_TOKEN" in values and "OUTPUT_TOKEN" in values:
         values["TOKEN"] = values["INPUT_TOKEN"] + values["OUTPUT_TOKEN"]
     elif usage.get("total_tokens") is not None:
-        value = Decimal(str(usage["total_tokens"]))
-        if value.is_finite() and value >= 0:
+        value = quantity(usage["total_tokens"])
+        if value is not None:
             values["TOKEN"] = value
+    # Responses input_tokens includes cached tokens. Keep the original total for
+    # quotas and legacy prices; split only when the supplier reports a breakdown.
+    details = usage.get("input_tokens_details", usage.get("prompt_tokens_details"))
+    cached = usage.get("cache_read_tokens")
+    created = usage.get("cache_write_tokens", usage.get("cache_creation_input_tokens"))
+    if isinstance(details, dict):
+        cached = details.get("cached_tokens", cached)
+        created = details.get("cache_creation_tokens", created)
+    cached = quantity(cached)
+    created = quantity(0 if created is None else created)
+    if cached is not None and created is not None and "INPUT_TOKEN" in values:
+        uncached = values["INPUT_TOKEN"] - cached - created
+        if uncached >= 0:
+            values.update(UNCACHED_INPUT_TOKEN=uncached, CACHE_READ_TOKEN=cached, CACHE_WRITE_TOKEN=created)
     return values
 
 
@@ -42,6 +64,7 @@ def estimate(pricing, usage):
 
 async def capture_pricing(conn, call_id, policy, capability, profile, actor):
     all_rules = policy["value"]["model_prices"]
+    all_rules = [r for r in all_rules if not r.get("model_name") or r["model_name"] == profile.get("model")]
     exact = [r for r in all_rules if r["capability"] == capability and r["profile_id"] == str(profile["id"])]
     rules = exact or [r for r in all_rules if r["capability"] == capability and r["profile_id"] is None]
     await execute(
@@ -76,8 +99,21 @@ async def finish_meter(conn, call_id, usage, known):
             "total_tokens",
             "characters",
             "seconds",
+            "input_tokens_details",
+            "prompt_tokens_details",
+            "cache_read_tokens",
+            "cache_write_tokens",
+            "cache_creation_input_tokens",
         }
     }
+    for key in ("input_tokens_details", "prompt_tokens_details"):
+        if key in usage:
+            detail = usage[key]
+            usage[key] = (
+                {k: detail[k] for k in ("cached_tokens", "cache_creation_tokens") if k in detail}
+                if isinstance(detail, dict)
+                else {}
+            )
     currency, cost = estimate(meter["pricing"], usage)
     await execute(
         conn,

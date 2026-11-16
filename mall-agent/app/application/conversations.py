@@ -152,7 +152,6 @@ class Conversations:
 
     async def snapshot_in(self, conn, conv, history_scope, actor=None):
         from app.application.handoffs import handoff_view, latest_handoff
-        from app.application.read_positions import read_position
 
         cid = conv["id"]
         data = await rows(
@@ -162,7 +161,22 @@ class Conversations:
             id=cid,
         )
         run = await one(conn, f"SELECT * FROM ag_run WHERE conversation_id=:id AND state IN {ACTIVE}", id=cid)
-        clock = await one(conn, "SELECT last_event_id FROM ag_event_clock WHERE singleton_id=1")
+        # Read cursor, unread count, preview and event cursor share this snapshot.
+        metadata = await one(
+            conn,
+            f"""SELECT clock.last_event_id,COALESCE(rc.last_seq,0) last_seq,
+            (SELECT COUNT(*) FROM ag_message m WHERE m.conversation_id=:cid AND {visible_sql()}
+                AND m.status<>'GENERATING' AND m.sender_kind IN ('MEMBER','ASSISTANT','STAFF')
+                AND NOT(m.sender_kind=:kind AND m.sender_id=:actor)
+                AND m.seq>COALESCE(rc.last_seq,0)) unread_count,
+            (SELECT text_content FROM ag_message m WHERE m.conversation_id=:cid
+                AND {visible_sql()} AND m.text_content<>'' ORDER BY seq DESC LIMIT 1) preview
+            FROM ag_event_clock clock LEFT JOIN ag_read_cursor rc ON rc.conversation_id=:cid
+                AND rc.actor_kind=:kind AND rc.actor_id=:actor WHERE clock.singleton_id=1""",
+            cid=cid,
+            kind=actor.kind if actor else "MEMBER",
+            actor=actor.id if actor else conv["member_id"],
+        )
         from app.application.actions import action_view
 
         pending = await rows(
@@ -171,14 +185,14 @@ class Conversations:
             id=cid,
         )
         messages = list(reversed(data[:20]))
-        position = await read_position(
-            conn, cid, actor.kind if actor else "MEMBER", actor.id if actor else conv["member_id"]
-        )
+        position = {"last_seq": str(metadata["last_seq"]), "unread_count": metadata["unread_count"]}
         return {
-            "conversation": await conversation_projection(conn, conv, actor=actor, position=position),
+            "conversation": await conversation_projection(
+                conn, conv, preview=metadata["preview"] or "", actor=actor, position=position
+            ),
             "recent_messages": await messages_projection(conn, messages),
             "latest_seq": str(max((m["seq"] for m in messages), default=0)),
-            "event_cursor": str(clock["last_event_id"]),
+            "event_cursor": str(metadata["last_event_id"]),
             "active_run": run_view(run),
             "pending_actions": [action_view(action) for action in pending],
             "handoff": handoff_view(await latest_handoff(conn, cid), conv),

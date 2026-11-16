@@ -79,7 +79,7 @@ const deferred = () => {
   return { promise, resolve }
 }
 
-async function harness() {
+async function harness(entry = {}) {
   const hooks = {},
     subscriptions = [],
     pendingSnapshots = []
@@ -91,6 +91,14 @@ async function harness() {
       resolveSubscribed = resolve
     })
   const agent = {
+    create: async (key, productId) => {
+      creations.push({ key, productId })
+      return copy(initial.conversation)
+    },
+    createOrderConversation: async (key, orderId) => {
+      creations.push({ key, orderId })
+      return copy(initial.conversation)
+    },
     list: async () => ({ items: [copy(initial.conversation)], next_cursor: null }),
     snapshot: async () =>
       pendingSnapshots.length ? pendingSnapshots.shift() : copy(currentSnapshot),
@@ -102,6 +110,7 @@ async function harness() {
     stop: async () => {},
     markRead: async (_id, lastSeq) => ({ last_seq: lastSeq, unread_count: 0 }),
   }
+  const creations = []
   const module = { exports: {} }
   vm.runInNewContext(javascript, {
     module,
@@ -126,7 +135,7 @@ async function harness() {
           onUnload: (fn) => {
             hooks.unload = fn
           },
-          onLoad: () => {},
+          onLoad: (fn) => { hooks.load = fn },
         }
       if (name === '@/services/agentStream') return streamModule.exports
       if (name === '@/services/agentAudio') return { stopAllSpeech() {} }
@@ -151,6 +160,7 @@ async function harness() {
     },
   })
   const state = module.exports.default.setup({}, { expose() {} })
+  hooks.load(entry)
   const ready = subscribed()
   hooks.show()
   await ready
@@ -160,6 +170,7 @@ async function harness() {
     subscriptions,
     pendingSnapshots,
     hooks,
+    creations,
     setSnapshot: (value) => {
       currentSnapshot = value
     },
@@ -167,6 +178,34 @@ async function harness() {
     close: () => hooks.unload(),
   }
 }
+
+test('product entry creates only one scoped conversation before subscribing to its stream', async () => {
+  const h = await harness({ productId: '9007199254740993' })
+  try {
+    assert.equal(h.creations.length, 1)
+    assert.equal(h.creations[0].productId, '9007199254740993')
+    assert.equal(h.state.entryProductId.value, '')
+    await h.state.load()
+    assert.equal(h.creations.length, 1)
+  } finally { h.close() }
+})
+
+test('order entry sets its target and clears the entry while the stream remains open', async () => {
+  const h = await harness({ orderId: '40', productId: '45' })
+  try {
+    assert.equal(h.creations[0].orderId, '40')
+    assert.equal(h.state.orderPanelId.value, '40')
+    assert.equal(h.state.entryOrderId.value, '')
+    assert.equal(h.state.entryProductId.value, '')
+  } finally { h.close() }
+})
+
+test('malformed and overflowing product IDs cannot create scoped conversations', async () => {
+  for (const productId of ['9223372036854775808', '45&orderId=40', '-1', '0045']) {
+    const h = await harness({ productId })
+    try { assert.equal(h.creations.length, 0) } finally { h.close() }
+  }
+})
 
 test('the actual chat callback repairs a missing fragment before advancing to later text', async () => {
   const h = await harness()

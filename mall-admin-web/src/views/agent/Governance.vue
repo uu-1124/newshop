@@ -31,8 +31,8 @@ const backupJob = ref<Job | null>(null)
 const backupSelection = ref('')
 const recoveryReason = ref('')
 const usage = ref<UsageSettlement>({ expected_version: 1, statement_ref: '', reason: '' })
-const numericFields = ['input_tokens', 'output_tokens', 'total_tokens', 'characters'] as const
-const fieldLabels = { input_tokens: '输入令牌', output_tokens: '输出令牌', total_tokens: '总令牌', characters: '字符' }
+const numericFields = ['input_tokens', 'output_tokens', 'total_tokens', 'cache_read_tokens', 'cache_write_tokens', 'characters'] as const
+const fieldLabels = { input_tokens: '输入令牌（含缓存）', output_tokens: '输出令牌', total_tokens: '总令牌', cache_read_tokens: '缓存读取令牌（有缓存计价时同时填读写量，无写入填0）', cache_write_tokens: '缓存写入令牌', characters: '字符' }
 let pending = { body: '', key: '' }
 const can = (permission: string) => permissions.value.includes(permission)
 const time = (value: string) => new Date(value).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
@@ -315,10 +315,13 @@ onMounted(() => { void act(load) })
         <button :disabled="(policy.value.quota_limits?.length || 0) >= 100" @click="addQuota">添加额度规则</button>
         <h3>供应商计价</h3>
         <p>按实际合同填写。未配置价格显示未知；输入/输出令牌可分别计价，总令牌不能与二者重复计价。</p>
+        <p v-if="!policy.value.model_prices?.length" role="status">尚未配置任何供应商价格，费用不可估算。免费额度、折扣和第三方令牌分组须另行核对，不能按零费用处理。</p>
         <div v-for="(p, index) in policy.value.model_prices" :key="index" class="rule">
           <label>能力<select v-model="p.capability"><option v-for="c in capabilities" :key="c">{{ c }}</option></select></label>
           <label>指定配置UUID（可空）<input :value="p.profile_id || ''" @input="p.profile_id = ($event.target as HTMLInputElement).value.trim() || null" /></label>
-          <label>单位<select v-model="p.unit"><option v-for="u in ['REQUEST', 'INPUT_TOKEN', 'OUTPUT_TOKEN', 'TOKEN', 'CHARACTER', 'SECOND']" :key="u">{{ u }}</option></select></label>
+          <label>绑定模型名称（可空）<input :value="p.model_name || ''" maxlength="160" @input="p.model_name = ($event.target as HTMLInputElement).value.trim() || null" /></label>
+          <label>价格来源与核对日期<input :value="p.source_ref || ''" maxlength="500" @input="p.source_ref = ($event.target as HTMLInputElement).value.trim() || null" /></label>
+          <label>单位<select v-model="p.unit"><option v-for="u in ['REQUEST', 'INPUT_TOKEN', 'OUTPUT_TOKEN', 'TOKEN', 'CHARACTER', 'SECOND', 'UNCACHED_INPUT_TOKEN', 'CACHE_READ_TOKEN', 'CACHE_WRITE_TOKEN']" :key="u">{{ u }}</option></select></label>
           <label>每多少单位<input v-model.number="p.per_units" type="number" min="1" max="1000000000" /></label>
           <label>价格<input v-model="p.price" inputmode="decimal" /></label>
           <label>币种<select v-model="p.currency"><option>CNY</option><option>USD</option></select></label>

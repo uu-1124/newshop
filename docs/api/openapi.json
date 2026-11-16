@@ -17746,7 +17746,10 @@
               "OUTPUT_TOKEN",
               "TOKEN",
               "CHARACTER",
-              "SECOND"
+              "SECOND",
+              "UNCACHED_INPUT_TOKEN",
+              "CACHE_READ_TOKEN",
+              "CACHE_WRITE_TOKEN"
             ]
           },
           "currency": {
@@ -17765,6 +17768,30 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 1000000000
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -17810,6 +17837,30 @@
             ]
           },
           "total_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cache_read_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cache_write_tokens": {
             "anyOf": [
               {
                 "type": "integer",

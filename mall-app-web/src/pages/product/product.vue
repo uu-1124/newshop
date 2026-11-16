@@ -159,6 +159,10 @@
         <text class="yticon icon-shoucang"></text>
         <text>收藏</text>
       </view>
+      <button class="p-b-btn support-entry" aria-label="咨询当前商品" :disabled="!product.id" @click="openProductSupport">
+        <text class="yticon icon-dianhua-copy"></text>
+        <text>客服</text>
+      </button>
 
       <view class="action-btn-group">
         <button type="primary" class="action-btn no-border buy-now-btn" @click="handleBuy">
@@ -280,6 +284,13 @@ import type {
 import type { PmsBrand } from '@/types/brand'
 import type { SmsCoupon } from '@/types/coupon'
 import { formatDate } from '@/utils/date'
+
+// Only pass the object ID; the consultation service rechecks visibility and facts.
+const openProductSupport = () => {
+  const id = String(product.value.id || '')
+  if (!/^[1-9][0-9]{0,18}$/.test(id) || BigInt(id) > 9223372036854775807n) return
+  uni.navigateTo({ url: `/pages/agent/chat?productId=${id}` })
+}
 
 // ===== 导航栏相关 =====
 const statusBarHeight = ref(0)
@@ -1460,6 +1471,7 @@ page {
     color: $font-color-base;
     width: 96rpx;
     height: 80rpx;
+    flex-shrink: 0;
 
     // navigator 组件渲染为 <a class="navigator-wrap">，需同步 flex 布局
     :deep(.navigator-wrap) {
@@ -1492,8 +1504,20 @@ page {
     }
   }
 
+  .support-entry {
+    padding: 0;
+    margin: 0;
+    min-height: 44px;
+    min-width: 44px;
+    background: transparent;
+    line-height: 1.4;
+    &::after { border: 0; }
+  }
+
   .action-btn-group {
     display: flex;
+    flex: 1;
+    min-width: 0;
     height: 76rpx;
     border-radius: 100px;
     overflow: hidden;
@@ -1519,6 +1543,8 @@ page {
       align-items: center;
       justify-content: center;
       width: 180rpx;
+      flex: 1;
+      min-width: 0;
       height: 100%;
       font-size: $font-base;
       padding: 0;

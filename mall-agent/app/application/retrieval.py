@@ -5,16 +5,21 @@ import hashlib
 from uuid import UUID
 
 from app.application.expiry import visible_sql
+from app.application.return_knowledge import RULE_CURRENT_SQL
 from app.domain.identity import DomainError
-from app.infrastructure.postgres.database import one, rows
+from app.infrastructure.postgres.database import encoded, one, rows
 
-GLOBAL_MEMBER = """d.enabled AND d.visibility='MEMBER' AND d.active_version_id=v.id
+GLOBAL_MEMBER = (
+    """d.enabled AND d.visibility='MEMBER' AND d.active_version_id=v.id
     AND v.state='READY' AND v.published_at IS NOT NULL
     AND ((COALESCE(d.scope->'product_ids','[]'::jsonb)='[]'::jsonb
     AND COALESCE(d.scope->'category_ids','[]'::jsonb)='[]'::jsonb)
     OR (CAST(:product AS text) IS NOT NULL AND
         (COALESCE(d.scope->'product_ids','[]'::jsonb) @> jsonb_build_array(CAST(:product AS text))
         OR COALESCE(d.scope->'category_ids','[]'::jsonb) @> jsonb_build_array(CAST(:category AS text)))))"""
+    + " AND "
+    + RULE_CURRENT_SQL
+)
 
 
 def scope_parameters(context):
@@ -38,28 +43,52 @@ def source_view(row):
 
 
 async def current_source(conn, ref, lock=False):
-    try:
-        did, vid, cid = [UUID(str(ref[k])) for k in ("document_id", "version_id", "chunk_id")]
-    except (ValueError, KeyError, TypeError):
-        return None
-    row = await one(
+    return (await current_sources(conn, [ref], lock=lock))[0]
+
+
+async def current_sources(conn, refs, lock=False):
+    """Resolve one bounded batch in the caller's transaction; preserve input order."""
+    valid = []
+    for ordinal, ref in enumerate(refs):
+        try:
+            did, vid, cid = [str(UUID(str(ref[k]))) for k in ("document_id", "version_id", "chunk_id")]
+            valid.append(
+                {
+                    "ordinal": ordinal,
+                    "did": did,
+                    "vid": vid,
+                    "cid": cid,
+                    **scope_parameters(ref.get("scope_context")),
+                }
+            )
+        except (ValueError, KeyError, TypeError):
+            continue
+    if not valid:
+        return [None for _ in refs]
+    if lock:
+        await one(conn, "SELECT value FROM ag_setting WHERE key='agent-return-rule-catalog-v1' FOR SHARE")
+    found = await rows(
         conn,
-        f"""SELECT d.id AS document_id,d.title,v.id AS version_id,
+        f"""SELECT r.ordinal,d.id AS document_id,d.title,v.id AS version_id,
         c.id AS chunk_id,c.content,COALESCE(p.content,c.content) AS context_content,
         COALESCE(p.section_path,c.section_path) AS section_path,
-        c.page_start,c.page_end FROM ag_kb_document d JOIN ag_kb_version v ON v.document_id=d.id
+        c.page_start,c.page_end FROM jsonb_to_recordset(CAST(:refs AS jsonb))
+        AS r(ordinal int,did uuid,vid uuid,cid uuid,product text,category text)
+        JOIN ag_kb_document d ON d.id=r.did JOIN ag_kb_version v ON v.document_id=d.id AND v.id=r.vid
         JOIN ag_kb_chunk c ON c.version_id=v.id LEFT JOIN ag_kb_chunk p ON p.id=c.parent_chunk_id
-        WHERE d.id=:did AND v.id=:vid AND c.id=:cid AND c.chunk_kind='CHILD' AND {GLOBAL_MEMBER}
+        WHERE c.id=r.cid AND c.chunk_kind='CHILD'
+        AND {GLOBAL_MEMBER.replace("CAST(:product AS text)", "r.product").replace("CAST(:category AS text)", "r.category")}
+        ORDER BY d.id,c.id,r.ordinal
         """
         + (" FOR SHARE OF d,v,c" if lock else ""),
-        did=did,
-        vid=vid,
-        cid=cid,
-        **scope_parameters(ref.get("scope_context")),
+        refs=encoded(valid),
     )
-    if row and hashlib.sha256(row["content"].encode()).hexdigest() == ref.get("content_sha256"):
-        return row
-    return None
+    result = [None for _ in refs]
+    for row in found:
+        index = row["ordinal"]
+        if hashlib.sha256(row["content"].encode()).hexdigest() == refs[index].get("content_sha256"):
+            result[index] = row
+    return result
 
 
 class AuthorizedRetrieval:
@@ -117,15 +146,21 @@ class AuthorizedRetrieval:
         batches = await asyncio.gather(*(search(v) for v in versions))
         hits = sorted([h for batch in batches for h in batch], key=lambda h: h["distance"], reverse=True)
         candidates, seen = [], set()
+        eligible_hits = [
+            hit for hit in hits if hit.get("entity", {}).get("version_id") in {str(v["id"]) for v in versions}
+        ]
+        hit_refs = [
+            {
+                k: hit.get("entity", {}).get(k)
+                for k in ("document_id", "version_id", "chunk_id", "content_sha256")
+            }
+            | ({"scope_context": context} if context else {})
+            for hit in eligible_hits
+        ]
         async with self.db.transaction() as conn:
-            for hit in hits:
+            checked = await current_sources(conn, hit_refs)
+            for hit, ref, row in zip(eligible_hits, hit_refs, checked):
                 entity = hit.get("entity", {})
-                ref = {k: entity.get(k) for k in ("document_id", "version_id", "chunk_id", "content_sha256")}
-                if context:
-                    ref["scope_context"] = context
-                if entity.get("version_id") not in {str(v["id"]) for v in versions}:
-                    continue
-                row = await current_source(conn, ref)
                 if not row or row["content"] != entity.get("text") or ref["chunk_id"] in seen:
                     continue
                 seen.add(ref["chunk_id"])
@@ -159,15 +194,13 @@ class AuthorizedRetrieval:
 
     async def recheck(self, refs):
         async with self.db.transaction() as conn:
-            for ref in refs:
-                if not await current_source(conn, ref):
-                    raise DomainError("SOURCE_UNAVAILABLE", "知识来源已撤回或更新，请重新提问", 410)
+            if any(row is None for row in await current_sources(conn, refs)):
+                raise DomainError("SOURCE_UNAVAILABLE", "知识来源已撤回或更新，请重新提问", 410)
 
     async def evidence(self, refs):
         result = []
         async with self.db.transaction() as conn:
-            for ref in refs:
-                row = await current_source(conn, ref)
+            for row in await current_sources(conn, refs):
                 if not row:
                     raise DomainError("SOURCE_UNAVAILABLE", "知识来源已撤回或更新", 410)
                 result.append(

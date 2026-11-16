@@ -181,21 +181,42 @@ def register_order_routes(app):
 
     @app.get(admin + "/return-rules", operation_id="adminListReturnRules")
     async def return_rules(request: Request, principal=Depends(staff)):
-        return await staff_read(request, principal, "/return-rules", "agent:return:read")
+        from app.application.return_knowledge import refresh_rule_sync
+
+        require_permission(principal, "agent:return:read")
+        svc = services(request)
+        return ok(
+            request,
+            await refresh_rule_sync(svc.db, svc.bridge, request.headers["authorization"], principal.id),
+        )
 
     @app.post(admin + "/return-rules", operation_id="adminPublishReturnRule")
     async def publish_return_rule(
         body: ReturnRuleInput, request: Request, principal=Depends(staff), key=Depends(idempotency)
     ):
-        return await command(
-            request,
-            principal,
-            "/return-rules",
-            "agent:return:review",
-            "POST",
-            body.model_dump(mode="json"),
-            key,
-        )
+        from app.application.return_knowledge import begin_rule_sync, finish_rule_sync
+
+        require_permission(principal, "agent:return:review")
+        svc = services(request)
+        sync = await begin_rule_sync(svc.db, principal.id)
+        try:
+            result = await command(
+                request,
+                principal,
+                "/return-rules",
+                "agent:return:review",
+                "POST",
+                body.model_dump(mode="json"),
+                key,
+            )
+            page = await svc.bridge.get(
+                "/mall-admin/agent-bridge/v1/return-rules", request.headers["authorization"], staff=True
+            )
+            await finish_rule_sync(svc.db, sync, page)
+            return result
+        except BaseException:
+            await finish_rule_sync(svc.db, sync)
+            raise
 
     @app.get(admin + "/return-addresses", operation_id="adminReturnAddresses")
     async def addresses(request: Request, principal=Depends(staff)):

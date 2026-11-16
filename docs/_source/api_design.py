@@ -251,11 +251,12 @@ schema("QuotaLimit",{"scope":en("GLOBAL","CAPABILITY","PROFILE","MEMBER","STAFF"
     "capability":nullable(en("DIALOG","VISION","EMBEDDING","RERANK","ASR","TTS")),"unit":en("REQUEST","TOKEN","CHARACTER","SECOND"),
     "daily_limit":st(40,pattern=r"^[1-9][0-9]{0,13}(?:\.[0-9]{1,6})?$")},["scope","subject_id","capability","unit","daily_limit"])
 schema("ModelPrice",{"profile_id":nullable(UUID),"capability":en("DIALOG","VISION","EMBEDDING","RERANK","ASR","TTS"),
-    "unit":en("REQUEST","INPUT_TOKEN","OUTPUT_TOKEN","TOKEN","CHARACTER","SECOND"),"currency":en("CNY","USD"),
-    "price":st(40,pattern=r"^(0|[1-9][0-9]{0,7})(?:\.[0-9]{1,8})?$"),"per_units":integer(1,1000000000)},
+    "unit":en("REQUEST","INPUT_TOKEN","OUTPUT_TOKEN","TOKEN","CHARACTER","SECOND","UNCACHED_INPUT_TOKEN","CACHE_READ_TOKEN","CACHE_WRITE_TOKEN"),"currency":en("CNY","USD"),
+    "price":st(40,pattern=r"^(0|[1-9][0-9]{0,7})(?:\.[0-9]{1,8})?$"),"per_units":integer(1,1000000000),
+    "model_name":nullable(st(160,minLength=1)),"source_ref":nullable(st(500,minLength=1))},
     ["profile_id","capability","unit","currency","price","per_units"])
 schema("UsageSettlement",{"expected_version":EXPECTED,"input_tokens":nullable(integer(0,1000000000000)),"output_tokens":nullable(integer(0,1000000000000)),
-    "total_tokens":nullable(integer(0,1000000000000)),"characters":nullable(integer(0,1000000000000)),"seconds":nullable(st(40,pattern=r"^(0|[1-9][0-9]{0,7})(?:\.[0-9]{1,6})?$")),
+    "total_tokens":nullable(integer(0,1000000000000)),"cache_read_tokens":nullable(integer(0,1000000000000)),"cache_write_tokens":nullable(integer(0,1000000000000)),"characters":nullable(integer(0,1000000000000)),"seconds":nullable(st(40,pattern=r"^(0|[1-9][0-9]{0,7})(?:\.[0-9]{1,6})?$")),
     "statement_ref":st(160,minLength=1),"reason":st(500,minLength=1)},["expected_version","statement_ref","reason"])
 schema("UsageSettlementResult",{"call_id":UUID,"usage_state":{"const":"RECONCILED"},"version":EXPECTED,
     "estimated_cost":nullable(st(40)),"currency":nullable(en("CNY","USD"))},["call_id","usage_state","version","estimated_cost","currency"])

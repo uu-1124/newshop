@@ -117,6 +117,11 @@
           /></button>
         </view>
         <template v-else>
+          <ProductContext
+            v-if="current?.entry_context?.kind === 'PRODUCT'"
+            :key="current.id"
+            :product-id="current.entry_context.product_id"
+          />
           <view v-if="current" class="conversation-controls"
             ><text class="current-title">{{ current.title }}</text
             ><view class="conversation-tools"
@@ -505,6 +510,7 @@ import CartCards from './CartCards.vue'
 import OrderCheckout from './OrderCheckout.vue'
 import OrderBrowser from './OrderBrowser.vue'
 import ProductBrowser from './ProductBrowser.vue'
+import ProductContext from './ProductContext.vue'
 import AnswerFeedback from './AnswerFeedback.vue'
 import AnswerSpeech from './AnswerSpeech.vue'
 import VoiceComposer from './VoiceComposer.vue'
@@ -554,9 +560,14 @@ function openOrderPanel(id: string) {
   orderPanelRequest.value++
 }
 const entryOrderId = ref('')
+const entryProductId = ref('')
 onLoad((options) => {
-  if (options?.orderId && /^[1-9][0-9]{0,18}$/.test(String(options.orderId)))
-    entryOrderId.value = String(options.orderId)
+  const validId = (value: unknown) => {
+    const id = String(value || '')
+    return /^[1-9][0-9]{0,18}$/.test(id) && BigInt(id) <= 9223372036854775807n ? id : ''
+  }
+  entryOrderId.value = validId(options?.orderId)
+  entryProductId.value = entryOrderId.value ? '' : validId(options?.productId)
 })
 import type {
   Attachment,
@@ -931,9 +942,21 @@ async function load() {
     try {
       const result = await agent.createOrderConversation(commandKey(`order-entry:${id}`), id)
       conversations.value = [result]
-      await select(result.id)
       orderPanelId.value = id
       entryOrderId.value = ''
+      void select(result.id)
+    } catch (reason) {
+      problem(reason)
+    }
+    return
+  }
+  if (entryProductId.value) {
+    const id = entryProductId.value
+    try {
+      const result = await agent.create(commandKey(`product-entry:${id}`), id)
+      conversations.value = [result]
+      entryProductId.value = ''
+      void select(result.id)
     } catch (reason) {
       problem(reason)
     }
