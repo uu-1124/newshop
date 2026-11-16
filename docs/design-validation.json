@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-11",
+  "kind": "offline-structural-review",
+  "checks": [
+    {
+      "name": "接口标识",
+      "passed": true,
+      "detail": "135 个 operationId 唯一且与目录一致"
+    },
+    {
+      "name": "Schema 引用",
+      "passed": true,
+      "detail": "解析 2324 个本地/事件跨文件引用；错误 []"
+    },
+    {
+      "name": "路径参数",
+      "passed": true,
+      "detail": "所有路径占位符都有必填参数；错误 []"
+    },
+    {
+      "name": "写请求幂等",
+      "passed": true,
+      "detail": "70 个写请求含必填 Idempotency-Key"
+    },
+    {
+      "name": "入口鉴权",
+      "passed": true,
+      "detail": "所有入口有身份要求；28 个内部桥接，普通22个要求主体令牌+服务签名，唯一核对例外要求receipt+签名"
+    },
+    {
+      "name": "映射有效性",
+      "passed": true,
+      "detail": "10 个逻辑页面、18 个需求，接口引用均有效"
+    },
+    {
+      "name": "需求覆盖",
+      "passed": true,
+      "detail": "R01–R18 均有页面、数据和接口承接；缺失 []"
+    },
+    {
+      "name": "对象必填字段",
+      "passed": true,
+      "detail": "283 个 Schema；必填字段均存在"
+    },
+    {
+      "name": "关键条件契约样例",
+      "passed": true,
+      "detail": "13 个正/反例核对批准/拒绝、CART/DIRECT 及知识输入互斥；错误 []；仅针对所用 Schema 子集"
+    },
+    {
+      "name": "DDL 表目录",
+      "passed": true,
+      "detail": "PostgreSQL 30 张、MySQL 新增 9 张及 1 张扩展"
+    },
+    {
+      "name": "DDL 结构括号",
+      "passed": true,
+      "detail": "字符串/行注释剔除后括号平衡；[]；不等价于数据库语法执行"
+    },
+    {
+      "name": "外键目标",
+      "passed": true,
+      "detail": "PostgreSQL 自有表及 MySQL 新旧表外键目标列存在；错误 []"
+    },
+    {
+      "name": "索引与枚举宽度",
+      "passed": true,
+      "detail": "PG 索引目标及名称、枚举字段宽度一致；错误 []"
+    },
+    {
+      "name": "离线导航资源",
+      "passed": true,
+      "detail": "入口 HTML 的本地 href/src 均存在；错误 []"
+    },
+    {
+      "name": "原型脚本语法",
+      "passed": true,
+      "detail": "Node --check 核对 portal.js 与 ui/app.js"
+    },
+    {
+      "name": "原需求保持原样",
+      "passed": true,
+      "detail": "SHA256 EAAFDC3D0528572B9A7C337087927C85D01C2D10440928C5BDB79AC7D20081D3"
+    }
+  ],
+  "passed": true,
+  "limits": [
+    "未使用完整 OpenAPI 元模型校验器",
+    "未执行 SQL、建库或迁移",
+    "原型状态演示不等于业务功能验收"
+  ]
+}

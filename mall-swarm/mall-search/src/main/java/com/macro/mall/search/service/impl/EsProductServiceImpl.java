@@ -1,5 +1,6 @@
 package com.macro.mall.search.service.impl;
 
+import com.macro.mall.common.api.PageValidation;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -85,12 +86,14 @@ public class EsProductServiceImpl implements EsProductService {
 
     @Override
     public Page<EsProduct> search(String keyword, Integer pageNum, Integer pageSize) {
+        PageValidation.search(pageNum, pageSize);
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         return productRepository.findByNameOrSubTitleOrKeywords(keyword, keyword, keyword, pageable);
     }
 
     @Override
     public Page<EsProduct> search(String keyword, Long brandId, Long productCategoryId, Integer pageNum, Integer pageSize,Integer sort) {
+        PageValidation.search(pageNum, pageSize);
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         NativeQueryBuilder nativeQueryBuilder = new NativeQueryBuilder();
         //分页
@@ -159,6 +162,7 @@ public class EsProductServiceImpl implements EsProductService {
 
     @Override
     public Page<EsProduct> recommend(Long id, Integer pageNum, Integer pageSize) {
+        PageValidation.search(pageNum, pageSize);
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         List<EsProduct> esProductList = productDao.getAllEsProductList(id);
         if (esProductList.size() > 0) {

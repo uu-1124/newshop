@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.SmsFlashPromotionProduct;
 import com.macro.mall.model.SmsFlashPromotionProductRelation;
 import com.macro.mall.service.SmsFlashPromotionProductRelationService;
@@ -73,6 +74,7 @@ public class SmsFlashPromotionProductRelationController {
                                                                    @RequestParam(value = "flashPromotionSessionId") Long flashPromotionSessionId,
                                                                    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                                    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<SmsFlashPromotionProduct> flashPromotionProductList = relationService.list(flashPromotionId, flashPromotionSessionId, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(flashPromotionProductList));
     }

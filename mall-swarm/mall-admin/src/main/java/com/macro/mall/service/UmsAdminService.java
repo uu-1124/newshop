@@ -66,6 +66,8 @@ public interface UmsAdminService {
      */
     List<UmsResource> getResourceList(Long adminId);
 
+    List<UmsResource> getAgentResourceList(Long adminId);
+
     /**
      * 修改密码
      */

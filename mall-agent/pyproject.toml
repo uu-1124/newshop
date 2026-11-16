@@ -1,0 +1,41 @@
+[project]
+name = "mall-agent"
+version = "0.1.0"
+description = "Mall agent architecture and first vertical slice"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "pydantic-settings>=2.8,<3",
+  "sqlalchemy[asyncio]>=2.0.38,<3",
+  "psycopg[binary,pool]>=3.2.6,<4",
+  "alembic>=1.15,<2",
+  "httpx>=0.28,<1",
+  "langgraph>=1,<2",
+  "langgraph-checkpoint-postgres>=3,<4",
+  "pymilvus==3.0.2",
+  "pillow>=12,<13",
+  "minio>=7.2,<8",
+  "python-multipart>=0.0.20,<1",
+  "redis>=6,<8",
+  "aio-pika>=9.5,<10",
+  "pypdf>=6,<7",
+  "defusedxml>=0.7,<1",
+  "cryptography>=46,<49",
+  "pymysql>=1.1,<2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "pytest-asyncio>=1,<2", "jsonschema>=4.23,<5", "ruff>=0.11,<1"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

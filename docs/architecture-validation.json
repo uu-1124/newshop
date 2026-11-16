@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-11",
+  "version": "0.2",
+  "kind": "offline-architecture-review",
+  "passed": true,
+  "checks": [
+    {
+      "name": "原接口保留",
+      "passed": true,
+      "detail": "当前133个基础operationId/方法/路径与生成源一致，包含反馈读取及四个规则管理接口；架构扩展增加模型历史与原编号核对2个"
+    },
+    {
+      "name": "接口全量归属",
+      "passed": true,
+      "detail": "135个接口逐个有唯一owner与首激活阶段"
+    },
+    {
+      "name": "接口映射原样承接",
+      "passed": true,
+      "detail": "每个接口的R/UI/输入输出与目录逐项相等"
+    },
+    {
+      "name": "需求章节场景全集",
+      "passed": true,
+      "detail": "R18、22章、U12、A15、C8、H7精确集合覆盖"
+    },
+    {
+      "name": "追踪关系有效",
+      "passed": true,
+      "detail": "每项需求有模块/阶段/页面/完整接口集合，场景引用有效；错误[]"
+    },
+    {
+      "name": "页面全量归属",
+      "passed": true,
+      "detail": "B01–B05/A01–A05逐项归属及接口集合；8个原型route与目录一致"
+    },
+    {
+      "name": "模块全集",
+      "passed": true,
+      "detail": "M01–M20，无未定义模块"
+    },
+    {
+      "name": "表全量归属",
+      "passed": true,
+      "detail": "30PG/9MySQL新表/1扩展，包含语音请求持久记录，逐项唯一owner与生命周期"
+    },
+    {
+      "name": "提交有序事件结构",
+      "passed": true,
+      "detail": "事件ID无sequence/identity/default；单行时钟及replay_floor存在。锁协议仍需真实并发测试"
+    },
+    {
+      "name": "控制世代贯通",
+      "passed": true,
+      "detail": "会话/run/action/全部13事件含control_epoch；version独立为乐观锁"
+    },
+    {
+      "name": "首次快照与列表补传契约",
+      "passed": true,
+      "detail": "正文/控制状态/游标同RR读取；员工列表可从最低水位补传"
+    },
+    {
+      "name": "确认核对持久字段",
+      "passed": true,
+      "detail": "dispatch可定位确认审计、加密仅核对凭据、投递与租约；会员Bearer无存储字段"
+    },
+    {
+      "name": "核对权限唯一例外",
+      "passed": true,
+      "detail": "27普通桥接均需主体Bearer与服务签名，唯一receipt核对不授予执行权限"
+    },
+    {
+      "name": "核对输入不含执行参数",
+      "passed": true,
+      "detail": "核对模式有限、参数不变；不能传member/商品/新operation或任意URL"
+    },
+    {
+      "name": "不可变模型历史契约",
+      "passed": true,
+      "detail": "保存启用/活动状态与不可变版本；公开历史无秘密引用"
+    },
+    {
+      "name": "调用与向量绑定版本",
+      "passed": true,
+      "detail": "调用、知识向量和额度绑定组合版本；embedding配置与版本成对为空"
+    },
+    {
+      "name": "额度预留与任务栅栏",
+      "passed": true,
+      "detail": "额度区分计量单位，兼容任务可追踪，旧job/核对worker有栅栏"
+    },
+    {
+      "name": "Action状态精确一致",
+      "passed": true,
+      "detail": "Action图与OpenAPI枚举完全一致；Java REJECTED映射FAILED，售后精确模拟退款阶段"
+    },
+    {
+      "name": "故障与运维落点",
+      "passed": true,
+      "detail": "F01–F27及RB01–RB09全量记录用户结果和后台处理"
+    },
+    {
+      "name": "图节点与工具全集",
+      "passed": true,
+      "detail": "12节点/11受控工具含购物车读取逐项定义；确认/付款/审核不在工具注册范围"
+    },
+    {
+      "name": "分册与链接完整",
+      "passed": true,
+      "detail": "7篇架构/计划正文，链接存在且代码围栏成对；错误[]"
+    },
+    {
+      "name": "原候选选型保留",
+      "passed": true,
+      "detail": "原六能力候选及Python/Milvus组合保留，并标实际兼容未验证"
+    },
+    {
+      "name": "核对协议参考轨迹",
+      "passed": true,
+      "detail": "363条线性参考轨迹验证最多一次副作用、封闭后迟到执行无效；不是MySQL真实锁测试"
+    },
+    {
+      "name": "事件协议参考反例",
+      "passed": true,
+      "detail": "sequence先分101后分102、102先提交会漏101；时钟持锁到提交排除此顺序，实际并发待验证"
+    },
+    {
+      "name": "金额件额参考样例",
+      "passed": true,
+      "detail": "1010个整数分/数量样例保证件额守恒；多优惠Java完整算法与业务D04仍待实现验收"
+    },
+    {
+      "name": "实施阶段需求原件未改",
+      "passed": true,
+      "detail": "原件['docs/商城智能体需求分析与技术设计.docx']；原件差异[]；授权实施源码差异（不作只读断言）['.gitignore', 'README.md', 'deployment/dev.cjs', 'deployment/rebuild-backend.ps1', 'deployment/start-local.ps1', 'deployment/stop-local.ps1', 'mall-admin-web/components.d.ts', 'mall-admin-web/src/router/guard.ts', 'mall-admin-web/src/router/index.ts', 'mall-admin-web/src/stores/permission.ts', 'mall-admin-web/vite.config.ts', 'mall-app-web/src/pages.json', 'mall-app-web/src/pages/order/orderDetail.vue', 'mall-app-web/src/pages/public/login.vue', 'mall-app-web/src/pages/user/user.vue', 'mall-app-web/src/utils/http.ts', 'mall-app-web/vite.config.ts', 'mall-swarm/mall-admin/src/main/java/com/macro/mall/dao/UmsAdminRoleRelationDao.java', 'mall-swarm/mall-admin/src/main/java/com/macro/mall/service/UmsAdminService.java', 'mall-swarm/mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java', 'mall-swarm/mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java', 'mall-swarm/mall-admin/src/main/resources/dao/UmsAdminRoleRelationDao.xml', 'mall-swarm/mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java', 'mall-swarm/mall-gateway/src/main/java/com/macro/mall/config/SaTokenConfig.java', 'mall-swarm/mall-gateway/src/main/resources/application.yml', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/component/CancelOrderReceiver.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/component/CancelOrderSender.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/domain/CartPromotionItem.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/domain/OrderParam.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/OmsPortalOrderService.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsCartItemServiceImpl.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java', 'mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java', 'mall-swarm/mall-portal/src/main/resources/dao/PortalProductDao.xml']"
+    },
+    {
+      "name": "基础设计检查",
+      "passed": true,
+      "detail": "基础16项结构检查和13项原型逻辑检查通过；浏览器视觉未验证"
+    }
+  ],
+  "limits": [
+    "未执行SQL、迁移或真实数据库并发",
+    "未进行供应商调用、容量或隔离恢复测试",
+    "未完成真实浏览器视觉与焦点验证",
+    "协议参考轨迹只验证说明模型，不能替代实现测试"
+  ]
+}

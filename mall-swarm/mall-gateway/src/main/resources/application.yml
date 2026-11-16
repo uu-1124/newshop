@@ -12,11 +12,24 @@ spring:
     gateway:
       server:
         webflux:
+          httpclient:
+            pool:
+              # Retire idle upstream sockets before the Python server's keep-alive deadline.
+              max-idle-time: 2s
+              eviction-interval: 1s
           discovery:
             locator:
               enabled: true
               lower-case-service-id: true #使用小写service-id
           routes: #配置路由路径
+            - id: mall-agent-member
+              uri: ${MALL_AGENT_HTTP_URL:http://127.0.0.1:8099}
+              predicates:
+                - Path=/mall-agent/v1/member/**
+            - id: mall-agent-admin
+              uri: ${MALL_AGENT_HTTP_URL:http://127.0.0.1:8099}
+              predicates:
+                - Path=/mall-agent/v1/admin/**
             - id: mall-auth
               uri: lb://mall-auth
               predicates:
@@ -66,7 +79,10 @@ secure:
       - "/webjars/**"
       - "/actuator/**"
       - "/mall-auth/**"
-      - "/mall-search/**"
+      - "/mall-search/esProduct/search"
+      - "/mall-search/esProduct/search/simple"
+      - "/mall-search/esProduct/search/relate"
+      - "/mall-search/esProduct/recommend/*"
       - "/mall-portal/sso/login"
       - "/mall-portal/sso/register"
       - "/mall-portal/sso/getAuthCode"
@@ -75,8 +91,6 @@ secure:
       - "/mall-portal/brand/**"
       - "/mall-portal/alipay/**"
       - "/mall-admin/admin/login"
-      - "/mall-admin/admin/register"
-      - "/mall-admin/minio/upload"
 management:
   endpoints:
     web:

@@ -4,6 +4,7 @@ import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.portal.domain.ConfirmOrderResult;
 import com.macro.mall.portal.domain.OmsOrderDetail;
 import com.macro.mall.portal.domain.OrderParam;
+import com.macro.mall.portal.domain.OrderCheckout;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,11 +20,18 @@ public interface OmsPortalOrderService {
      */
     ConfirmOrderResult generateConfirmOrder(List<Long> cartIds);
 
+    ConfirmOrderResult generateDirectConfirmOrder(List<com.macro.mall.model.OmsCartItem> items);
+
     /**
      * 根据提交信息生成订单
      */
     @Transactional
     Map<String, Object> generateOrder(OrderParam orderParam);
+
+    OrderCheckout previewOrder(OrderParam orderParam);
+
+    @Transactional
+    Map<String, Object> generateConfirmedOrder(OrderParam orderParam, String expectedFingerprint);
 
     /**
      * 支付成功后的回调
@@ -34,7 +42,6 @@ public interface OmsPortalOrderService {
     /**
      * 自动取消超时订单
      */
-    @Transactional
     Integer cancelTimeOutOrder();
 
     /**

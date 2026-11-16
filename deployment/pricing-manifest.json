@@ -1,0 +1,126 @@
+{
+  "verified_at": "2026-11-12T08:13:42.062348+08:00",
+  "change": "checkout-cent-allocation-20261112",
+  "quote_rule_version": "ORDER_CHECKOUT_CENTS_V2",
+  "status": "RUNTIME_VERIFIED",
+  "report": "docs/18-结算金额修复与质量检查收口.md",
+  "verification": {
+    "java_regression": {
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "final_source_database_rerun": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "final_source_database_rerun_is_subset": true,
+    "mysql_test_database": "mall_agent_cart_test",
+    "generated_allocation_cases": 1500,
+    "python_offline_tests_passed": 9,
+    "python_lint": "PASS",
+    "python_format_check_files": 107,
+    "buyer_typecheck": "PASS",
+    "admin_typecheck": "PASS",
+    "buyer_h5_build": "PASS",
+    "admin_build": "PASS_WITH_CHUNK_SIZE_WARNING",
+    "shared_web_contracts": "PASS",
+    "framework": {
+      "modules": 20,
+      "workflow_nodes": 12,
+      "active_python_operations": 53,
+      "reviewed_contract_operations": 116,
+      "external_io": false
+    },
+    "design_checks_passed": 16,
+    "architecture_checks_passed": 27,
+    "portal_package": "PASS",
+    "final_jar_v2_rule_inspected": true,
+    "new_gateway_smoke": "PASS",
+    "new_browser_smoke": "PASS_PERSISTED_CONFIRMATION_AND_ORDER_DETAIL",
+    "browser_full_checkout_flow": "MANUAL_EXPERIENCE_PENDING",
+    "runtime_checks": [
+      "actual_v1_package_prepared_readonly_quote",
+      "actual_v1_quote_rejected_by_v2_without_order_or_resource_changes",
+      "v2_exact_points_allocation_duplicate_confirm_and_real_order_detail",
+      "live_scheduler_recovers_same_order_without_reexecution",
+      "original_storefront_order_writer_uses_same_exact_allocation",
+      "cancel_restores_resources_and_historical_action_remains_successful"
+    ],
+    "runtime_business_facts": "PASS_TWO_CANCELLED_ORDERS_POINTS_STOCK_CART"
+  },
+  "artifacts": {
+    "built_portal": {
+      "path": "mall-swarm/mall-portal/target/mall-portal-1.0-SNAPSHOT.jar",
+      "sha256": "fd3fb07bc42d1094f4b9d6eed8e2a7b4e21dd782db6e49e0fb133a5a54173e25"
+    },
+    "staged_portal": {
+      "path": "deployment/.run/agent-jars/mall-portal.jar",
+      "sha256": "fd3fb07bc42d1094f4b9d6eed8e2a7b4e21dd782db6e49e0fb133a5a54173e25"
+    },
+    "rollback_portal": {
+      "path": "deployment/.run/pricing-rollback-20261112/mall-portal.jar",
+      "sha256": "ca3bc2b02db8517acaae2de02b4bf9f5e474e4c0b3dfe69a4e8012068adb4497"
+    }
+  },
+  "source_sha256": {
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/domain/MoneyAllocation.java": "c3cabe3f6dd77f59c944227c619e45cc9293a8af1d2bce06f97bf1f112908e93",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/domain/CheckoutItem.java": "8074df04b42ef863bbb226d3afb040627e060d9762238652794ef1e3df212375",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/domain/CartPromotionItem.java": "4c65337b401916473fc26be1debdd32a9e71eebee1dd8db433f24ad48430a5dc",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/domain/OrderCheckout.java": "277d3add97a033eb0febd33326260a1223e21874623583601c73e930d0c09444",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java": "54fb08f2b746a290b1126c2f1c7e10d168bf126999e254b92b1820548d53ffb1",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": "f7b35118f32bce4bdd634c7e216eb0068fd1ffeec98710e144aa47f216f695a1",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": "55c3120146fe38be5fc7ed83c83a12b6f0a1ff83dbb3ba6c75618e62b808b2a0",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/AgentOrderService.java": "811d361165a1e14637a99b2da06b17c21b4b988517520103bd3dc2d52f9a05b2",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/MoneyAllocationTest.java": "aea5dc494df328abc8f7f7d8b10fb7d519b9a08a7e3e77e2df7cf35e30bff785",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/CheckoutPricingConservationTest.java": "a264c9d9be323715a501a3f3a0182cd5eab5910e4ccb15e7f2e3e7463eca8477",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/CouponThresholdTest.java": "ad66af1c246044c9457bfa11877d376073432de18b121d706b28e3715bf9373b",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OmsPromotionPriceSecurityTest.java": "0c16b705f2a12afaa83735cb3965bd314af4e5fcd5535ad5f863eb964ff9f69e",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/AgentOrderDatabaseTest.java": "41cea2ae4b5501a852e9bf29f7766274a64e89cc1d417be1d2634f6f61916b83",
+    "mall-app-web/src/pages/agent/chat.vue": "dca3de7696fe75619ee9e4fd875ea974cc62f015e114312e4bc71982bdcd9969",
+    "mall-agent/scripts/check_framework.py": "f6d70f7b0c939c35098ed437209f36c77d9e70ab45d4c1458459ea1fd3281277",
+    "mall-agent/tests/test_framework.py": "fe2c877b5339c142f6514e44b27325abf218453b305c9ba7e2309c0df9f61c85",
+    "mall-agent/app/module_catalog.py": "ecc75b3cfc93ef94d7581d9744a48c1208661cbe66a0746e0b290a6f18fa8e55"
+  },
+  "database_migrations_added": 0,
+  "business_database_modified": true,
+  "test_database_modified": true,
+  "applications_restarted": true,
+  "containers_restarted": false,
+  "payment_executed": false,
+  "paid_models_called": false,
+  "temporary_mysql_tunnel_closed": true,
+  "full_business_runtime": "NOT_READY",
+  "remaining": [
+    "manual narrow-screen checkout interaction and device keyboard checks",
+    "durable Java business outbox",
+    "manual reconciliation and receipt renewal",
+    "remaining conversation and product interfaces",
+    "staff SSE and business context",
+    "agent order lookup, cancellation and returns"
+  ],
+  "source_verified_at": "2026-11-12T00:56:51.232308+08:00",
+  "business_database_write_scope": {
+    "dedicated_test_member_id": "19",
+    "test_orders": [
+      "110",
+      "111"
+    ],
+    "orders_cancelled": true,
+    "stock_and_points_restored": true,
+    "existing_product_prices_and_rules_modified": false
+  },
+  "manager_tunnel_running": true,
+  "browser_demo_member_session_restored": true,
+  "runtime_evidence": {
+    "deployment/.run/pricing-upgrade-smoke.json": "26c5a1a85a5803014098cde4ea929b495665e4a600b07c257c18ccae7a901393",
+    "deployment/.run/pricing-upgrade-resume.log": "18db9f0594fce75b05b24439cdce80a946cf0920cab8cb96ed76479a02187174",
+    "deployment/.run/pricing-final-business-facts.json": "1e5780b75c3dbf39831a5671a2bdb1c28ae3f3786b4d349af1de4830aafd7ef2",
+    "deployment/.run/pricing-confirmation-browser.jpg": "0a6962fceac7579215d68e17d829e22656295818779e6c9e08049ba46478b701",
+    "deployment/.run/pricing-order-110-browser.jpg": "5b1c7e383d7059f00c802568914e1a62d84bd09dab3640eb3b8a0c3a5807e2f9",
+    "mall-agent/scripts/smoke_pricing.py": "585627640269f23fbaeeb457f57718533446df769ade5ca8648e02a09b4f1629"
+  }
+}

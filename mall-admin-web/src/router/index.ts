@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '@/views/layout/Layout.vue'
 import type { RouteRecordExt } from '@/types/router'
+import { agentRouter } from './agent'
 
 export const constantRouterMap: RouteRecordExt[] = [
   { path: '/404', component: () => import('@/views/normal/404/index.vue'), hidden: true },
@@ -40,6 +41,7 @@ export const constantRouterMap: RouteRecordExt[] = [
 ]
 
 export const asyncRouterMap: RouteRecordExt[] = [
+  agentRouter,
   {
     path: '/pms',
     component: Layout,

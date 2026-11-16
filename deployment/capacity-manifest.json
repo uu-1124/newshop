@@ -1,0 +1,39 @@
+{
+  "checked_at": "2026-11-13T13:52:24.642527+00:00",
+  "kind": "performance-batching-and-sustained-capacity",
+  "goal_status": "active",
+  "result": "CONTINUOUS_WORKLOAD_PASSED_LATENCY_TARGET_REMAINS_OPEN",
+  "source_hashes": {
+    "mall-agent/app/application/views.py": "71eda64dd15bab031fb903d03f586da3faf08647e72017cf2f6001c680393cf8",
+    "mall-agent/app/application/conversations.py": "717cd5511f5e802e43b145b8641923d504683e5e1357ef0fd4b8e3cdd06eecf0",
+    "mall-agent/app/application/handoffs.py": "9ec80cad4928ca4ffc49e71a666dfb3751e9d4645e4ee91d8d907d1a27d2aa8a",
+    "mall-agent/app/application/expiry.py": "662ea05bbdf312a6d0f129faa1d84b1f0b89926419b8f979e81693edc5467746",
+    "mall-agent/app/api/member.py": "2b210fef63e20e56f633dc3aceba7c24f2595716c6ea6120149c19492db4455a",
+    "mall-agent/app/api/staff_events.py": "e5367a775ce41a8b436418fe3cf5d5e25e5987f061c2d636a00ca21950281fcc",
+    "mall-agent/app/infrastructure/postgres/database.py": "667c7d6a5c92f9ef0a2acc4d83af3a6320c6dc3b7ae4a408eff8824eb2d3be28",
+    "mall-agent/app/infrastructure/request_metrics.py": "f18be0781c604f27461850a3de7acb4e541897de689aea075300ff50cfbea04f",
+    "mall-agent/tests/test_projection_batches.py": "7c6c6a08d4a93b6bb89cd91bc54b2b510e39fb2807eb848bb56cf0e864a23866",
+    "mall-agent/scripts/accept_capacity.py": "6eee3df96b62f061f7e9a323e2bb501684bfff35c85fcffffcfba52f2fd17043",
+    "deployment/observe-capacity-remote.cjs": "3b97a6d115a3ef84a0283b940ed3ac19a58f78c65107d41b9d28930f28fa3d17",
+    "deployment/sample-capacity-resources.py": "ee5092b078f9b5c0eb0da87e6070b9b9d3a298e2c73b1571445f728241bee285",
+    "docs/30-批量读取优化与持续容量验收.md": "26dbd76c419675afd043e1ffc7ca2d400b67ea037dbc57976a3d6d7ff96c2761",
+    "docs/22-智能体完整功能补齐跟踪.md": "fb99d216799e79b8330c1ea08b3fa2ad46c281fcc2614e41fbadee232977657a",
+    "docs/00-设计导航.md": "5657e41eabc586c3efdd15607ee240d3c90629e1b2fd7c8bac6ac577bbabbdf1"
+  },
+  "evidence_hashes": {
+    "deployment/.run/capacity-e7af44f9-5084-4c32-9b7e-02f2331f35ea.json": "74ab57564e19ed3a1e6eeb7838059b27593a9f2cb07457a1cbc54c5264665db4",
+    "deployment/.run/capacity-e7af44f9-5084-4c32-9b7e-02f2331f35ea-resources.json": "7fe6a1223507c3544af31fabcde4c8c77cff4386d6839ccd64d975642ad3febd",
+    "deployment/.run/completion-performance-baseline-20261113.json": "06d6f1807102ccebf032382069b2f8165aa46565db9bde99a20b4c4f814711aa",
+    "deployment/.run/completion-performance-after-20261113.json": "cad34e87b7b01ea5564c15187a489c4c793e85eb830a68dd23aa082fc187a33c",
+    "deployment/.run/completion-performance-regression-20261113.log": "8ac2d4d230c3c5009d2642a6ad31d326c67eb159cf1c0a248b787cd74b774cbe",
+    "deployment/.run/completion-performance-batch-tests-20261113.log": "b3dfcd55a8629fb5c1948c425efa50881f2feaf2a606c6992bf3f73cd208ea5f",
+    "deployment/.run/completion-performance-projection-retry-20261113.log": "eb69cdeae967822b80e5486578cc8239401190ff37477afa7c988c724af99ab4",
+    "deployment/.run/completion-capacity-live-20261113.log": "0bc456ae04fca950a072a48aa2f3c499b891e1021770246c04e66ad325aea57d",
+    "deployment/.run/completion-capacity-resources-20261113.log": "09415274099cc143db3bcce6a594adae0aa8a86745b6c971e7ec7fa0e8007f43",
+    "deployment/.run/completion-capacity-final-state-20261113.json": "7983ed9e17332c5089949a86ba6bf68b6878f6283eb5ecc4761635040b453752",
+    "deployment/.run/completion-observability-browser-20261113.png": "e4c9356f7c1c1cb3235fc6b5ae1a45fb6efb185886a7221c008412d4f7428b30",
+    "deployment/.run/completion-capacity-final-state-20261113.log": "a77c900492514dd7bf23f15272508a536d910e393fede453a37726d1b9696614",
+    "deployment/.run/completion-capacity-final-state-retry-20261113.log": "3d585f31db8b62758dabeb3cee57bac00579f3d8eba3983feda1e8b8876a4253"
+  },
+  "original_requirement_sha256": "eaafdc3d0528572b9a7c337087927c85d01c2d10440928c5bdb79ac7d20081d3"
+}

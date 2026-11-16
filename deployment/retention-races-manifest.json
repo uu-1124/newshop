@@ -1,0 +1,79 @@
+{
+  "created_at": "2026-11-13T18:49:44.211311+00:00",
+  "goal_status": "active",
+  "previous_goal_turn": "progress: recovery boundaries implemented/deployed with crash and live reconciliation evidence",
+  "scope": "original group 8 retention/protection/generation/handoff interleavings; original ten-group goal unchanged",
+  "validation": {
+    "before_fix": "two actual application failures reproduced after fixture repair",
+    "initial_fixed": 13,
+    "expanded_interleavings": 31,
+    "final_batch": 28,
+    "batches_overlap": true,
+    "new_concurrency_executions": 7,
+    "isolated_pg_target": "mall_agent_architecture_test",
+    "lock_waits_observed": true,
+    "physical_delete_lease_test": "MEMORY_OBJECT_DOUBLE_AND_REAL_PG",
+    "checkpoint_test": "REAL_POSTGRES_SAVER_AND_FIXTURE_DIALOG",
+    "live_private_objects": "TWO_REAL_MINIO_OBJECTS",
+    "live_retention_preview_execute": "PASS",
+    "proof_protected_then_released": "PASS",
+    "cleanup": "PASS",
+    "no_new_model_calls": true,
+    "business_and_policy_unchanged": true,
+    "ruff_full_check": "PASS",
+    "changed_files_format": "PASS",
+    "shared_contracts": "PASS",
+    "offline_framework": "PASS"
+  },
+  "deployment": {
+    "reloaded": [
+      "agent-api",
+      "agent-jobs",
+      "agent-scheduler"
+    ],
+    "manager_tunnel_or_cloud_restarted": false,
+    "portal_sha256": "863aadaab147fc51ea276ad08203b0ea6fd1ea32d618105acf3a4c0bb3a22394",
+    "gateway_sha256": "7179fba90b4c5eb998b3b1cc6c22dd4cf5cd9508fa5370bb4950fc5d5890650a",
+    "migration": "0010"
+  },
+  "real_payment_refund": false,
+  "return_submitted": false,
+  "remaining": [
+    "historical V1 pending-card browser",
+    "broad multi-turn/four-card UI",
+    "streaming interruptions and latency",
+    "mixed grounding failures",
+    "supplier price/usage evidence",
+    "audio seven-day chain and restore/retention combinations",
+    "complete cross-window recovery/broker failure",
+    "disaster recovery and controlled reopening",
+    "long-term deletion log and key lifecycle"
+  ],
+  "source_hashes": {
+    "mall-agent/app/application/actions.py": "21e42d8a94cce873f5b9247fe59ce4c969bd96eea4aadaca0c401549571c48d5",
+    "mall-agent/app/application/retention.py": "8e9909c2efc9a03c7b11d3a95012ed296823ac678789968d297072dd2bf5f17c",
+    "mall-agent/tests/test_retention_races.py": "a925e4e801c00b92ed0fd6213ed313c6eda3079bbf8442ef45f4a08acd695b7a",
+    "mall-agent/scripts/smoke_retention_protection.py": "b4954cf721a9b112ed93a5135270c86a699d963f297e78b5a3ae5c93da1fdc46",
+    "docs/35-留存清理与售后保护并发验收.md": "462eb03d713e127d164e84f7e2cb5691bfa1e4d81fec0d6f9bf5d49e11c1618c",
+    "docs/22-智能体完整功能补齐跟踪.md": "033efecce21bba87a454f62f6877f1e1ff94794157f1ae87baa7772f010b9e28",
+    "docs/00-设计导航.md": "448996804654ce7f5a8325bdc346cff1c9406b41e5e1a03cb660378d8669e57f",
+    "docs/architecture/03-关键流程与故障恢复.md": "bcdef77e0ac3bf125fdc2ff3b8e6de3eec372738356a9e765d72630f8dbe7997",
+    "mall-agent/README.md": "d0d56d3db7f3769c20688dc700b9be44367adc71058573bcc6a34756b98f03fa"
+  },
+  "evidence_hashes": {
+    "completion-retention-race-before-20261114.log": "9c164e7d4927dde22d783018a21eea4ba0c8fb61b21ee09e5efd81b2a152d933",
+    "completion-retention-race-reproduction-20261114.log": "3bc7b05adb021a5ced3db0db7476d7e27d1c0fa6e25e93dd98b06293ae98c942",
+    "completion-retention-race-fixed-20261114.log": "aa375baa111e484e64c5fdf8da4f94d88d000e9ac7a97ab53ae08ae06839b7eb",
+    "completion-retention-interleavings-expanded-20261114.log": "ce8c8fbc59cfa815304bf687008bb3d81e9c7a06450af212c93a49370326bb43",
+    "completion-retention-protection-final-tests-20261114.log": "9e7f05e04b5f3fddfe657bdcb70676c4e085cd7bab056c0704ceaec73e4abb3d",
+    "completion-retention-races-preinstall-20261114.json": "f117e92a90dcd96b5ed6d8758d8f96de5fcc13b534f21bfae3d69654d3088d8f",
+    "completion-retention-races-agent-api-reload-20261114.log": "7f975ce8c124c5102f80f138c0f649f3b0f10a0319709696bcd218f574358edc",
+    "completion-retention-races-agent-jobs-reload-20261114.log": "7f38e4d1cf03b355c8a4e1cc06f185a421987ee8f619d635de834fed5b45e3c3",
+    "completion-retention-races-agent-scheduler-reload-20261114.log": "507c1ddfe33a4d8307b4bf0d5e8fcb6c1828a91522300f85c4cbbe3c29aa9669",
+    "completion-retention-races-postinstall-ready-20261114.json": "d2359c1c7a128034cb4023817c88927dd2d4854879a16e4f37974ef1066b5358",
+    "completion-retention-protection-live-20261114.json": "25ae9588cbe58fc6768c4044758535027c7d3ec21e87bf01fc362f739661c9e9",
+    "completion-retention-protection-live-20261114.log": "7353c4862b8a7fede27133ed6b403c2a996caf28264dd16ae1d481797a41f2ea",
+    "completion-retention-races-final-state-20261114.json": "6628d583bbfa0260874fc59433f3bbd9b67bdc9deb137dc23350a39acd4cbcb1",
+    "completion-retention-races-ruff-20261114.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+  }
+}

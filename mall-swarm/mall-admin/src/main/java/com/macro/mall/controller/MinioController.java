@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
+import cn.dev33.satoken.stp.StpUtil;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.dto.BucketPolicyConfigDto;
 import com.macro.mall.dto.MinioUploadDto;
@@ -42,6 +43,9 @@ public class MinioController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult upload(@RequestPart("file") MultipartFile file) {
+        if (!StpUtil.isLogin()) {
+            return CommonResult.unauthorized(null);
+        }
         try {
             //创建一个MinIO的Java客户端
             MinioClient minioClient =MinioClient.builder()
@@ -100,6 +104,9 @@ public class MinioController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult delete(@RequestParam("objectName") String objectName) {
+        if (!StpUtil.isLogin()) {
+            return CommonResult.unauthorized(null);
+        }
         try {
             MinioClient minioClient = MinioClient.builder()
                     .endpoint(ENDPOINT)

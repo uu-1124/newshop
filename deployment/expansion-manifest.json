@@ -1,0 +1,532 @@
+{
+  "schema": "feature-expansion-v1",
+  "updated_at": "2026-11-12T19:19:29.752361+08:00",
+  "goal_status": "COMPLETED_REQUESTED_SIX_GROUPS",
+  "report": "docs/19-扩展功能实施跟踪.md",
+  "scope": "Six user-requested feature groups, local runtime acceptance. Full architecture remains PARTIAL.",
+  "framework": {
+    "modules": 20,
+    "designed_operations": 118,
+    "active_python_operations": 73,
+    "workflow_nodes": 12,
+    "migration": "0007",
+    "business": "PARTIAL",
+    "full_business_runtime": "NOT_READY"
+  },
+  "groups": [
+    {
+      "name": "会话管理",
+      "status": "COMPLETE",
+      "features": [
+        "rename",
+        "owner_soft_delete_and_durable_erasure",
+        "per_actor_read_unread",
+        "cursor_pagination",
+        "title_search",
+        "desktop_and_390px_ui"
+      ],
+      "evidence": [
+        "conversation-management-smoke.json",
+        "responsive-browser-smoke.json"
+      ]
+    },
+    {
+      "name": "消息操作",
+      "status": "COMPLETE",
+      "features": [
+        "independent_reply_retry_api_ui",
+        "same_original_question_new_run",
+        "idempotency_and_race_fences",
+        "current_auth_recheck",
+        "no_trade_execute_replay"
+      ],
+      "evidence": [
+        "conversation-management-smoke.json",
+        "conversation-management-verify.log"
+      ]
+    },
+    {
+      "name": "商品导购",
+      "status": "COMPLETE",
+      "features": [
+        "joint_sku_filters",
+        "signed_pagination",
+        "real_details_and_facts",
+        "two_to_four_product_comparison",
+        "price_stock_factual_recommendation"
+      ],
+      "gateway_checks": 5,
+      "evidence": [
+        "catalog-runtime-smoke.json",
+        "catalog-comparison-browser.png"
+      ]
+    },
+    {
+      "name": "知识系统",
+      "status": "COMPLETE",
+      "features": [
+        "trusted_product_category_scopes",
+        "historical_version_rollback",
+        "physical_pdf_pages",
+        "orphan_index_gc",
+        "capacity_guard_and_recovery"
+      ],
+      "runtime_checks": 6,
+      "evidence": [
+        "knowledge-expansion-smoke.json"
+      ],
+      "business_material": "SYNTHETIC_ONLY_FORMAL_POLICY_NOT_SEEDED"
+    },
+    {
+      "name": "人工工作台",
+      "status": "COMPLETE",
+      "features": [
+        "private_staff_images",
+        "product_and_readonly_order_cards",
+        "signed_current_member_business_context",
+        "staff_sse",
+        "per_staff_unread",
+        "supervisor_sanitized_audit"
+      ],
+      "runtime_checks": 5,
+      "latest_runtime_smoke_after_reload": true,
+      "evidence": [
+        "staff-expansion-smoke.json",
+        "staff-expansion-smoke-final.log",
+        "staff-workbench-browser.png",
+        "staff-audit-browser.png"
+      ]
+    },
+    {
+      "name": "模型系统",
+      "status": "COMPLETE",
+      "features": [
+        "controlled_registry_profiles_and_versions",
+        "explicit_compatibility_jobs",
+        "activation",
+        "immutable_prompt_draft_publish_restore",
+        "frozen_inflight_configuration",
+        "restart_preserves_published_configuration"
+      ],
+      "runtime_checks": 4,
+      "evidence": [
+        "model-expansion-smoke.json",
+        "model-management-browser.png"
+      ]
+    }
+  ],
+  "verification": {
+    "python_full": {
+      "passed": 88,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 848.02,
+      "postgres_database": "mall_agent_architecture_test",
+      "batches": "SEQUENTIAL"
+    },
+    "java_catalog": {
+      "passed": 7,
+      "real_mysql_tests": 4
+    },
+    "java_staff": {
+      "passed": 10,
+      "real_mysql_tests": 2
+    },
+    "mysql_database": "mall_agent_cart_test",
+    "admin_types_and_build": "PASSED",
+    "buyer_types_and_h5_build": "PASSED",
+    "ruff": "PASSED",
+    "framework_and_generated_contracts": "PASSED",
+    "physical_mobile_keyboard": "NOT_TESTED",
+    "responsive_390px": "PASSED"
+  },
+  "runtime": {
+    "status": "UP",
+    "build": "order-0.9",
+    "migration": "0007",
+    "framework": {
+      "modules": 20,
+      "scaffold": "BOUNDARIES_REGISTERED",
+      "business": "PARTIAL"
+    },
+    "capabilities": {
+      "dialog": "LIVE",
+      "dialog_model": "gpt-6.1-sol",
+      "knowledge": "TRUSTED_PRODUCT_CATEGORY_LIVE",
+      "media": "CHAT_IMAGE",
+      "vision_model": "gpt-6.1-sol",
+      "transactions": "ADD_CART_AND_CREATE_ORDER_LIVE",
+      "handoffs": "IMAGES_CARDS_SSE_AUDIT_LIVE",
+      "model_administration": "VERSIONED_LIVE"
+    }
+  },
+  "cleanup": {
+    "cleaned_test_conversations": 30,
+    "active_runs": 0,
+    "active_labeled_test_knowledge": 0,
+    "recent_failed_conversation_cleanup": 0,
+    "remaining_test_notes": 0,
+    "remaining_test_events": 0,
+    "remaining_unprotected_test_images": 0,
+    "staff_presence": "OFFLINE",
+    "original_model_and_prompt_restored": true,
+    "candidate_disabled": true
+  },
+  "workers": [
+    "generation",
+    "jobs",
+    "outbox",
+    "scheduler"
+  ],
+  "jars": {
+    "admin": "7e142a6c7b9ae396806d08eb525302fd2b557d87afea375a19e12c92fa4bc506",
+    "portal": "7e3ccb5cfa5b35f038d9a5ee8a4c71794a7668220c0d24262f546560185387b6"
+  },
+  "paid_usage": "Explicit live reply retry, knowledge answer/indexing, model compatibility and switch acceptance. Final audit and responsive UI created no paid calls.",
+  "boundaries": [
+    "Single authorized retrieval: at most 32 active matching knowledge documents; excess fails explicitly.",
+    "Knowledge acceptance used synthetic materials; formal shop policy still needs business review and import.",
+    "Scanned PDF OCR is not implemented.",
+    "Embedding switches require disabling affected published documents, rebuilding and republishing.",
+    "Provider endpoints and secret references remain controlled; arbitrary providers require adapters.",
+    "390px desktop viewport is verified; physical phones and soft keyboards are untested.",
+    "Local managed runtime and production build artifacts verified; no external production deployment."
+  ],
+  "outside_requested_scope_pending": [
+    "M12 generic retention governance",
+    "M13 full observability console",
+    "M16 governance",
+    "M19 after-sale end-to-end workflow",
+    "M20 backup and restore verification",
+    "generic action reconciliation handler"
+  ],
+  "backups": [
+    "deployment/.run/feature-expansion-baseline-20261112",
+    "deployment/.run/feature-expansion-rollback-20261112"
+  ],
+  "git_commit_created": false,
+  "source_sha256": [
+    {
+      "file": "docs/19-扩展功能实施跟踪.md",
+      "sha256": "613e668c0bb48cb67f18b7bea157975fd95170b9db15352866571183e76bac38",
+      "bytes": 9760
+    },
+    {
+      "file": "mall-agent/app/application/conversations.py",
+      "sha256": "da98a921c443ac990eef94cc68982bc1d23127f0422e09facbe42094c47f1f2c",
+      "bytes": 28556
+    },
+    {
+      "file": "mall-agent/app/application/read_positions.py",
+      "sha256": "9aa6245d210b23ca173d2b8c11a32a8e78caca64cf9281840dac95a7e0e4e8d7",
+      "bytes": 2163
+    },
+    {
+      "file": "mall-agent/app/application/conversation_cleanup.py",
+      "sha256": "235abf7d457844ce9eb7d1fc5257e538bfa10d67f2d3cce0b07f1e482b39c8a3",
+      "bytes": 9164
+    },
+    {
+      "file": "mall-agent/app/application/catalog.py",
+      "sha256": "525892435be543824e3f0ea207ccd02f47ad3719a46a1921c651604b0dc0dab3",
+      "bytes": 4940
+    },
+    {
+      "file": "mall-agent/app/application/knowledge.py",
+      "sha256": "53677e444ee2d86d63af99b56ee78c463e3bb2779f2d4f65eca0a31f93405ed7",
+      "bytes": 37298
+    },
+    {
+      "file": "mall-agent/app/application/retrieval.py",
+      "sha256": "b864bd7dc107ff68bb7812eb7f25802482ddcbc880a547a5216885d4242057ba",
+      "bytes": 8814
+    },
+    {
+      "file": "mall-agent/app/application/handoffs.py",
+      "sha256": "1ccf1474e6c00e12d61333ba57ada42edb7e5f903798fa49daeab4924cf8aaf6",
+      "bytes": 34480
+    },
+    {
+      "file": "mall-agent/app/application/model_admin.py",
+      "sha256": "26aa083c9902ec2cad99f7398f7be43d0bba1d51e26b0e57fd184ac9db8d702c",
+      "bytes": 17176
+    },
+    {
+      "file": "mall-agent/app/api/staff_events.py",
+      "sha256": "635a9efc0df98503b6f22e68e4b3dbd47d860051f45ba96d3cea97c383bc1211",
+      "bytes": 6109
+    },
+    {
+      "file": "mall-agent/app/infrastructure/model_config.py",
+      "sha256": "2b4835c1b7c86c1ae3ccb6faed0e36f5c5d0bc772434655726bf27be8292381f",
+      "bytes": 4824
+    },
+    {
+      "file": "mall-agent/app/infrastructure/model_ledger.py",
+      "sha256": "6e951359e9acca0ac3bfb1725c895136189c94c7cc3419d97f00c90cb7d1580d",
+      "bytes": 13695
+    },
+    {
+      "file": "mall-agent/app/infrastructure/model_compatibility.py",
+      "sha256": "c6ab30668a92fd0d743cffbb7ff992c2cc52c3f6579ecf5ca0c58fdab61fa067",
+      "bytes": 6524
+    },
+    {
+      "file": "mall-agent/app/workers/generation.py",
+      "sha256": "e48e35af04670d963a89c11db4658b70083c9ce0e7e2ed8f61a531fa410733ed",
+      "bytes": 12626
+    },
+    {
+      "file": "mall-agent/scripts/verify_expansion_state.py",
+      "sha256": "1af7a81f981afa58457ca1b8fefcb40596bf51355ea1d002127fe19e857c4015",
+      "bytes": 9748
+    },
+    {
+      "file": "mall-agent/scripts/smoke_conversations.py",
+      "sha256": "e172b772ddf11a49dd6bb9f8004eb768687ecbaa2366890ee5f77679845f88f7",
+      "bytes": 9447
+    },
+    {
+      "file": "mall-agent/scripts/smoke_knowledge_expansion.py",
+      "sha256": "b51f17f9581619faca09865a4d3d9433bc58bb587d25b056988fa9f0bd3fc220",
+      "bytes": 19695
+    },
+    {
+      "file": "mall-agent/scripts/smoke_staff_expansion.py",
+      "sha256": "eaed87cd90f922a338b53f3c62a5430806600eb989215eaeeca4e034e035abab",
+      "bytes": 8368
+    },
+    {
+      "file": "mall-agent/scripts/smoke_models_expansion.py",
+      "sha256": "d03368d88ad4f359789cc22beb60eb96f53f7b4ac12d084919fd07af46af4bd8",
+      "bytes": 8978
+    },
+    {
+      "file": "mall-app-web/src/pages/agent/chat.vue",
+      "sha256": "9350bbef5950f25c3d66b91656b589780ddb46dec5bb4890c2f7ff45d7f175fe",
+      "bytes": 32656
+    },
+    {
+      "file": "mall-app-web/src/pages/agent/ProductBrowser.vue",
+      "sha256": "31c1a63f76904fd06b43e647dee1371cc786271e8b433df727e5a9c1fc3c183e",
+      "bytes": 12259
+    },
+    {
+      "file": "mall-admin-web/src/views/agent/Service.vue",
+      "sha256": "13184f63d9f2150432e75b1ee55e0e44be50d32dd5e331db4a3658a23a55e310",
+      "bytes": 21469
+    },
+    {
+      "file": "mall-admin-web/src/views/agent/StaffComposer.vue",
+      "sha256": "1c91b046e8ea723be9758622975c64de1392016a20ccf3931f8bb10f4d705116",
+      "bytes": 6670
+    },
+    {
+      "file": "mall-admin-web/src/views/agent/StaffMessageContent.vue",
+      "sha256": "f69a0450723e515960c6cc20b3dd0392c98add9f4d9e5ccee1de1b68ad55ee3b",
+      "bytes": 3224
+    },
+    {
+      "file": "mall-admin-web/src/views/agent/Knowledge.vue",
+      "sha256": "cbb0171595795c3e729a5d802c276fcd13ed0e927212055a5787f9bb54d6c450",
+      "bytes": 22276
+    },
+    {
+      "file": "mall-admin-web/src/views/agent/Models.vue",
+      "sha256": "f02d45ffd4e6abdcc249a1e58d91a48431c66172754cb061db55e99224660f11",
+      "bytes": 16758
+    },
+    {
+      "file": "mall-admin-web/src/router/guard.ts",
+      "sha256": "7627f160425065d7fc0acb065cac8af7c1ba6c5ec953645918a36e71c0cf9b3d",
+      "bytes": 1809
+    },
+    {
+      "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/AgentProductCatalog.java",
+      "sha256": "940523ad5437ddd3ed0f28627003b1573dcccf049e80356c9f6ec67b33b3d7ef",
+      "bytes": 15181
+    },
+    {
+      "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/service/AgentStaffBusiness.java",
+      "sha256": "4f013245445794856813545ea4874eeb9f5ad2c32cc6dd6f62c903473cf2329d",
+      "bytes": 9676
+    },
+    {
+      "file": "mall-agent/tests/test_conversation_management.py",
+      "sha256": "a1a3b777695d124d3b901558546c7f090086b2ff797e1c28706d47966b3fc186",
+      "bytes": 25400
+    },
+    {
+      "file": "mall-agent/tests/test_catalog.py",
+      "sha256": "f61a3ad2195037e857c7090f7fe5bae4061eb1526c3d0551beccb738559e5756",
+      "bytes": 10655
+    },
+    {
+      "file": "mall-agent/tests/test_knowledge_expansion.py",
+      "sha256": "5fcc1f6bd4c6a59a99f29328161e95c2742b1a2f9db4861510d8d2a1f26ba025",
+      "bytes": 13561
+    },
+    {
+      "file": "mall-agent/tests/test_staff_business.py",
+      "sha256": "e52267ccd6949d908ab68a59aea72637f2b03056ed85aa107e2069a37698c17d",
+      "bytes": 8327
+    },
+    {
+      "file": "mall-agent/tests/test_staff_events.py",
+      "sha256": "a1cd20d05883f7d939e1beb4a4ae1402bce7d995bc24074ed87f354f88bc0963",
+      "bytes": 7758
+    },
+    {
+      "file": "mall-agent/tests/test_model_administration.py",
+      "sha256": "906ecbed86676af79b34b7371291d1d8035f96b3435bb963ca2f40364ca467e1",
+      "bytes": 11687
+    },
+    {
+      "file": "mall-app-web/src/services/agent-contracts.ts",
+      "sha256": "92384862cd91f749cae30c81c3d48d2e18dfff37cc0dc94f8ddcde391e9e4ec4",
+      "bytes": 55139
+    },
+    {
+      "file": "mall-admin-web/src/apis/agent-contracts.ts",
+      "sha256": "92384862cd91f749cae30c81c3d48d2e18dfff37cc0dc94f8ddcde391e9e4ec4",
+      "bytes": 55139
+    },
+    {
+      "file": "docs/architecture/coverage.json",
+      "sha256": "5d54d7b8c8d98c138ac399f032109a903fc044f8dc4ea5b6859e314c64393729",
+      "bytes": 161649
+    },
+    {
+      "file": "mall-agent/migrations/versions/0007_model_administration.py",
+      "sha256": "0414d8c0511aa865d10b47f82b15f2ef0825467ebd72c85dffbacaa337e987b9",
+      "bytes": 355
+    }
+  ],
+  "evidence_sha256": [
+    {
+      "file": "deployment/.run/expansion-full-final.log",
+      "sha256": "fe4189e51c8ee89bd66e77beee58d07e8d915964aef213dd7f00609289b04c42",
+      "bytes": 194
+    },
+    {
+      "file": "deployment/.run/expansion-catalog-tests.log",
+      "sha256": "f4f4f4eba7b9bc195eca2f14ce7e929db35f57cd2cfeb90df1a6350ef00b0080",
+      "bytes": 6838
+    },
+    {
+      "file": "deployment/.run/expansion-staff-java-database.log",
+      "sha256": "94180de0fbc484e14edc298774a8773f5e7aa9518642698e352e69785fcfefe5",
+      "bytes": 6430
+    },
+    {
+      "file": "deployment/.run/expansion-admin-typecheck.log",
+      "sha256": "50c6608578e015a078c7df0b5cf576ab7199621b997939ce1b0ab35740ed19ea",
+      "bytes": 58
+    },
+    {
+      "file": "deployment/.run/expansion-buyer-typecheck.log",
+      "sha256": "1828ad86b2fd0c0c10609fd3416d89b1c3161e38a89df55e0d7d567bd15969fc",
+      "bytes": 65
+    },
+    {
+      "file": "deployment/.run/expansion-admin-build-final.log",
+      "sha256": "8713b77c8282a631ff9c65d0de26e7a5535ec25bfbf91fb9edfbf1198dbb4d22",
+      "bytes": 23127
+    },
+    {
+      "file": "deployment/.run/expansion-buyer-build-final.log",
+      "sha256": "25786e4694d3546bb4957e00f733c15de4c82a9ecbe8798cf52f565ffb9837fd",
+      "bytes": 7495
+    },
+    {
+      "file": "deployment/.run/expansion-final-checks.log",
+      "sha256": "83519e4bfa3bd9b001f2ad924acdccd0cc924fa6d35ea5ae79fbfc58bc9d1835",
+      "bytes": 238
+    },
+    {
+      "file": "deployment/.run/conversation-management-smoke.json",
+      "sha256": "08571f55336b3b2ec2af13e81bd53d7536bef159d49c0b87d2f60645c0f3bac2",
+      "bytes": 1786
+    },
+    {
+      "file": "deployment/.run/conversation-management-verify.log",
+      "sha256": "f48254ff690dbfedda23336fa08675bfcbaa0063df935c0010d53f82e2b71280",
+      "bytes": 84
+    },
+    {
+      "file": "deployment/.run/conversation-management-browser.jpg",
+      "sha256": "8732fde5ec2826ea2ce8ed68cb1753efbb79f224377cee6d04a4248a8cf22b1b",
+      "bytes": 52197
+    },
+    {
+      "file": "deployment/.run/catalog-runtime-smoke.json",
+      "sha256": "2fc62b74bfe95fb3904619798ac2d7a354ca4db03704cc19947c6bf5d94c596d",
+      "bytes": 464
+    },
+    {
+      "file": "deployment/.run/catalog-comparison-browser.png",
+      "sha256": "870a3dc7d46bc0824bd19ce635df5cf9b5df66e2afe62697ab234338beda04d6",
+      "bytes": 97018
+    },
+    {
+      "file": "deployment/.run/knowledge-expansion-smoke.json",
+      "sha256": "0b0dfdf0088fc20350bbc740850225a0390dbb2f4a96cbd2ba17f7bbb98c4489",
+      "bytes": 2077
+    },
+    {
+      "file": "deployment/.run/knowledge-expansion-smoke.log",
+      "sha256": "ac6f49c92215552113689a24b9eecec741c9a4b68ae348596231b0a3679ff089",
+      "bytes": 365
+    },
+    {
+      "file": "deployment/.run/staff-expansion-smoke.json",
+      "sha256": "d1baf6d13fb09a9d9e2bade07c989c213b9a4a7e7ed0f2fe6d1a2a90d58a33a7",
+      "bytes": 601
+    },
+    {
+      "file": "deployment/.run/staff-expansion-smoke-final.log",
+      "sha256": "f563a8bbe6193e5ed37b7bb23e646461a353f74562aebb627e6bf7d539cbc30f",
+      "bytes": 256
+    },
+    {
+      "file": "deployment/.run/staff-workbench-browser.png",
+      "sha256": "ac171ffc543d509f4cd1eb426e0bf1d631dbd0b534740715682d0f9d318dafbb",
+      "bytes": 163904
+    },
+    {
+      "file": "deployment/.run/staff-audit-browser.png",
+      "sha256": "d2dc446cf2806ef374cefd5affcabfa59531e675a63b5d69eb5e9933a952bef6",
+      "bytes": 327062
+    },
+    {
+      "file": "deployment/.run/model-expansion-smoke.json",
+      "sha256": "a92365d03de261e80edf8ffe6551c07fbe2ce301edfa77774da7f2a42aaf5880",
+      "bytes": 1061
+    },
+    {
+      "file": "deployment/.run/model-management-browser.png",
+      "sha256": "c2e9dad8cc336ecfa14a6db9376cb15d23fcd75a366e756bb384c3a5c4e888ad",
+      "bytes": 240509
+    },
+    {
+      "file": "deployment/.run/responsive-browser-smoke.json",
+      "sha256": "31b852b2661b4c56d98febe111942fd1b66eebab8263e6c6286599fd90361a7c",
+      "bytes": 487
+    },
+    {
+      "file": "deployment/.run/buyer-responsive-browser.png",
+      "sha256": "18bd1801afc0f384d8a27a80772baf0ddcadffc24f6e7d0b4f136089679ef8e5",
+      "bytes": 73185
+    },
+    {
+      "file": "deployment/.run/expansion-final-state.json",
+      "sha256": "67c60d172bf8c2c42c1ae0a9c3a0b16fb1a8263fdc79a80a978129e72e62175d",
+      "bytes": 4235
+    },
+    {
+      "file": "deployment/.run/expansion-final-state.log",
+      "sha256": "cb362eb90c46597652028570feefaea9f6990b9a6847010507c1de8ccb694388",
+      "bytes": 377
+    }
+  ]
+}

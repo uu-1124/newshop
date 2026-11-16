@@ -1,0 +1,417 @@
+{
+  "build": "runtime-0.5",
+  "verified_at": "2026-11-11T06:03:08.317971+00:00",
+  "migration": "0003",
+  "domain_tables": 32,
+  "checkpoint_tables": 4,
+  "modules": 20,
+  "active_python_operations": 15,
+  "reviewed_contract_operations": 116,
+  "full_business_runtime": "NOT_READY",
+  "active_job_handlers": [
+    "RUNTIME_CHECK"
+  ],
+  "workers": [
+    "api",
+    "generation",
+    "scheduler",
+    "jobs",
+    "outbox"
+  ],
+  "messaging": {
+    "rabbitmq": "durable direct exchange, publisher confirms, PG fallback",
+    "redis": "ID notifications, reconnect, PG fallback",
+    "dedicated_credentials": true
+  },
+  "verification": {
+    "python_tests": {
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0
+    },
+    "java_tests": [
+      {
+        "class": "com.macro.mall.controller.AgentStaffBridgeTest",
+        "tests": 4
+      },
+      {
+        "class": "com.macro.mall.config.GatewayErrorEncodingTest",
+        "tests": 5
+      },
+      {
+        "class": "com.macro.mall.config.SearchWhitelistSecurityTest",
+        "tests": 5
+      },
+      {
+        "class": "com.macro.mall.portal.controller.AgentMemberBridgeTest",
+        "tests": 3
+      }
+    ],
+    "ruff": "passed",
+    "evidence": {
+      "runtime-smoke": {
+        "result": "passed",
+        "checks": [
+          "real_staff_identity_and_explicit_permissions",
+          "unsigned_staff_bridge_denied",
+          "signed_staff_bridge_nonce_replay_denied",
+          "member_token_cannot_enter_staff_domain",
+          "permission_revocation_applies_to_existing_token",
+          "disabled_role_immediately_loses_permissions",
+          "disabled_staff_immediately_rejected",
+          "pg_enqueue_live_consumer_success",
+          "public_staff_retry_idempotency_then_live_consumer_success",
+          "transactional_wakeups_confirmed_by_real_rabbit",
+          "staff_job_cursor_pagination"
+        ]
+      },
+      "runtime-state": {
+        "result": "passed",
+        "checks": [
+          "four_completed_real_gpt_runs_use_full_graph_and_versioned_router",
+          "guide_checkpoint_contains_real_product_tool_results",
+          "no_raw_images_or_config_secrets_in_completed_checkpoints",
+          "four_worker_kinds_live_and_all_committed_events_published"
+        ]
+      },
+      "agent-smoke": {
+        "result": "passed",
+        "checks": [
+          "real_member_identity",
+          "invalid_token_denied",
+          "unsigned_bridge_denied",
+          "internal_broker_not_routed",
+          "create_idempotency",
+          "send_idempotency",
+          "schema_valid_persistent_sse",
+          "persistent_history_and_live_model",
+          "sse_resume_after_cursor",
+          "stop_reaches_terminal_state",
+          "history_preserved_after_api_restart"
+        ]
+      },
+      "image-chat-smoke": {
+        "result": "passed",
+        "checks": [
+          "private_upload_idempotency",
+          "authenticated_private_content",
+          "fake_image_rejected",
+          "gpt_image_observation_and_streamed_reply",
+          "image_followup_uses_bounded_history",
+          "visual_clue_to_real_mall_product_tool",
+          "image_and_reply_preserved_after_api_restart"
+        ]
+      }
+    }
+  },
+  "jars": [
+    {
+      "service": "admin",
+      "sha256": "cbfdcdcc77439a4a638bdd7d24c10538818b90b65fa849293e0de45642320933",
+      "runtime": "local Windows Java 17"
+    },
+    {
+      "service": "portal",
+      "sha256": "a52662cdd3963fc8027b383e0a3254c5471312660c6ad1cf1c5633a177b7fdd3",
+      "runtime": "local Windows Java 17"
+    },
+    {
+      "service": "gateway",
+      "sha256": "c7cd764b7a893588bd154a00b7d695129545ce0ae8a76369031aad8ab7974d1e",
+      "runtime": "local Windows Java 17"
+    }
+  ],
+  "source": [
+    {
+      "file": "deployment/dev.cjs",
+      "sha256": "9e2cd78fe58e2217a702867a677bdd30e37e0d2f287728aab6c2356379cbe32c"
+    },
+    {
+      "file": "deployment/prepare-agent-runtime.cjs",
+      "sha256": "c3951669dd9778802eb5e095007645846e4ae899a1b751c9ecf563d8efc4adcb"
+    },
+    {
+      "file": "mall-agent/app/__init__.py",
+      "sha256": "892fbf1ae7a803992c0779374b2802dff7d0dc5d33c685878125e40b1c1c7e1b"
+    },
+    {
+      "file": "mall-agent/app/agents/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/agents/dialog.py",
+      "sha256": "6e31176025e6bb9aa4a90d70d28936af10ca09f3e0fefe613bcbceb59674c20f"
+    },
+    {
+      "file": "mall-agent/app/agents/graph.py",
+      "sha256": "1ed47b5b616fc19338456b7e6ed4e21dc2c0917c47bf8a343d781131183836b1"
+    },
+    {
+      "file": "mall-agent/app/agents/live_workflow.py",
+      "sha256": "ee5aa6208aad03103e8ee7f79a3d5a6fba1ebe1bd0f40e2e6f5bfe75b9bf114d"
+    },
+    {
+      "file": "mall-agent/app/agents/workflow.py",
+      "sha256": "cf74bb309872fd9c9e0324d15ef86f6160e3f78ba0dba3577a8fb7a855df3322"
+    },
+    {
+      "file": "mall-agent/app/api/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/api/admin.py",
+      "sha256": "c3be9528a71ae6a5d45092c789479aaf7aff3a169b9844799ff1c1a79cf08d48"
+    },
+    {
+      "file": "mall-agent/app/api/contracts.py",
+      "sha256": "a0b4321848503207211da862de2c30f716bfbb4f4e85a9bbac9cbf9feb86379e"
+    },
+    {
+      "file": "mall-agent/app/api/dependencies.py",
+      "sha256": "e4a63843e5c75c80869c3a2d1dda6986289b42c21a8ef147740ed35e10b08831"
+    },
+    {
+      "file": "mall-agent/app/api/dto.py",
+      "sha256": "319fdc3735c9fd17b28ab7e713e6c4b10d94536f20b326973bef5047ecd30841"
+    },
+    {
+      "file": "mall-agent/app/api/member.py",
+      "sha256": "8d00e16016286ca1a0da12746b5c0a2e2228d48452f4821a0a791ba6ba4d6178"
+    },
+    {
+      "file": "mall-agent/app/application/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/application/attachments.py",
+      "sha256": "2ca30cee976ed548f83ac165037a7acb2e96da7473cf7794cb6b197267b810cc"
+    },
+    {
+      "file": "mall-agent/app/application/conversations.py",
+      "sha256": "a3bdf0ee42bcaf4c26119b1a4fd49b32c492eabf3a2aa9b66b6490ecfdbef722"
+    },
+    {
+      "file": "mall-agent/app/application/extensions.py",
+      "sha256": "9eb057814ae1d0f4b14f1bc795071bdd1036398716d88e107e4308994c1284c0"
+    },
+    {
+      "file": "mall-agent/app/application/jobs.py",
+      "sha256": "d464e7bfd6ab3d7c747505e35857ba729c31573bf78bc4d3e77c938516b99d77"
+    },
+    {
+      "file": "mall-agent/app/application/outbox.py",
+      "sha256": "9a2b6c0d848b93d1b24e98acae03098e4eb0ba80dd5693cc358a6bd8142e38f3"
+    },
+    {
+      "file": "mall-agent/app/application/runs.py",
+      "sha256": "7f9f81dc5cf2499b85914c2b939cb309deebe458445075d3d6eabdd8e00d4407"
+    },
+    {
+      "file": "mall-agent/app/application/runtime_check.py",
+      "sha256": "907331def2d97a6f2357c466cdd54c108806f0d84fe00b4812d16d5ccf69316e"
+    },
+    {
+      "file": "mall-agent/app/application/views.py",
+      "sha256": "8c1cb14e97c5b69840e9b82b1d42bfcbf25cfac04e9a5c541a979291d3526c51"
+    },
+    {
+      "file": "mall-agent/app/bootstrap.py",
+      "sha256": "abe15c596867df742b9a48069c1e821387fe83da98fdf4d6e1e705c67bc5f377"
+    },
+    {
+      "file": "mall-agent/app/domain/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/domain/capabilities.py",
+      "sha256": "01b0fa5a967cb58f96b4e68e241e5e4527e48b46f5ecbdc660bb22bd9a0c865e"
+    },
+    {
+      "file": "mall-agent/app/domain/identity.py",
+      "sha256": "06c3e2b8bf1588f2bac3b07cff2517706d5b73e8f7549de0a1a99c8ba80a0adb"
+    },
+    {
+      "file": "mall-agent/app/domain/ports.py",
+      "sha256": "8ccd5c85c3e5e1097378ebc415f2d58a577508cda7d50c4d82937ec62f568d25"
+    },
+    {
+      "file": "mall-agent/app/framework.py",
+      "sha256": "d1d4f33ff7f5fefbe3685c0213d3723a4703ce323e470b9070d72cc11e5066ad"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/aliyun_models.py",
+      "sha256": "7f0c3dfe40fe1905e2eef68bf73b64fb87cd46ff9400311f60b1cbd1960cdf09"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/cursors.py",
+      "sha256": "547e0e182b49dcb37b81eec0c11e162458c4e5a582f541ea30ffc9ae235fef67"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/dialog_provider.py",
+      "sha256": "ba2beeefb0f6ac12410228168bca4cfc49c6f6476594d5c4705eef89cbd2e64f"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/gpt_vision.py",
+      "sha256": "7df61c4c2cd7bb700972dea64826e46dd786aa5d643d0e62d03f775e59ad8522"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/image_decode.py",
+      "sha256": "697f01aa87eef9df29ce386fef6db704bdd120a511e7fb4dbf6d1cc3c72534f7"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/java_bridge.py",
+      "sha256": "96fd7cecd0fb58ce2c54eee885dc58efc64780b8869d80fb92854aa650c27fd3"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/milvus_candidates.py",
+      "sha256": "8c33f8ae0563d9bba64494909f1b21596be12365592123269066cf095dc657c6"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/model_ledger.py",
+      "sha256": "0f9e074083d578cec7e12c99c5ed6f872dfbc17d599d854943cada5d1ebf71c4"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/model_transport.py",
+      "sha256": "b4e9056362059127eeeaa1df833cffe5d5cbb2223ca545772fd6344d11d8f27b"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/postgres/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/postgres/database.py",
+      "sha256": "8bbe68b718a22c281b16788df1b838eeca7e53de40e65511be8dbcadcfbd2e22"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/private_objects.py",
+      "sha256": "d9277db33c9cc0183a1697f24916210eeb238298593756d8f05b9b269afa22bf"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/providers.py",
+      "sha256": "59c2bad05526b8263cea74f80bf112a952fa9fa3b6be4227c653ebf246ab3bf4"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/runtime_auth.py",
+      "sha256": "ef449dcd9cee2ee0c5acb51b601025bfe70dafb1c68c0a645d8d1b1f979700f7"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/staff_auth.py",
+      "sha256": "dbbc37c122561aeb8ff40dcb4a81b01d6a653330174bfc0dcd762242345414da"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/wakeups.py",
+      "sha256": "8ed955d34c93a3f739d8caf28c8e0743dea69de60770b8e5052ac79af3ba50da"
+    },
+    {
+      "file": "mall-agent/app/infrastructure/worker_status.py",
+      "sha256": "d842ac2f7249ce50b93aed781ab9bcd6be43d2ec2a32f4d0ed4c826608951e9d"
+    },
+    {
+      "file": "mall-agent/app/main.py",
+      "sha256": "63087e378c1ac014df1413ddfd692618df2917a7193f1688ea6406bca6acf235"
+    },
+    {
+      "file": "mall-agent/app/module_catalog.py",
+      "sha256": "9a4878df293fa41025446888c94ef012283b37ef6145da2ef393155213b1ec7c"
+    },
+    {
+      "file": "mall-agent/app/runtime.py",
+      "sha256": "2a280fd0c240688df9be7e9b7bf67358e717b5e3f10af839482481066ad1685b"
+    },
+    {
+      "file": "mall-agent/app/serve.py",
+      "sha256": "acd4f117af1b7b1633e5f654df328b4174f8216f32944babe60aac5431b1d24b"
+    },
+    {
+      "file": "mall-agent/app/settings.py",
+      "sha256": "be52a57a021ac77cbc8135a0b7c992eb48ce5c0aeb6c4eb482448eff7d2538b1"
+    },
+    {
+      "file": "mall-agent/app/workers/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "mall-agent/app/workers/generation.py",
+      "sha256": "23c38c88ad31406bfd2f5a08cfe65d617230ddc9ab70234381a7d81d47b64d16"
+    },
+    {
+      "file": "mall-agent/app/workers/jobs.py",
+      "sha256": "e45d4764843ccf20536927497ef35ac5a22170ee5d9e2b959d44868e041f349e"
+    },
+    {
+      "file": "mall-agent/app/workers/outbox.py",
+      "sha256": "e87a1a62d8036fb4cee7720414a6fb5efd4d93ea279aec138021c6b46b135350"
+    },
+    {
+      "file": "mall-agent/app/workers/scheduler.py",
+      "sha256": "ce6945418d1a505b8f46b709bbb98994340d011dd6df3b4446e6ee616847575c"
+    },
+    {
+      "file": "mall-agent/migrations/env.py",
+      "sha256": "a91fda055065405578bb58dccf9870c7aae0d546f90d89270b5fb894b57d9304"
+    },
+    {
+      "file": "mall-agent/migrations/versions/0001_design_baseline.py",
+      "sha256": "564ff028b3418763974f7d1ad5cec4ed07268c124829f5b4a7fef55dcd046218"
+    },
+    {
+      "file": "mall-agent/migrations/versions/0002_image_observations.py",
+      "sha256": "2c493d59733d26e77f90c3fb52a29a08e6033b7ba4ca07063e7e31718aae39a1"
+    },
+    {
+      "file": "mall-agent/migrations/versions/0003_runtime_foundation.py",
+      "sha256": "5360cae64c722659b8df70d89b41a04f375582e872c394fccdb4bb9e0b1ba39c"
+    },
+    {
+      "file": "mall-agent/pyproject.toml",
+      "sha256": "a2d1c7784fce0dc567a07ef270bfa0a8d73c5776af160dd24af29611fad94fa5"
+    },
+    {
+      "file": "mall-agent/tests/conftest.py",
+      "sha256": "b5d924831652b2bcdff80fc2e4e27841d46722d2494176d8c7510e6c0e3d1a76"
+    },
+    {
+      "file": "mall-agent/tests/test_architecture.py",
+      "sha256": "9f745186200501e0d2b8fdd40a5d57810b9974fc0761e7d0737de941c921b739"
+    },
+    {
+      "file": "mall-agent/tests/test_framework.py",
+      "sha256": "95d4201d348e013bff8dfeabe9a231a57f270bae6bbc4bb3e66ad500286f3719"
+    },
+    {
+      "file": "mall-agent/tests/test_images.py",
+      "sha256": "c028d45c792793e41353cbf07d020449231e69436e8dac8316d0ece61b3bb3d8"
+    },
+    {
+      "file": "mall-agent/tests/test_models.py",
+      "sha256": "a023e560faf669447363eb4369d3d090eb603589295d08ff2c928269e820d11d"
+    },
+    {
+      "file": "mall-agent/tests/test_notifications.py",
+      "sha256": "5410caf536e581e70a45dfd1c252837bbd6cb017afabd4d7644b2cc3d5e75bbe"
+    },
+    {
+      "file": "mall-agent/tests/test_postgres.py",
+      "sha256": "29d04a311858bcf728003d6823ec43e7c74b88f7fdce6c785993eadc4b72c100"
+    },
+    {
+      "file": "mall-agent/tests/test_runtime.py",
+      "sha256": "a47f6d45d721f85dcb0c3be90652510fadce2b891e954a20d9e8860353f92c58"
+    },
+    {
+      "file": "mall-agent/uv.lock",
+      "sha256": "b844d9de7fbcf255e563585774cd837b8d29b32c7bdc5e30b5468ea6f8e3da0c"
+    }
+  ],
+  "remaining": [
+    "knowledge ingestion and authorized retrieval",
+    "human service",
+    "transaction preparation and confirmation",
+    "voice workflows",
+    "backup/restore and capacity acceptance"
+  ]
+}

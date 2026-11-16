@@ -1,5 +1,6 @@
 package com.macro.mall.portal.controller;
 
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.model.PmsProduct;
@@ -37,9 +38,10 @@ public class PmsPortalProductController {
     public CommonResult<CommonPage<PmsProduct>> search(@RequestParam(required = false) String keyword,
                                                        @RequestParam(required = false) Long brandId,
                                                        @RequestParam(required = false) Long productCategoryId,
-                                                       @RequestParam(required = false, defaultValue = "0") Integer pageNum,
+                                                       @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                                        @RequestParam(required = false, defaultValue = "5") Integer pageSize,
                                                        @RequestParam(required = false, defaultValue = "0") Integer sort) {
+        PageValidation.sql(pageNum, pageSize);
         List<PmsProduct> productList = portalProductService.search(keyword, brandId, productCategoryId, pageNum, pageSize, sort);
         return CommonResult.success(CommonPage.restPage(productList));
     }

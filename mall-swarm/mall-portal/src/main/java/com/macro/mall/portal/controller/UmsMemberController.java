@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,7 +63,13 @@ public class UmsMemberController {
     @ResponseBody
     public CommonResult info() {
         UmsMember member = memberService.getCurrentMember();
-        return CommonResult.success(member);
+        UmsMember response = null;
+        if (member != null) {
+            response = new UmsMember();
+            BeanUtils.copyProperties(member, response);
+            response.setPassword(null);
+        }
+        return CommonResult.success(response);
     }
 
     @Operation(summary = "登出功能")

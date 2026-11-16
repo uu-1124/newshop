@@ -27,6 +27,9 @@ public interface UmsAdminRoleRelationDao {
      */
     List<UmsResource> getResourceList(@Param("adminId") Long adminId);
 
+    /** Fresh agent permissions from enabled roles only. */
+    List<UmsResource> getAgentResourceList(@Param("adminId") Long adminId);
+
     /**
      * 获取资源相关用户ID列表
      */

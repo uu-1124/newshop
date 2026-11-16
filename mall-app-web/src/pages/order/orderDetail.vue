@@ -110,11 +110,11 @@
         <button class="action-btn recom" @click="handlePayOrder(order.id)">立即付款</button>
       </view>
       <view class="action-box b-t" v-if="order.status === 2">
-        <button class="action-btn">查看物流</button>
+        <button class="action-btn" @click="openAgentOrder">查看演示物流</button>
         <button class="action-btn recom" @click="handleReceiveOrder(order.id)">确认收货</button>
       </view>
       <view class="action-box b-t" v-if="order.status === 3">
-        <button class="action-btn">申请售后</button>
+        <button class="action-btn" @click="openAgentOrder">申请售后</button>
         <button class="action-btn recom">评价商品</button>
       </view>
       <view class="price-content" v-if="order.status === 0">
@@ -136,6 +136,7 @@ import type { OmsOrderDetail } from '@/types/order'
 // ===== 页面数据 =====
 // 订单ID
 const orderId = ref<number>(0)
+const openAgentOrder = () => uni.navigateTo({ url: `/pages/agent/chat?orderId=${orderId.value}` })
 // 订单详情
 const order = ref<OmsOrderDetail>({} as OmsOrderDetail)
 // 订单状态信息

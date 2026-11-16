@@ -1,0 +1,271 @@
+{
+  "stage": "auxiliary-model-attribution-and-crash-accounting-20261114",
+  "created_at": "2026-11-14T02:40:07.398979+00:00",
+  "goal_status": "active",
+  "scope": "original groups6/7/9; run/job source attribution, durable reservations, auxiliary protocol errors; additional agent gateway rejection HTTP contract",
+  "migration": "0010",
+  "design_operations": 130,
+  "runtime_python_operations": 101,
+  "schema_change": "UnknownModelUsage optional run/job/actor/error fields; existing ag_model_call columns, no migration",
+  "checks": {
+    "primary_regression": "48 passed in 247.02s",
+    "knowledge_facts_memory_crash": "21 passed in 236.74s",
+    "final_protocol_and_attribution": "34 passed in 111.61s",
+    "gateway": "15 passed, Maven BUILD SUCCESS",
+    "ruff": "PASS app/scripts/tests",
+    "format": "PASS 12 changed Python files",
+    "web_contracts": "PASS --check",
+    "framework": "PASS 20 modules/12 nodes/130 design/97 offline default routes",
+    "design": "16 checks PASS",
+    "architecture": "historical 26/27 freeze assertion failure retained, not rerun",
+    "buyer_types": "PASS",
+    "admin_types": "PASS",
+    "admin_build": "PASS, original chunk warning retained"
+  },
+  "live": {
+    "checked_at": "2026-11-14T02:34:31.636081+00:00",
+    "deleted": true,
+    "run_review": "PASSED",
+    "job_review": "PASSED",
+    "permissions": {
+      "other_member_run": 404,
+      "member_admin_usage": 401
+    },
+    "active": {
+      "runs": 0,
+      "jobs": 0,
+      "actions": 0
+    },
+    "workers": [
+      {
+        "process_kind": "backups",
+        "n": 1
+      },
+      {
+        "process_kind": "generation",
+        "n": 1
+      },
+      {
+        "process_kind": "jobs",
+        "n": 1
+      },
+      {
+        "process_kind": "observability",
+        "n": 1
+      },
+      {
+        "process_kind": "outbox",
+        "n": 1
+      },
+      {
+        "process_kind": "scheduler",
+        "n": 1
+      }
+    ],
+    "counts": {
+      "calls": 505,
+      "unknown_meters": 6,
+      "price_rules": 0,
+      "knowledge_active": 3
+    },
+    "calls": [
+      {
+        "capability": "DIALOG",
+        "status": "SUCCEEDED",
+        "run_id": "28aa6fd9-1841-40c0-b9a2-e231eef1ae5e",
+        "job_id": null,
+        "actor_kind": "MEMBER",
+        "actor_id": 22,
+        "n": 2
+      },
+      {
+        "capability": "EMBEDDING",
+        "status": "SUCCEEDED",
+        "run_id": "28aa6fd9-1841-40c0-b9a2-e231eef1ae5e",
+        "job_id": null,
+        "actor_kind": "MEMBER",
+        "actor_id": 22,
+        "n": 1
+      },
+      {
+        "capability": "EMBEDDING",
+        "status": "SUCCEEDED",
+        "run_id": null,
+        "job_id": "c7bc6a69-4256-431b-9e49-7491b8fe95d1",
+        "actor_kind": "STAFF",
+        "actor_id": 3,
+        "n": 1
+      },
+      {
+        "capability": "RERANK",
+        "status": "SUCCEEDED",
+        "run_id": "28aa6fd9-1841-40c0-b9a2-e231eef1ae5e",
+        "job_id": null,
+        "actor_kind": "MEMBER",
+        "actor_id": 22,
+        "n": 1
+      }
+    ],
+    "legacy_unchanged": true,
+    "dispatches": 0,
+    "migration": "0010",
+    "livez": 200,
+    "ready": {
+      "http": 200,
+      "dependencies": {
+        "cloud": "UP",
+        "redis": "UP",
+        "milvus": "UP",
+        "gateway": "UP",
+        "postgres": "UP",
+        "rabbitmq": "UP",
+        "admin_bridge": "UP",
+        "portal_bridge": "UP",
+        "private_objects": "UP"
+      },
+      "framework": {
+        "modules": 20,
+        "scaffold": "BOUNDARIES_REGISTERED",
+        "business": "PARTIAL"
+      }
+    },
+    "contract": {
+      "operations": 101,
+      "usage_fields": [
+        "call_id",
+        "capability",
+        "provider_request_id",
+        "status",
+        "run_id",
+        "job_id",
+        "actor_kind",
+        "actor_id",
+        "error_code",
+        "usage_state",
+        "version",
+        "created_at",
+        "reservations"
+      ]
+    },
+    "baseline_unchanged": {
+      "business": true,
+      "policies": true
+    },
+    "call_delta": 5,
+    "source_sha256": "eaafdc3d0528572b9a7c337087927c85d01c2d10440928c5bdb79ac7d20081d3",
+    "checks": {
+      "drained": true,
+      "deleted": true,
+      "both_live_paths": true,
+      "all_new_calls_linked": true,
+      "call_count": true,
+      "history": true,
+      "business_policies": true,
+      "no_business": true,
+      "unknown_price_unchanged": true,
+      "permissions": true,
+      "gateway_package": true
+    },
+    "auth_http_acceptance": {
+      "anonymous": {
+        "http": 401,
+        "code": "AUTH_REQUIRED",
+        "data_is_null": true,
+        "request_id": "74ba0c71-ee52-470f-bbca-df11b0ffd60d"
+      },
+      "member_identity": {
+        "http": 200,
+        "kind": "MEMBER"
+      },
+      "member_admin_usage": {
+        "http": 401,
+        "code": "AUTH_REQUIRED",
+        "data_is_null": true
+      },
+      "internal_route": {
+        "http": 403,
+        "code": "FORBIDDEN",
+        "data_is_null": true
+      },
+      "staff_usage": {
+        "http": 200,
+        "code": "OK",
+        "items": 6
+      }
+    },
+    "gateway": {
+      "pid_changed": true,
+      "manager_unchanged": true,
+      "active_sha256": "4999efd3878a359a104801b2a7086830b751e98102a539bc42d1ffb3df3c934c",
+      "expected_sha256": "4999efd3878a359a104801b2a7086830b751e98102a539bc42d1ffb3df3c934c"
+    }
+  },
+  "remaining": [
+    "supplier price/statements and historical unknown usage; do not fabricate attribution",
+    "broader capabilities, real supplier failure and crossed lease/control/reconciliation windows",
+    "natural choices,address/coupon/points,CART,two-order switching and all four-card UI combinations",
+    "latency,larger knowledge evaluation and mixed fact/retrieval faults",
+    "cross-restore retention,erasure journal/key lifecycle",
+    "real broker/UNKNOWN crossed windows,different-host disaster and reopening"
+  ],
+  "files": {
+    "mall-agent/app/infrastructure/model_call_context.py": "77bf345dc779c619648cc2b1c200fd7e9ffbab0ec81ae22e1e768dc771d262e0",
+    "mall-agent/app/infrastructure/model_ledger.py": "334cfa26b526b356d6b7eda7a02b7c1bc9ff19c277eceea3d8b8bb20d7da5544",
+    "mall-agent/app/infrastructure/aliyun_models.py": "aeba608658d646ff32ac6b02e9c412f8a890b31b036711c0da4fe80f1c25ef81",
+    "mall-agent/app/application/governance.py": "6d0eb5d83ed6bc57f446f76a26701ffbe774f830ab9ee34871b4e76fb0dde5d3",
+    "mall-agent/app/workers/generation.py": "36c8ef2194dc5ba1af2207ca07f4b926ebaee8e2e18436ffdef4b50e24cb8e3d",
+    "mall-agent/app/workers/jobs.py": "5146b055aac3bc687b474a346fb7af85f9856223c913a1a67eef26f8cb058d09",
+    "mall-agent/scripts/evaluate_model_attribution.py": "1adf1b7ba1dfafe27a231f9c65a67dcd2c0d008c8428941e989d7f3672781bab",
+    "mall-agent/tests/test_model_call_attribution.py": "21175deef758ecd7377d4a70807ab9e997152cbd33db33fb56dd1fcaadfc3fce",
+    "mall-agent/tests/model_attribution_crash_child.py": "c10996d8cabeb13d04a5e2e11e4f0927db9d59c59b3c63bb11f06dbb37ca034b",
+    "mall-agent/tests/test_governance.py": "cbc5ab992829fdcec9bfc98309dfc1b1e9d8708cea71fb3acd2190abe9163549",
+    "mall-agent/tests/test_models.py": "ca9177118319527f287f557c393fe8d1ceb9612e1d92596e5cf3dbca7c1aadfa",
+    "mall-agent/tests/conftest.py": "86f48bfd62fdc7995424af3d8e9f159361cc8f7571b51ff6eb11ae9a1b433bb9",
+    "mall-admin-web/src/views/agent/Governance.vue": "c6ed4f29edf90b6d1eeb39237bc0a8074ac708209fbbd85b141d1e05e78f80fd",
+    "mall-admin-web/src/apis/agent-contracts.ts": "4210d2a5387747fbaf50271396b43b616d2abee713348610bd30eee1084c2a9c",
+    "mall-app-web/src/services/agent-contracts.ts": "4210d2a5387747fbaf50271396b43b616d2abee713348610bd30eee1084c2a9c",
+    "docs/_source/api_design.py": "405ff5f8a7f84c811f0617a9bbc9f5bb0d18b74b32c07cb0911aaffd60aeea51",
+    "docs/api/openapi.json": "ab7e09d050df3fb71f821d8557a6d8e31e88946d266751300e1ef359667dcad8",
+    "docs/api/sse-events.schema.json": "725b8094900ee44316e66f5156fd3de460b29e31da6ebb2ddae58b6557111d2d",
+    "docs/api/operation-catalog.json": "03d0a5738ac45b629bdfbd1c1e438f3f6cefcc1e0930f5e1a3203927f8108ee2",
+    "docs/design-validation.json": "b3c9fe355b31e542c11cdb91a45f5e1e5fddad30660392c91ae2f0bc51144de9",
+    "docs/42-辅助模型调用归属与中断记账验收.md": "6124287f6a4d5bce163076387c825d0a560b07ac9c42a44189e22558be65eff5",
+    "docs/22-智能体完整功能补齐跟踪.md": "6b997a7abe57f7eaf95543cea45413a4732a3cdf29ec769125a9d5cccc6691db",
+    "docs/00-设计导航.md": "6d7a5e7d270e0ffce7d0ed8d7475b410da3bbef66df4c6eafbd582306dcd2171",
+    "mall-agent/README.md": "0cc981587e1ceecb24d5b06b4fda63501a71112fc22a657c9b962dbd3eca69f4",
+    "mall-swarm/mall-gateway/src/main/java/com/macro/mall/config/SaTokenConfig.java": "1729dd748f9c7c4ef19c4078301613f3d4578139806403e59b69b438e279362f",
+    "mall-swarm/mall-gateway/src/test/java/com/macro/mall/config/GatewayErrorEncodingTest.java": "7ae029d6b0a25b8556738fa146a6c5d54fec0cefbc354fa9f80af861339664d2",
+    "deployment/.run/agent-jars/mall-gateway.jar": "4999efd3878a359a104801b2a7086830b751e98102a539bc42d1ffb3df3c934c",
+    "deployment/.run/completion-model-attribution-admin-build-20261114.log": "6abc4e16c713a391c943ec9beab1801382a0ace52577e7dad24443a214c738fd",
+    "deployment/.run/completion-model-attribution-api-reload-20261114.log": "fa4a262488923920e82c19c8826658ecf894d9e9a931e016972ede08bfd1dcfe",
+    "deployment/.run/completion-model-attribution-auth-envelope-after-20261114.json": "9378b399a4d872b948f4a196be56cfde17d5e27e1bc5ef12e74fff4f322c8904",
+    "deployment/.run/completion-model-attribution-auth-envelope-before-20261114.json": "e2415594808738ec6a9fce3fa872b7af33b1d04aaf467688ef913179c7fc3c73",
+    "deployment/.run/completion-model-attribution-before-20261114.log": "3b7ca8ca16f964543e611adf54e2e0894f2451df732f3d6d7fd44713ce3d76bb",
+    "deployment/.run/completion-model-attribution-delivery-tests-20261114.log": "98c05a4e91cccdf8ed44b1d77c983477dfa8b2fb451ce81fe23e6c38cfe6d962",
+    "deployment/.run/completion-model-attribution-design-check-20261114.log": "fd3b207e98e317a2120d0671b88d6f0e575417dc742a6c0703fc28cb8c9141dc",
+    "deployment/.run/completion-model-attribution-expanded-tests-20261114.log": "6e6aed7109a27681bf85d6c6547551937f69a1d4871d3e7e43a330bf95f37da7",
+    "deployment/.run/completion-model-attribution-final-state-20261114.json": "eaf5780ec331de40cde05f5b67f9fd2f86177fe05bdd4e3e7bc3e7771e15dbd8",
+    "deployment/.run/completion-model-attribution-final-state-before-auth-http-fix-20261114.json": "338c71670369ca451f8a030f571e5c5779f28cd54fa87c10d9d9b5de84941819",
+    "deployment/.run/completion-model-attribution-final-tests-20261114.log": "3d05c68ed990faa83f534a3a76f7bf53408f502f16d7dc00e2f539310cc24d72",
+    "deployment/.run/completion-model-attribution-first-tests-20261114.log": "a830e88cf04608224d550fc842348adc82e5aeb85b5e7dd449c27e33aaac73af",
+    "deployment/.run/completion-model-attribution-gateway-before-20261114.jar": "7179fba90b4c5eb998b3b1cc6c22dd4cf5cd9508fa5370bb4950fc5d5890650a",
+    "deployment/.run/completion-model-attribution-gateway-final-tests-20261114.log": "447868c43dcf4c3ece7eeaa39c7116c2549e5c0ff61e7224a991b90a9f7b4a8a",
+    "deployment/.run/completion-model-attribution-gateway-swap-20261114.json": "254b8948b27c4f9ff3263d93d2714d14a7114b910e35cea603bad534e154885b",
+    "deployment/.run/completion-model-attribution-gateway-tests-20261114.log": "1e9942903a284b86eee6a67219e7b74737697a05bcbe761458614473ef407144",
+    "deployment/.run/completion-model-attribution-generation-reload-20261114.log": "deff4b18e2d4d11ea915fe4f643b50f0078f5d6360a33c33ddc19d2f5030042a",
+    "deployment/.run/completion-model-attribution-governance-browser-20261114.png": "0e3a8b3a145878352bdb85e783fb9b0ba18e0a395db24f0459d8e289c2de7607",
+    "deployment/.run/completion-model-attribution-governance-browser-20261114.txt": "1a3a61df0585ca0924a4bed85216a32823137f5fab43a8cc799b1712f4ea5311",
+    "deployment/.run/completion-model-attribution-jobs-reload-20261114.log": "845ac0fa631bef43c09d42c0525257ac98a0cae06f82b3242aec77895c677d54",
+    "deployment/.run/completion-model-attribution-knowledge-crash-tests-20261114.log": "f9d2552b48848aa98430c66507b7cf36d3753107d854e7818acc7ed8417cd72f",
+    "deployment/.run/completion-model-attribution-live-20261114.json": "c9614655b50c56b8c2ed1fa0bbd87e41960fe3585333ce6e6be0f9a5c7b0a203",
+    "deployment/.run/completion-model-attribution-live-cleanup-20261114.log": "08e7d3c114289f50e5e0606b5450b1fa98d9e6c17dac28dab1e7dcb81b6a9837",
+    "deployment/.run/completion-model-attribution-live-job-20261114.log": "54fdd0e983143db2da423f344002837a1cbe4ac7dd4b3cd1afe4e19a13526ac0",
+    "deployment/.run/completion-model-attribution-live-run-20261114.log": "8545e6eebef9be37ac353156232d4d7cc263985c800f486e0e121d714b972097",
+    "deployment/.run/completion-model-attribution-preinstall-20261114.json": "89ff63784c72f457254f45884039f29717276eb0ebfd8ad8c62d519e8bbd4792",
+    "deployment/.run/completion-model-attribution-protocol-delivery-tests-20261114.log": "0c06fb0dd5050753fe3fbec2da00641b4f6b40c07624753f8a10e556a661ff74",
+    "deployment/.run/completion-model-attribution-protocol-diagnosis-20261114.log": "e03a9252ffa04a18d9addff0c1a41cb6243816859cb37c6a27243a37e80cb194",
+    "deployment/.run/completion-model-attribution-protocol-final-tests-20261114.log": "a56a09a14c7aabad353563706f0d0ab5bfd188e445f84cc25301f32f1fad2b6c",
+    "deployment/.run/completion-model-attribution-regression-20261114.log": "32f364a20c4c780526fd6412edc48bce868be37eb03a0afc02da541ca0dc8dc2",
+    "deployment/.run/completion-model-attribution-scheduler-reload-20261114.log": "fc071f09fa586d8310e386d19b56ff7e7a217e92bcbf1f21e12a4105b14d2348"
+  }
+}

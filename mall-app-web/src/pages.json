@@ -49,6 +49,12 @@
         "navigationBarTitleText": "分类"
       }
     },
+    // #ifdef H5
+    {
+      "path": "pages/agent/chat",
+      "style": { "navigationBarTitleText": "智能客服", "navigationStyle": "custom" }
+    },
+    // #endif
     {
       "path": "pages/cart/cart",
       "style": {

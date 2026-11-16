@@ -47,10 +47,19 @@ public class SaTokenConfig {
                 .setAuth(obj -> {
                     // 对于OPTIONS预检请求直接放行
                     SaRouter.match(SaHttpMethod.OPTIONS).stop();
+                    // Agent member authentication is handled by its signed Java identity bridge.
+                    // Internal paths are never routed; staff endpoints require their own login and bridge.
+                    SaRouter.match("/mall-agent/v1/member/**").stop();
+                    // Staff login is checked here; fresh resource permissions are checked by the signed identity bridge.
+                    SaRouter.match("/mall-agent/v1/admin/**", r -> StpUtil.checkLogin()).stop();
+                    SaRouter.match("/mall-agent/**", r -> { throw new NotPermissionException("agent-route"); });
+                    // Recovery has a separately signed, operation-scoped receipt and cannot execute.
+                    SaRouter.match("/mall-portal/agent-bridge/v1/operations/*/reconcile").stop();
                     // 登录认证：商城前台会员认证
                     SaRouter.match("/mall-portal/**", r -> StpMemberUtil.checkLogin()).stop();
                     // 登录认证：管理后台用户认证
                     SaRouter.match("/mall-admin/**", r -> StpUtil.checkLogin());
+                    SaRouter.match("/mall-search/**", r -> StpUtil.checkLogin());
                     // 权限认证：管理后台用户权限校验
                     // 获取Redis中缓存的各个接口路径所需权限规则
                     Map<Object, Object> pathResourceMap = redisTemplate.opsForHash().entries(AuthConstant.PATH_RESOURCE_MAP);
@@ -58,14 +67,20 @@ public class SaTokenConfig {
                     List<String> needPermissionList = new ArrayList<>();
                     // 获取当前请求路径
                     String requestPath = SaHolder.getRequest().getRequestPath();
+                    boolean searchManagement = requestPath.startsWith("/mall-search/");
+                    // Index maintenance uses the existing product-management resource.
+                    String permissionPath = searchManagement ? "/mall-admin/product" : requestPath;
                     // 创建路径匹配器
                     PathMatcher pathMatcher = new AntPathMatcher();
                     Set<Map.Entry<Object, Object>> entrySet = pathResourceMap.entrySet();
                     for (Map.Entry<Object, Object> entry : entrySet) {
                         String pattern = (String) entry.getKey();
-                        if (pathMatcher.match(pattern, requestPath)) {
+                        if (pathMatcher.match(pattern, permissionPath)) {
                             needPermissionList.add((String) entry.getValue());
                         }
+                    }
+                    if (searchManagement && CollUtil.isEmpty(needPermissionList)) {
+                        throw new NotPermissionException("search-index-management");
                     }
                     // 接口需要权限时鉴权
                     if(CollUtil.isNotEmpty(needPermissionList)){
@@ -79,7 +94,22 @@ public class SaTokenConfig {
     /**
      * 自定义异常处理
      */
-    private CommonResult handleException(Throwable e) {
+    private Object handleException(Throwable e) {
+        if (SaHolder.getRequest().getRequestPath().startsWith("/mall-agent/")) {
+            int status = e instanceof NotLoginException ? 401 : e instanceof NotPermissionException ? 403 : 503;
+            String code = status == 401 ? "AUTH_REQUIRED" : status == 403 ? "FORBIDDEN" : "AUTH_SERVICE_UNAVAILABLE";
+            String message = status == 401 ? "请登录对应账号后继续" : status == 403 ? "当前身份没有相关权限" : "权限服务暂不可用，请稍后重试";
+            String requestId = SaHolder.getRequest().getHeader("X-Request-ID");
+            try {
+                if (requestId == null || !UUID.fromString(requestId).toString().equals(requestId)) requestId = UUID.randomUUID().toString();
+            } catch (IllegalArgumentException invalid) { requestId = UUID.randomUUID().toString(); }
+            SaHolder.getResponse().setStatus(status)
+                    .setHeader("Content-Type", "application/json; charset=utf-8")
+                    .setHeader("X-Request-ID", requestId).setHeader("Cache-Control", "no-store");
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("code", code); body.put("message", message); body.put("data", null); body.put("request_id", requestId);
+            return cn.hutool.json.JSONUtil.toJsonStr(body, cn.hutool.json.JSONConfig.create().setIgnoreNullValue(false));
+        }
         //设置错误返回格式为JSON
         SaHolder.getResponse()
                 .setHeader("Content-Type", "application/json; charset=utf-8")

@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.model.SmsFlashPromotion;
 import com.macro.mall.service.SmsFlashPromotionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,6 +82,7 @@ public class SmsFlashPromotionController {
     public Object getItem(@RequestParam(value = "keyword", required = false) String keyword,
                           @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                           @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<SmsFlashPromotion> flashPromotionList = flashPromotionService.list(keyword, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(flashPromotionList));
     }

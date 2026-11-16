@@ -1,0 +1,343 @@
+{
+  "stage": "member-cart-selection-and-real-checkout-revisions-20261114",
+  "created_at": "2026-11-14T06:27:01.094774+00:00",
+  "goal_status": "active",
+  "scope": "original group1 with source facts and card changes; independent checkout member/cart binding, actual address/coupon/points/CART revisions; shared Java metadata correction",
+  "migration": "0010",
+  "design_operations": 130,
+  "runtime_python_operations": 101,
+  "checks": {
+    "python": "237 passed in 267.54s",
+    "java": "46 passed, 0 failures/errors/skips; Maven BUILD SUCCESS",
+    "ruff": "PASS app/scripts/tests",
+    "format": "PASS 12 Python files",
+    "framework": "PASS 20 modules/12 nodes/130 operations/97 offline default routes",
+    "web_contracts": "PASS --check",
+    "design": "16/16 read-only pass",
+    "architecture": "default26/27 freeze baseline retained; existing implementation mode27/27 read-only pass",
+    "frontend_source_change": false,
+    "frontend_build": "not rerun; actual browser validates current API data"
+  },
+  "final": {
+    "checked_at": "2026-11-14T06:21:35.655884+00:00",
+    "cleaned": true,
+    "original_business_member_policies_unchanged": true,
+    "confirm_requests": 0,
+    "cases": {
+      "DIRECT": [
+        {
+          "run_id": "9a3ba575-94bc-44d5-b2f1-8c2efc430bc4",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 6,
+          "elapsed_seconds": 65.14
+        },
+        {
+          "run_id": "aae2296d-5f65-4335-b983-4bcd893e8d1d",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 5,
+          "elapsed_seconds": 55.77
+        },
+        {
+          "run_id": "5dbd7dff-7288-4ee8-a6f6-50109d07a1c9",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 5,
+          "elapsed_seconds": 55.32
+        },
+        {
+          "run_id": "fc2da285-f044-475f-9606-8c28a2e78fc9",
+          "review": "FAILED_ACCEPTANCE",
+          "run_state": "COMPLETED",
+          "calls": 5,
+          "elapsed_seconds": 64.01
+        }
+      ],
+      "DIRECT_FIXED": [
+        {
+          "run_id": "eb28a226-ab54-4807-846c-aec96a7f11cc",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 6,
+          "elapsed_seconds": 64.3
+        },
+        {
+          "run_id": "bdfdfa7f-b0b6-4073-bfad-a2eb9fc3e44f",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 5,
+          "elapsed_seconds": 58.48
+        },
+        {
+          "run_id": "ef25bc7d-ded3-486c-816f-356db836a4b7",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 5,
+          "elapsed_seconds": 63.94
+        },
+        {
+          "run_id": "75d3e832-1747-4238-8194-87c20e599c65",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 5,
+          "elapsed_seconds": 63.9
+        },
+        {
+          "run_id": "6407b44c-b0d5-4a3c-b972-012d3397a91e",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 2,
+          "elapsed_seconds": 24.77
+        }
+      ],
+      "CART": [
+        {
+          "run_id": "c784868d-ab51-479b-922a-bc33f5f65e78",
+          "review": "FAILED_UI_ACCEPTANCE",
+          "run_state": "COMPLETED",
+          "calls": 4,
+          "elapsed_seconds": 50.04
+        },
+        {
+          "run_id": "70258b56-c300-4c2b-8282-6aac01360d0b",
+          "review": "FAILED_UI_ACCEPTANCE",
+          "run_state": "COMPLETED",
+          "calls": 4,
+          "elapsed_seconds": 49.85
+        },
+        {
+          "run_id": "5c2c5f96-fdd3-4f8d-83b3-92886e8f41b8",
+          "review": "FAILED_UI_ACCEPTANCE",
+          "run_state": "COMPLETED",
+          "calls": 4,
+          "elapsed_seconds": 52.62
+        }
+      ],
+      "CART_FIXED": [
+        {
+          "run_id": "78a3a312-a57f-4f38-81ba-836ac9301f6e",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 4,
+          "elapsed_seconds": 50.89
+        },
+        {
+          "run_id": "5b8b8c3e-0a6c-4641-a3aa-43601bebfba8",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 4,
+          "elapsed_seconds": 47.48
+        },
+        {
+          "run_id": "428e9907-410e-48ee-ba86-800f4dc0c9bd",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 4,
+          "elapsed_seconds": 50.05
+        },
+        {
+          "run_id": "8e887d43-f1ce-4309-b1c8-6f4b2b5d9bbf",
+          "review": "PASSED",
+          "run_state": "COMPLETED",
+          "calls": 2,
+          "elapsed_seconds": 30.31
+        }
+      ]
+    },
+    "checks": {},
+    "active": {
+      "runs": 0,
+      "jobs": 0,
+      "operations": 0,
+      "uploads": 0
+    },
+    "visible_test_conversations": 0,
+    "dispatches": 0,
+    "model_calls": [
+      {
+        "capability": "DIALOG",
+        "status": "SUCCEEDED",
+        "n": 70
+      }
+    ],
+    "new_calls": 70,
+    "new_unlinked_calls": 0,
+    "historical_calls_unchanged_since_midpoint": true,
+    "counts": {
+      "calls": 575,
+      "unknown_meters": 6,
+      "active_knowledge": 3,
+      "migration": "0010"
+    },
+    "workers": [
+      {
+        "process_kind": "backups",
+        "fresh": 1
+      },
+      {
+        "process_kind": "generation",
+        "fresh": 1
+      },
+      {
+        "process_kind": "jobs",
+        "fresh": 1
+      },
+      {
+        "process_kind": "observability",
+        "fresh": 1
+      },
+      {
+        "process_kind": "outbox",
+        "fresh": 1
+      },
+      {
+        "process_kind": "scheduler",
+        "fresh": 1
+      }
+    ],
+    "dialog_daily_used": "113.000000",
+    "member_points": 5000,
+    "stocks": [
+      {
+        "id": 239,
+        "stock": 248,
+        "lock_stock": 0
+      },
+      {
+        "id": 240,
+        "stock": 250,
+        "lock_stock": 0
+      },
+      {
+        "id": 241,
+        "stock": 250,
+        "lock_stock": 0
+      },
+      {
+        "id": 242,
+        "stock": 250,
+        "lock_stock": 0
+      }
+    ],
+    "test_cart": [
+      {
+        "id": 168,
+        "delete_status": 1
+      },
+      {
+        "id": 169,
+        "delete_status": 1
+      }
+    ],
+    "test_coupons": [
+      {
+        "id": 33,
+        "count": 0,
+        "use_count": 0,
+        "expired": 1
+      },
+      {
+        "id": 34,
+        "count": 0,
+        "use_count": 0,
+        "expired": 1
+      }
+    ],
+    "livez": {
+      "http": 200
+    },
+    "readyz": {
+      "http": 200,
+      "dependencies": {
+        "cloud": "UP",
+        "redis": "UP",
+        "milvus": "UP",
+        "gateway": "UP",
+        "postgres": "UP",
+        "rabbitmq": "UP",
+        "admin_bridge": "UP",
+        "portal_bridge": "UP",
+        "private_objects": "UP"
+      }
+    },
+    "runtime_python_operations": 101,
+    "portal_sha256": "f49fedefd5b55594822e5983653a9d1395e5f5eb34a5f028c747c5224372cd3c",
+    "original_requirement_sha256": "eaafdc3d0528572b9a7c337087927c85d01c2d10440928c5bdb79ac7d20081d3"
+  },
+  "remaining": [
+    "natural two-order target switch and broader multi-item references",
+    "performance and actual provider failure/retry/control combinations",
+    "larger mixed knowledge/facts/memory evaluation",
+    "supplier price/bill evidence and original unknown meters",
+    "cross-restore retention, UNKNOWN/broker and disaster/reopening",
+    "whole-project voice/feedback/human buyer images/after-sale rule versions"
+  ],
+  "files": {
+    "mall-agent/app/agents/cart_choices.py": "8ee0d209bc0bc55c23ab394ba0d2bb5b34f226f229e00ea36f467e0af1704653",
+    "mall-agent/app/agents/item_choices.py": "87f7de2a5e0c70827077f5cd125c458539d6a5e745057e38ade61e4fd9b2f8c6",
+    "mall-agent/app/agents/dialog.py": "ae7c4f5c5a8ed7a0b4eeb5c4fadef71994078aa0bc46688d37759ae96004fd42",
+    "mall-agent/app/agents/preparation_tools.py": "94431ec23e34fa33700ffb2305433c45b743f31c5e9692f09dbeefd500d3e8dd",
+    "mall-agent/app/api/runtime_tools.py": "531877ade688bc085209101d8eb51d3b2bbad5633353f1029303c5cfbee18b68",
+    "mall-agent/app/application/cart.py": "4ecf1b795839e97180e2ae52388ffe32ac314f1cddd07e30bee24ccd9dc322f9",
+    "mall-agent/tests/test_cart_choices.py": "8f9dc4f48c33ee8a680a5e45081de64baf9c633f61758156fc5eb306134279b0",
+    "mall-agent/tests/test_cart_choices_graph.py": "61f1a3b653e4ba82027bea39d325712418acfcb2b627ee0df9033fec3c322d47",
+    "mall-agent/tests/test_cart_choices_broker.py": "02f011e0f8138a5c786085e012f941586d4eed06314832e0a768212a059a9369",
+    "mall-agent/tests/test_unchanged_item_choices.py": "458e6d68c18484fafaf88b97139e502983b9375053ea506910f517c9caa81465",
+    "mall-agent/tests/test_preparation_tools.py": "f4c9d150c3a3134c8f5da4a7a6b9ed28b58d68bc4dc0f7da477caedd9006cff8",
+    "mall-agent/scripts/evaluate_checkout_choices.py": "2ee2feff45e083b8cfca93cf3ce7f240a14fd94d6a937d6de59fb90ab36a4951",
+    "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java": "35abe23288de1fcc3aefa0567ca21fde2e1b63158b0e5fdb85e48b6f96cd766e",
+    "mall-swarm/mall-portal/src/main/resources/dao/PortalProductDao.xml": "df370a05f3d0c6fb19966a58b000e4a62ea5216d64ccf645fc1274b1892ef382",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OmsPromotionPriceSecurityTest.java": "feb7f0dbca55feb08770aac0dd9055ccf9df356f6fed34bd9254f3b10d719aec",
+    "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/AgentOrderDatabaseTest.java": "de14b54a094e844e9a71f3dfd9ed538f6702a3c5fafc227ad651f5f4757e359a",
+    "docs/45-购物车选择与多轮结算改选验收.md": "6f1c543436a1a36e762b21f68d953055eda0a5b8bebb27ce14d0fac54384ea2d",
+    "docs/43-智能体模块当前完成度对照审计.md": "c227e3debc0b7b25f3d3099517a5af52a717123226c798f2c5720928ab4c9b2f",
+    "docs/22-智能体完整功能补齐跟踪.md": "80ede1ea847a4791652a26e5846955152839985449d4a6d5c328c81d936f7619",
+    "docs/00-设计导航.md": "5ff080f4b0fde7c525e2ca30ba05c166f477835958ad4c92106f037c5dc292cd",
+    "mall-agent/README.md": "ae1dd2b35e1c411a5bd02661732e1dd2785b11d472128ca244ccc4361760ce36",
+    "deployment/.run/completion-cart-choices-ambiguity-tests-20261114.log": "5434aa0aa5d017cd005817fbb0cb6c24fda38693c340cd28bb0cfd48f2e71d94",
+    "deployment/.run/completion-cart-choices-before-20261114.log": "319283d2efa65e48e29934118a7400d79880f3e124cd717743b4c1859c78d945",
+    "deployment/.run/completion-cart-choices-broker-tests-20261114.log": "c6b58057f4075e6826e8d5e5a2ce253b445d4914be2e4e16616341721cf151fb",
+    "deployment/.run/completion-cart-choices-complete-tests-20261114.log": "11a20869e255b0c8ab6e4998f4f2ab2836c3391823a9d892562d47334f18a339",
+    "deployment/.run/completion-cart-choices-delivery-final-tests-20261114.log": "701aebd8f7ac70a69e7c14aa4421e2e2cb61a4bee6b2984cb2b2448f1677efac",
+    "deployment/.run/completion-cart-choices-delivery-tests-20261114.log": "74b3b63d6b8c9ab458640d76cabef6ccf209f1e561e70d91332626bc66d10cdf",
+    "deployment/.run/completion-cart-choices-delivery-verified-tests-20261114.log": "7debe43e43c6d1a8f41280b6036572ecb17d44556a9ab1de01c452bab073fe64",
+    "deployment/.run/completion-cart-choices-final-offline-20261114.log": "7902854d3f9a5adf58b9ea33797433e89ce10f2e3f4e37fdf4d4496417e3d286",
+    "deployment/.run/completion-cart-choices-final-parser-tests-20261114.log": "d7d3fd519f5babe44910833dde6ec4a48dbc95d7bf60541590616e5356d565d6",
+    "deployment/.run/completion-cart-choices-final-tests-20261114.log": "55358bc7c60d7d4621d365143925ce3f7d45ade0ca19f131789737ee27cd281a",
+    "deployment/.run/completion-cart-choices-first-tests-20261114.log": "c9651335a34bac819bb53ef2e3ba3639b78ae620797b188f618f5e351fd9d629",
+    "deployment/.run/completion-cart-choices-original-wording-tests-20261114.log": "592cf2205e57fadd13623d1cd7cc58f0667b67d709c56c9a15f9ee9603ff10f4",
+    "deployment/.run/completion-cart-choices-preservation-tests-20261114.log": "40b12c4753bc9f94a84ce5f4cb0c154855fc5bee5e15ec55996eed910735a61e",
+    "deployment/.run/completion-cart-choices-quantity-tests-20261114.log": "dbdd8f383738fa527a9df792132af8f05ba939af0252cb4150c1ab3fc13db477",
+    "deployment/.run/completion-cart-choices-removal-tests-20261114.log": "e99f46cfbcaeaf38bbc05788f14515a63fbb39491ceb8ec4544581298382298f",
+    "deployment/.run/completion-cart-choices-unchanged-tests-20261114.log": "66ed969fec35ffa8db3a4f80c3c477d9e9b5a4e3f4ae0154b1db64ff17b11470",
+    "deployment/.run/completion-cart-choices-verified-tests-20261114.log": "b4c5889e33ef87dee2ecb88e948a9d330d5e3cc10cda2cf35b16836d313ee4f2",
+    "deployment/.run/completion-checkout-choices-cart-after-browser-20261114.json": "25ae854986aaea4cc3b1c41d803338dc9f8a9bff5e9f0e3bad82d3bebdba1465",
+    "deployment/.run/completion-checkout-choices-cart-before-browser-20261114.json": "7546fae6639a73d6caf436fd40e3780552ab733f0c0481a7fc00f087db537dca",
+    "deployment/.run/completion-checkout-choices-cart-final-20261114.log": "c162fa886125f36668549df813e6827b25236bed57d042fa5c5660c4587942d4",
+    "deployment/.run/completion-checkout-choices-cart-fixed-browser-20261114.png": "93013948d13252008d968321b4f2e5979d7f3602684b6d10daea741f44de83e5",
+    "deployment/.run/completion-checkout-choices-cart-missing-label-before-browser-20261114.png": "04e18fa060b1e50e352a73ba4c5c10a8c3edaffbbcf2afd150f7413d8f22d478",
+    "deployment/.run/completion-checkout-choices-clarification-browser-20261114.json": "f050de18795e35c1357db299d6f05c9e4b4cc7266027bb4f8804cdda3e9fa7d0",
+    "deployment/.run/completion-checkout-choices-clarification-browser-20261114.png": "e9bed5e58c8427e6c99b25cfef15cf7dda51f5b14036cf65073d817c1479bcdb",
+    "deployment/.run/completion-checkout-choices-cleanup-20261114.log": "21fde4477519b454c0c1bf67b206d3fcf750e61b1b243ac419321dea65ff2c31",
+    "deployment/.run/completion-checkout-choices-design-checks-20261114.json": "70fc04e83b7307b50df6a0223c20c04260867a0595a140afc300781e9d804acf",
+    "deployment/.run/completion-checkout-choices-direct-browser-20261114.json": "b128978928f08b3098f7dd00a5cce3362e78fd4f67bc03db79856f39b306ec4c",
+    "deployment/.run/completion-checkout-choices-direct-revision-browser-20261114.png": "a9efdf0c4c5f9a1b48f92093a99347bcb300975508c4a51b1187d2f238ee851d",
+    "deployment/.run/completion-checkout-choices-direct0-20261114.log": "bc527c7eba5c55e5b0ca00c333c7ae7196203e807b3444e487a47dd4818b568a",
+    "deployment/.run/completion-checkout-choices-direct1-20261114.log": "866c92813d0c67551a4d9139563f7ba2f6aacd4e197da1bf2ea885899e91d889",
+    "deployment/.run/completion-checkout-choices-direct2-20261114.log": "441b12ed257121826a212e0eb6be5cfe63fc094fe92e42d610c81364f1502237",
+    "deployment/.run/completion-checkout-choices-final-state-20261114.json": "e8864c33c9299df7ea29810d7061134e80128f529e781947d0832dd2692aa77d",
+    "deployment/.run/completion-checkout-choices-historical-midpoint-20261114.json": "7bf36f7c99fbc7b155bf20263c0c352b6e00505ce8c3bd59c8addf05498a1487",
+    "deployment/.run/completion-checkout-choices-live-20261114.json": "c5f02d31d251b93091f89ee6090632f13c363a9f8bc2ace0a2c5e804fb7523a2",
+    "deployment/.run/completion-checkout-choices-midpoint-20261114.json": "a9ad4944ebb2cceb8c82f878b067f3ebbac806c207c84588f980e0c0cf9bc332",
+    "deployment/.run/completion-checkout-choices-seed-20261114.log": "7c253a48bc69bb320a9b9c4ce89957bdc385992c6d769a6df9b8d146f1d7179b",
+    "deployment/.run/completion-checkout-metadata-before-20261114.log": "6cfb06a6da8b7ae7af5caa11be18429a022f2088cbadec9a1ad0d5b4a06ebf26",
+    "deployment/.run/completion-checkout-metadata-java-delivery-20261114.log": "db73c6d6fb320ff3d57908cfa5594428391b3b20b6121dfd330c6435fc641327",
+    "deployment/.run/completion-checkout-metadata-java-final-20261114.log": "31a513abca68a3f19e9b1553b06eeabca6ffc367029e343a41b7af364262d7ba",
+    "deployment/.run/completion-checkout-metadata-java-verified-20261114.log": "133f383d4914434874d3119b90ecc5f8b14603568fa960f2b27bf39e30914908",
+    "deployment/.run/completion-checkout-metadata-jvm-progress-20261114.log": "5064aff8864f9689adbd1f13ee58b838ec69db14f15bd7bc1050be878a350cca",
+    "deployment/.run/completion-checkout-metadata-jvm-second-progress-20261114.log": "e8fdfb73ad79f3f26d0ea66a0bd1b595b950c22a6ce33f2f5681ac649e300f73",
+    "deployment/.run/completion-checkout-metadata-portal-before-20261114.jar": "863aadaab147fc51ea276ad08203b0ea6fd1ea32d618105acf3a4c0bb3a22394",
+    "deployment/.run/completion-checkout-metadata-portal-swap-20261114.json": "e29389b201262c9946cf8e89b7c23dc796b99efe14b999bdb75e65bcb253b337"
+  }
+}

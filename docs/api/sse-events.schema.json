@@ -1,0 +1,1027 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SSE data JSON event",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "message.accepted"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "message_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "seq": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$",
+              "description": "大整数序号，以字符串传输"
+            },
+            "client_message_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message_id",
+            "seq",
+            "client_message_id"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "run.started"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "run_id"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "run.queued"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "run_id",
+            "position"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "message.delta"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "message_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "run_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483647
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message_id",
+            "run_id",
+            "offset",
+            "text"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "message.completed"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "$ref": "openapi.json#/components/schemas/Message"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "action.updated"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "$ref": "openapi.json#/components/schemas/Action"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "action"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "handoff.updated"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "handoff": {
+              "$ref": "openapi.json#/components/schemas/Handoff"
+            },
+            "conversation": {
+              "$ref": "openapi.json#/components/schemas/Conversation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "handoff",
+            "conversation"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "run.failed"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "error_code": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "run_id",
+            "error_code",
+            "retryable"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "run.stopped"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "run_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "USER",
+                "HANDOFF",
+                "SESSION_CHANGED"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "run_id",
+            "reason"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "read.updated"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "$ref": "openapi.json#/components/schemas/ReadPosition"
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "conversation.updated"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "conversation": {
+              "$ref": "openapi.json#/components/schemas/Conversation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "conversation"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "job.updated"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "job": {
+              "$ref": "openapi.json#/components/schemas/Job"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "job"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "note.created"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "大整数序号，以字符串传输"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversation_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "客户端最后读取的对象版本"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "note": {
+              "$ref": "openapi.json#/components/schemas/Note"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "note"
+          ]
+        },
+        "control_epoch": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "description": "控制世代；接管/停止/关闭/删除递增，普通改名/已读不使旧run失效"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "conversation_id",
+        "conversation_version",
+        "occurred_at",
+        "payload",
+        "control_epoch"
+      ]
+    }
+  ]
+}

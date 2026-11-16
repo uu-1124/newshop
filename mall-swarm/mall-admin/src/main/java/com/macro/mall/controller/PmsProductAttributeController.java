@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.PmsProductAttributeParam;
 import com.macro.mall.dto.ProductAttrInfo;
 import com.macro.mall.model.PmsProductAttribute;
@@ -37,6 +38,7 @@ public class PmsProductAttributeController {
                                                                  @RequestParam(value = "type") Integer type,
                                                                  @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<PmsProductAttribute> productAttributeList = productAttributeService.getList(cid, type, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(productAttributeList));
     }

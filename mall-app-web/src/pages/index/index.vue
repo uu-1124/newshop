@@ -370,9 +370,12 @@ const handleNavToDetailPage = (item: PmsProduct) => {
   })
 }
 
-// 跳转到广告详情页
+// 使用广告配置中已有的商城页面链接
 const handleNavToAdvertisePage = (item: SmsHomeAdvertise) => {
-  // TODO: 实现广告详情页跳转逻辑
+  const url = item.url?.trim()
+  if (url?.startsWith('/pages/')) {
+    uni.navigateTo({ url })
+  }
 }
 
 // 跳转到品牌制造商直供页

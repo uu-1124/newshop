@@ -1,0 +1,98 @@
+{
+  "stage": "stream-control-reconciliation-20261114",
+  "created_at": "2026-11-14T04:07:37.906584+08:00",
+  "goal_status": "active",
+  "scope": "original ten groups remain; this stage improves streaming controls and recovery",
+  "model_fixture": "synthetic_ui_only; controlled Runs.append; actual PG/gateway/SSE/browser; no supplier invocation",
+  "checks": {
+    "frontend_tests": 27,
+    "frontend_failures": 0,
+    "buyer_types": "passed",
+    "h5_build": "passed",
+    "ruff": "passed",
+    "framework": "passed 20 modules/12 nodes/130 design operations",
+    "shared_contracts": "passed"
+  },
+  "live_cases": [
+    "actual buyer stop with old append fenced",
+    "actual buyer handoff + authenticated staff claim/reply; original effective presence restored",
+    "closed/reopened buyer page includes offline persisted text",
+    "gateway Last-Event-ID replay contains exactly missed delta and terminal; same single run"
+  ],
+  "runs": [
+    {
+      "conversation_id": "2c678d5a-5ad1-49f9-84b8-17e5fe905757",
+      "state": "STOPPED",
+      "n": 1
+    },
+    {
+      "conversation_id": "6050d931-cb01-4ec3-af31-d4511028824e",
+      "state": "STOPPED",
+      "n": 1
+    },
+    {
+      "conversation_id": "c509d1bf-70e7-4b70-93d9-bfe7a0f1cb6a",
+      "state": "COMPLETED",
+      "n": 1
+    },
+    {
+      "conversation_id": "d4eae0c3-e128-4434-b520-9788c81056a7",
+      "state": "COMPLETED",
+      "n": 1
+    }
+  ],
+  "cleanup_verified": true,
+  "business_unchanged": true,
+  "model_calls_unchanged": true,
+  "restart_performed": false,
+  "migration": "0010",
+  "source_document_sha256": "eaafdc3d0528572b9a7c337087927c85d01c2d10440928c5bdb79ac7d20081d3",
+  "remaining": [
+    "multi-turn parameter changes and four-card UI matrix",
+    "stream supplier/interruption/retry/source withdrawal/permission combinations and latency",
+    "mixed knowledge/fact faults",
+    "actual supplier pricing/statements",
+    "cross-restore retention/deletion journal/key lifecycle",
+    "UNKNOWN and real broker cross-window faults",
+    "different-host disaster recovery and controlled reopening"
+  ],
+  "files": {
+    "mall-app-web/src/pages/agent/chat.vue": "8deae879d63dfd2be4bb5ff137b9937f5d5a2ce261080c9a622ec523a5f428e7",
+    "mall-app-web/src/services/agent.ts": "e25f70d82f46f968cbe8fea996453edaca6022087696726459fdf28fb924ecc8",
+    "mall-app-web/src/services/agentStream.ts": "bd90b51fc8f8ca488166579b93c848fa4ecfec939904037ba4b5fc6e3c91bf7f",
+    "mall-app-web/test/agent-stream-state.test.mjs": "feed33c160d2e4c30f5b3d75edf4be32de47058de46cc7a217df7ffb2f9b692b",
+    "mall-app-web/test/chat-stream-integration.test.mjs": "50f6a599c9cba8aef723b957b2e163e688adeed5ae21f3a7c2b030ae056204f4",
+    "mall-app-web/test/cancellation-card.test.mjs": "8d0ff4d2905302d1c47b57d15fbeacdeb66d7944a85734668e03b0ad37a38782",
+    "mall-agent/scripts/smoke_stream_ui.py": "97bec8ae7dfe4a34a389db0a78e338d9b286b97b93ba91df1c68da1df16eaa21",
+    "docs/37-流式控制失败恢复与重连页面验收.md": "451d64099198ddc130809022fd0dc4c1b250324c0d7e5aa00d575657b02359cd",
+    "deployment/.run/completion-stream-control-before-20261114.log": "12ebd1f31fcf63074b1676c70034c77dbe474772e630c1b27b9fadb8a11b5e18",
+    "deployment/.run/completion-stream-control-fixed-20261114.log": "294c74247e93a872e7382b38e42199cdfbcd4f92886381371587cea4364ecd36",
+    "deployment/.run/completion-stream-control-expanded-tests-20261114.log": "dcc936fc29b656679ddf1df122555a57c648d369a14169e779a8fcbe576f860b",
+    "deployment/.run/completion-stream-control-types-final-20261114.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "deployment/.run/completion-stream-control-build-final-20261114.log": "ccf2aeb1e7cd789315d463c141fef1d4e219ec57a7f4a71cec513215eb4b1c8f",
+    "deployment/.run/completion-stream-ui-stop-prepare-20261114.log": "6b329dec9cb9d8849db1831b5c3521eaa43e3c233c51d4ed7fc78ee03543212d",
+    "deployment/.run/completion-stream-ui-stop-prepare-resume-20261114.log": "d7efa6020447e4082fdf7e875a679f46b61db2cc528c465bd412884b32440e0c",
+    "deployment/.run/completion-stream-ui-stop-prepare-diagnostic-20261114.log": "0e56c6cb53ad25ef83e1914dbb6c447f3b0fa3314a5e474fd0150c91d2c2fb62",
+    "deployment/.run/completion-stream-ui-stop-prepare-final-20261114.log": "08482fd8c5755a8d9fbb079e300772b11714ef2340077d60e47e3b59586e57ae",
+    "deployment/.run/completion-stream-ui-stop-append-20261114.log": "049d7b26baa0a76d9f5740fc3f9d6f09f3e985b2bc79d8fc1f9bb1874094d113",
+    "deployment/.run/completion-stream-ui-stop-fenced-20261114.log": "aa4cd6a666d33e4b1b6528a9b5c4b40c5582eb312507c2067db681e26640bac6",
+    "deployment/.run/completion-stream-ui-takeover-prepare-20261114.log": "aa0eed138a22433f34aaf47c272507b3ab82daa42c79ea7be092c13b9c25cd3a",
+    "deployment/.run/completion-stream-ui-takeover-claim-20261114.log": "e1005c85496b603883ce7140e97ec1cc87e92e28764bce5a5643a7a75d34b1d2",
+    "deployment/.run/completion-stream-ui-takeover-fenced-20261114.log": "6b7576e2c63aed0ad3232a998cbbb8a3186d67e220e90d42f3ce3f977b88c032",
+    "deployment/.run/completion-stream-ui-reconnect-prepare-20261114.log": "c95bde41dd2601c3798e2275c817a573266b2c53622415b41e0b1c450966b722",
+    "deployment/.run/completion-stream-ui-reconnect-offline-20261114.log": "76071a1db45a00b97dcab7986e7d2705c97dca6ec26b10970bb58051523ab27d",
+    "deployment/.run/completion-stream-ui-reconnect-finish-20261114.log": "dd2c2ea47fb8b5f52b0e1f007a449ac3f4deb0e586333e3f815ea329f3127b3e",
+    "deployment/.run/completion-stream-sse-replay-prepare-20261114.log": "b0836d884eee4eaae21f4e2763413ff186703853adfc2e4a02071e972cf34ec9",
+    "deployment/.run/completion-stream-sse-replay-final-20261114.log": "7771de1293b5a4d23600591187b0ada1012068901fbf063a58064f575eb1dd9a",
+    "deployment/.run/completion-stream-ui-cleanup-20261114.log": "c8acf54cf99b20768dc9f5fc21a78d26569ed07a12a870d662606b9ab79572e6",
+    "deployment/.run/completion-stream-ui-fixtures-20261114.json": "3d684649c38a020ed6bdacac1a7b59ec16cafce7d94fc5302fa4d732d3a4f1e9",
+    "deployment/.run/completion-stream-control-final-state-20261114.json": "9cac0cd6d35d2db79810a809f68d6a3e7df2c347b3f6ffd5ea7cc647921a0abe",
+    "deployment/.run/completion-stream-ui-live-delta-20261114.png": "48503d1426c4e632d5d42f15f7e5d22fcf45b65a651c915d6139e6344139d26d",
+    "deployment/.run/completion-stream-ui-stopped-20261114.png": "86c89af38d41cd0dcc56164aecc5279894b709cb9b1b884e756d03877aa2fc6f",
+    "deployment/.run/completion-stream-ui-human-active-20261114.png": "d7f95876829752ef4893d41dcbfd17dfd2f95bd72658074b1ac7e1392e11b30c",
+    "deployment/.run/completion-stream-ui-reopened-20261114.png": "eb7a981857e89b8f55e3842a7950d7c4f8cf136daef8ceca571d7e0611e28780",
+    "deployment/.run/completion-stream-ui-stopped-reopen-20261114.txt": "38b10cc8a09ba39425496d292c6027b22bf00661cf168a3e4dbc9ce022fb74ad",
+    "deployment/.run/completion-stream-ui-before-disconnect-20261114.txt": "65264648445b4cc4b94cbd010efe3c3ab9757ffe91478fb5a4cac8560b86e587",
+    "deployment/.run/completion-stream-ui-reopened-20261114.txt": "58334f226cfacb10d148914de3746db7ab24a7185eb134fda9740ef03753d324"
+  }
+}

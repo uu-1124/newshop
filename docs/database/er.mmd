@@ -1,0 +1,18 @@
+erDiagram
+    ag_conversation ||--o{ ag_message : contains
+    ag_conversation ||--o{ ag_run : generates
+    ag_conversation ||--o{ ag_action : prepares
+    ag_conversation ||--o{ ag_handoff : queues
+    ag_conversation ||--o{ ag_staff_note : notes
+    ag_conversation ||--o{ ag_read_cursor : reads
+    ag_conversation ||--o{ ag_event_outbox : events
+    ag_kb_document ||--o{ ag_kb_version : versions
+    ag_kb_version ||--o{ ag_kb_chunk : chunks
+    ag_attachment ||--o{ ag_attachment_ref : references
+    ag_message ||--o{ ag_feedback : feedback
+    ag_run ||--o{ ag_model_call : usage
+    oms_agent_quote ||--o{ oms_agent_operation : confirms
+    oms_order_item ||--o{ oms_order_return_apply : returns
+    oms_order_return_apply ||--o{ oms_return_proof_reference : proofs
+    oms_order ||--o{ oms_shipment : shipment
+    oms_shipment ||--o{ oms_shipment_event : timeline

@@ -8,9 +8,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import Editor from '@tinymce/tinymce-vue'
+import { useUserStore } from '@/stores/user'
 
 // minio上传路径
 const minioUploadUrl = import.meta.env.VITE_BASE_SERVER_URL + import.meta.env.VITE_MINIO_UPLOAD_URL
+const userStore = useUserStore()
 
 interface Props {
   modelValue: string
@@ -94,6 +96,9 @@ const initOptions = {
     // 发起请求上传图片（目前仅支持minio上传）
     const xhr = new XMLHttpRequest()
     xhr.open('POST', minioUploadUrl)
+    if (userStore.userInfo.token) {
+      xhr.setRequestHeader('Authorization', userStore.userInfo.token)
+    }
     // 上传进度回调
     xhr.upload.onprogress = (e) => {
       progress(e.loaded / e.total * 100)

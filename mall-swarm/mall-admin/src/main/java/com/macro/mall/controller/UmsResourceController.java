@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.model.UmsResource;
 import com.macro.mall.service.UmsResourceService;
 
@@ -79,6 +80,7 @@ public class UmsResourceController {
                                                       @RequestParam(required = false) String urlKeyword,
                                                       @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<UmsResource> resourceList = resourceService.list(categoryId,nameKeyword, urlKeyword, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(resourceList));
     }

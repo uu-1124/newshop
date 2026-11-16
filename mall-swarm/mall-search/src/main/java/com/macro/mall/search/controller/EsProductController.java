@@ -1,5 +1,6 @@
 package com.macro.mall.search.controller;
 
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.search.domain.EsProduct;
@@ -70,6 +71,7 @@ public class EsProductController {
     public CommonResult<CommonPage<EsProduct>> search(@RequestParam(required = false) String keyword,
                                                       @RequestParam(required = false, defaultValue = "0") Integer pageNum,
                                                       @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
+        PageValidation.search(pageNum, pageSize);
         Page<EsProduct> esProductPage = esProductService.search(keyword, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(esProductPage));
     }
@@ -84,6 +86,7 @@ public class EsProductController {
                                                       @RequestParam(required = false, defaultValue = "0") Integer pageNum,
                                                       @RequestParam(required = false, defaultValue = "5") Integer pageSize,
                                                       @RequestParam(required = false, defaultValue = "0") Integer sort) {
+        PageValidation.search(pageNum, pageSize);
         Page<EsProduct> esProductPage = esProductService.search(keyword, brandId, productCategoryId, pageNum, pageSize, sort);
         return CommonResult.success(CommonPage.restPage(esProductPage));
     }
@@ -94,6 +97,7 @@ public class EsProductController {
     public CommonResult<CommonPage<EsProduct>> recommend(@PathVariable Long id,
                                                          @RequestParam(required = false, defaultValue = "0") Integer pageNum,
                                                          @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
+        PageValidation.search(pageNum, pageSize);
         Page<EsProduct> esProductPage = esProductService.recommend(id, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(esProductPage));
     }

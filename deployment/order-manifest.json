@@ -1,0 +1,76 @@
+{
+  "verified_at": "2026-11-11T14:25:20.301451+00:00",
+  "build": "order-0.9",
+  "migration": "0006",
+  "domain_tables": 33,
+  "checkpoint_tables": 4,
+  "modules": 20,
+  "workflow_nodes": 12,
+  "active_python_operations": 53,
+  "reviewed_contract_operations": 116,
+  "actions": [
+    "ADD_CART",
+    "CREATE_ORDER_CART"
+  ],
+  "not_active": [
+    "CREATE_ORDER_DIRECT",
+    "CANCEL_ORDER",
+    "CREATE_RETURN"
+  ],
+  "full_business_runtime": "NOT_READY",
+  "order_authority": "existing Java OmsPortalOrderService",
+  "new_mysql_columns": [
+    "oms_agent_quote.checkout_fingerprint"
+  ],
+  "new_containers": 0,
+  "payment_executed": false,
+  "verification": {
+    "java": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "python_action_order_targeted_passed": 11,
+    "python_full_first_run": {
+      "passed": 55,
+      "failed": 1,
+      "failure": "outdated operation count assertion, updated 52 to 53"
+    },
+    "python_framework_after_fix": {
+      "passed": 3,
+      "failed": 0
+    },
+    "portal_package": "PASS",
+    "buyer_h5_build": "PASS",
+    "python_lint_and_format_files": 107,
+    "framework": "20 modules / 12 nodes / 53 active operations",
+    "shared_web_contracts": "PASS",
+    "design_checks_passed": 16,
+    "architecture_checks_passed": 27,
+    "deployment_tests_passed": 1,
+    "real_gateway_checks": [
+      "real_gpt_shopping_workflow_returns_java_sku_cards",
+      "prepare_keeps_cart_stock_points_and_orders_unchanged",
+      "duplicate_confirmation_creates_one_original_java_order_with_exact_quote",
+      "real_scheduler_recovers_committed_order_without_reexecution"
+    ],
+    "post_restart_verified": true,
+    "conversation_events_published": 14,
+    "browser": "cart/address/points selection -> actual order confirmation card -> cancelled preparation",
+    "browser_proof": "deployment/.run/order-confirm-ui.jpg"
+  },
+  "test_orders_cancelled": true,
+  "test_points_restored": true,
+  "test_stock_and_reservation_restored": true,
+  "portal_jar_sha256": "ca3bc2b02db8517acaae2de02b4bf9f5e474e4c0b3dfe69a4e8012068adb4497",
+  "report": "docs/17-复用Java计价与订单创建闭环验收.md",
+  "remaining": [
+    "direct checkout",
+    "agent order lookup and cancellation",
+    "agent return applications",
+    "complete business outbox",
+    "long outage and capacity testing",
+    "manual reconciliation and receipt renewal"
+  ]
+}

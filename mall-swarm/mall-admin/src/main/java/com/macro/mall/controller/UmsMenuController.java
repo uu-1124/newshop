@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.UmsMenuNode;
 import com.macro.mall.model.UmsMenu;
 import com.macro.mall.service.UmsMenuService;
@@ -77,6 +78,7 @@ public class UmsMenuController {
     public CommonResult<CommonPage<UmsMenu>> list(@PathVariable Long parentId,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<UmsMenu> menuList = menuService.list(parentId, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(menuList));
     }

@@ -22,6 +22,8 @@ import java.util.List;
 @Service
 public class OmsOrderReturnApplyServiceImpl implements OmsOrderReturnApplyService {
     @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate agentDb;
+    @Autowired
     private OmsOrderReturnApplyDao returnApplyDao;
     @Autowired
     private OmsOrderReturnApplyMapper returnApplyMapper;
@@ -33,6 +35,8 @@ public class OmsOrderReturnApplyServiceImpl implements OmsOrderReturnApplyServic
 
     @Override
     public int delete(List<Long> ids) {
+        for(Long id:ids)if(agentDb.queryForObject("SELECT COUNT(*) FROM oms_agent_return WHERE return_id=?",Long.class,id)>0)
+            com.macro.mall.common.exception.Asserts.fail("智能体售后记录保留业务审计，不可通过旧入口删除");
         OmsOrderReturnApplyExample example = new OmsOrderReturnApplyExample();
         example.createCriteria().andIdIn(ids).andStatusEqualTo(3);
         return returnApplyMapper.deleteByExample(example);
@@ -40,6 +44,8 @@ public class OmsOrderReturnApplyServiceImpl implements OmsOrderReturnApplyServic
 
     @Override
     public int updateStatus(Long id, OmsUpdateStatusParam statusParam) {
+        if(agentDb.queryForObject("SELECT COUNT(*) FROM oms_agent_return WHERE return_id=?",Long.class,id)>0)
+            com.macro.mall.common.exception.Asserts.fail("请在智能体业务操作页面按审核、收货、演示退款阶段处理此申请");
         Integer status = statusParam.getStatus();
         OmsOrderReturnApply returnApply = new OmsOrderReturnApply();
         if(status.equals(1)){

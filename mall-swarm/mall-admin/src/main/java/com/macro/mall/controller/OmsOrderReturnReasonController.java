@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.model.OmsOrderReturnReason;
 import com.macro.mall.service.OmsOrderReturnReasonService;
 
@@ -62,6 +63,7 @@ public class OmsOrderReturnReasonController {
     @ResponseBody
     public CommonResult<CommonPage<OmsOrderReturnReason>> list(@RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                                @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<OmsOrderReturnReason> reasonList = orderReturnReasonService.list(pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(reasonList));
     }

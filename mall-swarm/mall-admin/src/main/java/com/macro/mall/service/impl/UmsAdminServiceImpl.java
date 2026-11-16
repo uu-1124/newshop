@@ -219,6 +219,11 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     }
 
     @Override
+    public List<UmsResource> getAgentResourceList(Long adminId) {
+        return adminRoleRelationDao.getAgentResourceList(adminId);
+    }
+
+    @Override
     public int updatePassword(UpdateAdminPasswordParam param) {
         if(StrUtil.isEmpty(param.getUsername())
                 ||StrUtil.isEmpty(param.getOldPassword())

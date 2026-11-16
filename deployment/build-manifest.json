@@ -1,5 +1,5 @@
 {
-  "time": "2026-11-08T04:45:26.238Z",
+  "time": "2026-11-10T11:17:06.784Z",
   "source": [
     {
       "repo": "macrozheng/mall-swarm",
@@ -20,27 +20,606 @@
   "jars": [
     {
       "file": "mall-admin.jar",
-      "sha256": "a76850f7bbfb372dcde87e49a5ec8a83cc27b77d8476ce83bdbc68b1a06825cc"
+      "sha256": "5c7076ec2ef81aabceab8f1c16327bf434fb9e9d0550126cdf6abfab5df3a1b2"
     },
     {
       "file": "mall-auth.jar",
-      "sha256": "e465b87882192655ea680aed54940ca6dbb483f721bcfaae211ee85fe57256f4"
+      "sha256": "54da3df7cf41a608e51d53ac630550fcf9172eab0947f46b67f673377d1507da"
     },
     {
       "file": "mall-gateway.jar",
-      "sha256": "8b64383f8d103013320e2daecf00644511befbcbcb5a1bfb8ecf77f02fc9d5fd"
+      "sha256": "63a98479141653d162049fd04bf9cd284a012f146e1695a452557921ba4155d9"
     },
     {
       "file": "mall-monitor.jar",
-      "sha256": "bff6e74581eb23579fa82e424a43013e8c5e609370c5593d7eaec8b27b68c36f"
+      "sha256": "d199eb4db9eaffd019f72d44457f7f7d9e545704fd4d48b94301739a6eff06a2"
     },
     {
       "file": "mall-portal.jar",
-      "sha256": "acf322dbc5dbb367416b9342a4ba6a9acccc6c321317bcae22a473023ff1af8f"
+      "sha256": "2b90748b7bd6ac620a889192bc312d4fe14eda6531f5fcb5ca6d4b73118cb62b"
     },
     {
       "file": "mall-search.jar",
-      "sha256": "389976553daede54dff40a7dec8dff27b50924b47570a1b899e51114c4459197"
+      "sha256": "4f9e535a2eb31f4535820bd3389d910f53cf7fa3e36b159a9d3be145d1a259c3"
     }
-  ]
+  ],
+  "localChanges": {
+    "branch": "codex/conservative-security-fixes",
+    "note": "source字段保留上游基线；当前源码包含已验收的保守安全与基础稳定性修复。",
+    "fixed": [
+      1,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    "skipped": [
+      2,
+      3,
+      6
+    ],
+    "files": [
+      {
+        "file": "deployment/dev.cjs",
+        "sha256": "ab0b1abd0b4a84962b55589b1b0fc6ec9a125cd4d26b082664bae4e8938d9b76"
+      },
+      {
+        "file": "deployment/start-local.ps1",
+        "sha256": "00d5a9d5cce7310602cbd4da117266f7506c29a76fd2cda5ed5ab855c4202215"
+      },
+      {
+        "file": "deployment/stop-local.ps1",
+        "sha256": "562733b28b34148e1011d10b648dcde954e03d6bfe941490b7a9ee628402c8a5"
+      },
+      {
+        "file": "mall-admin-web/src/components/Tinymce/index.vue",
+        "sha256": "1039ac0355d60c4c2b043aab6f3889a450382ff689e40a9b55bd6241a2085ec1"
+      },
+      {
+        "file": "mall-admin-web/src/components/Upload/multiUpload.vue",
+        "sha256": "64b9b04e95a0393e2caf82fd5a919a5839247c0498a1363f4ad554fdc2fa4a9f"
+      },
+      {
+        "file": "mall-admin-web/src/components/Upload/singleUpload.vue",
+        "sha256": "7cd40bd611a5afb0c9bb5e2934923138f6564a7586f4c95e4b3d404124a7d194"
+      },
+      {
+        "file": "mall-app-web/package-lock.json",
+        "sha256": "629bfd129e445acac298e9af79e4880bf30d42a27cbffb512f8934849f8fa977"
+      },
+      {
+        "file": "mall-app-web/package.json",
+        "sha256": "5b4d826e1ab25b2da2f3c5052a6840dd5fca8255fa5346c5fd5720f086ab129e"
+      },
+      {
+        "file": "mall-app-web/src/components/mix-list-cell.vue",
+        "sha256": "d5088d88f1164c7debb195d531b89ffa30cdf3e9fb0f1eda152c4546195e4dcb"
+      },
+      {
+        "file": "mall-app-web/src/components/uni-number-box.vue",
+        "sha256": "b529c6a9a5edb2907b6db282194cc3846b03b0790ed7574d3248b33ea0cadeb5"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/MinioController.java",
+        "sha256": "fa56d258235594e4333256d047af9f5e55da9c75bbdf654c635163693bd4f7d1"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+        "sha256": "21133049df323654c963ab76b9c642bb68ff88d4976e946939b8e0160af19f4b"
+      },
+      {
+        "file": "mall-swarm/mall-gateway/src/main/java/com/macro/mall/config/SaTokenConfig.java",
+        "sha256": "276fd92b5bed883cab0222dfde8ba3ce135a264ce1601cd99cd18e4f187405a2"
+      },
+      {
+        "file": "mall-swarm/mall-gateway/src/main/resources/application.yml",
+        "sha256": "2f31c08813eb9c7f98a59184060c4a2cca0b9b196046e6733410b77f2fcdcef0"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/OmsPortalOrderController.java",
+        "sha256": "7657a176bf8045bd7c4331ad24ba991558890378faa5b83d157bc1f28150ff76"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/dao/PortalOrderDao.java",
+        "sha256": "0d1a7dd8ec3130ecac047a6ac96552c843d96eeed39a78f019b861304daff9ea"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsCartItemServiceImpl.java",
+        "sha256": "017fd7cdcd7705d059724b32c0eb72636623c5d3415ad8e1e9c53ec3573c557e"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderReturnApplyServiceImpl.java",
+        "sha256": "836e18be699f161fba22f86e8fca3d0f1002be870d9dda7aa4faa6c32b57469e"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+        "sha256": "94ea2842308be71e5bb7000e595ac1930f25ab248fd107c559c27866bbe8ce59"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+        "sha256": "e8ccd0a0290a6dfcc1a546d1366ef27b2482ae103540b71b001bdde161398616"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/resources/dao/PortalOrderDao.xml",
+        "sha256": "caa90965393771b7ac2d01a8bb78bf0a16d1fc85aa347ece52cece8c532d8ec2"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/test/java/com/macro/mall/controller/AdminResponseSecurityTest.java",
+        "sha256": "4b6d8c7f2ed71c4720000c9821cb61cba19caa57fcef93b5c2dcd06db491eb8a"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/test/java/com/macro/mall/controller/MinioAuthenticationTest.java",
+        "sha256": "2a6b53a69efac83a2c2fac84c264065a7d05fd102a5844ec72b73ee29d9458a3"
+      },
+      {
+        "file": "mall-swarm/mall-gateway/src/test/java/com/macro/mall/config/SearchWhitelistSecurityTest.java",
+        "sha256": "0bd8d40855ff68ad65ac3da6faa100988482a207db885874bde3b92a8d1afe25"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/CartValidationSecurityTest.java",
+        "sha256": "bf561dad6cd9fc37376b37a57a7f3a13d586cb31212007e78945f463a0a33417"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/CheckoutValidationTest.java",
+        "sha256": "3452700d75038a55a3090eb80332e2ddb993b0e36fa37c3a9f8caa440f975b0c"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OmsPromotionPriceSecurityTest.java",
+        "sha256": "16b38921dd7c7797d718bc341d7887f99d8a913abd1c019c768e67c81af66fa9"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OrderOwnershipSecurityTest.java",
+        "sha256": "9788a8f6454804c2e583fca4abc70aec15d04592481bd39e1857357b130a1e25"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OrderPaymentIdempotencyTest.java",
+        "sha256": "af2c6fa4b70dc240c9415bb76a9a572a71782b64e1d86a140f37e9f65cc2cd7b"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/ReturnApplicationSecurityTest.java",
+        "sha256": "bcab22b88dcfb4a5aa3d36cf4d74162e55ca469b603f35265bbf696d03098963"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/UmsMemberController.java",
+        "sha256": "8d1b52e52a6572c4ab744cbcd33e548d760496965c70c26c4cacb07211139efe"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/MemberInfoResponseSecurityTest.java",
+        "sha256": "817695718dbf1354c1c62cc93c98b42dbf1ed2c68d4b7c92e5ec7e26c17c94bb"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/PmsPortalProductController.java",
+        "sha256": "bad40cddf5bf82ee948e6cf6d1113e4d5045e846600bae6cd420d392ec59c3d6"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/ProductSearchPaginationTest.java",
+        "sha256": "6fa9be40dc5127527ec8094144f61e3253e76ce355a115c6674c3041cedd677a"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+        "sha256": "5b514840824747eb2091316ec35990308ff584984e286a45abfd82950682aad8"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/ProductDetailValidationTest.java",
+        "sha256": "d159619b316cbc2cbc46b4b4a10a38a78f226e922b805afdad4354c5089b34aa"
+      },
+      {
+        "file": "deployment/test/dev-encoding.test.cjs",
+        "sha256": "9537a7a8968646a964e74d54aaa9f74ac10bb27ecd8f5da1a1dd142da9ba052d"
+      },
+      {
+        "file": "mall-swarm/mall-gateway/pom.xml",
+        "sha256": "7e85c180986943e99f69df712cfb1f54e9dc946b57810ab9fb658b8cc0997647"
+      },
+      {
+        "file": "mall-swarm/mall-gateway/src/test/java/com/macro/mall/config/GatewayErrorEncodingTest.java",
+        "sha256": "ed18af8de06aa52caeaa977b600755b303e087213c3d80b32d3dd14a30b6a826"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/GlobalOrderCancellationEntryTest.java",
+        "sha256": "1247cd502aaf3d13f8a6b0341f7bece1e9190da6a97951fc48fac7009f3ad1cf"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/DemoPaymentOwnershipTest.java",
+        "sha256": "00a643462e32f02d07e48bd9053159fa75d1bcd295978b81517f35f17b87cc05"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/test/java/com/macro/mall/service/OrderCloseConsistencyTest.java",
+        "sha256": "08602d912f26b68c48a4307b32a8fdc6d588b9300426d15296958fce0fa12de0"
+      },
+      {
+        "file": "mall-swarm/mall-common/src/main/java/com/macro/mall/common/api/PageValidation.java",
+        "sha256": "c5dac9a19d2780fe59666830541d574ddeae40aeea69b050ea1dc00c84359c26"
+      },
+      {
+        "file": "mall-swarm/mall-mbg/src/main/java/com/macro/mall/order/OrderResourceService.java",
+        "sha256": "6ea75b22086f9e1c552526e78d94fe9b3652e455e0068bd8cfda399245c0c3b2"
+      },
+      {
+        "file": "mall-swarm/mall-mbg/src/main/java/com/macro/mall/order/dao/OrderResourceDao.java",
+        "sha256": "30b3a2007feff247f4d2d70cb2a9347b46fc6d983d2ed0dfbb045d7078a68d72"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OrderPointsPersistenceTest.java",
+        "sha256": "cfeaa7f653e62f4330baf15e92bfafdbaa0587ba24331112f4fbb41438d3fc66"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OrderResourceDatabaseTest.java",
+        "sha256": "4df2a094521ff7c58c847c6efb9c24791b1d6474ef56176b7734b3a60c3169e8"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/OrderTimeoutConsistencyTest.java",
+        "sha256": "23b38cd2706327585c76a96f5a3889b6cafc9315194a89b6d1c5e87652fd1ce1"
+      },
+      {
+        "file": "mall-swarm/mall-search/src/test/java/com/macro/mall/search/controller/SearchPaginationTest.java",
+        "sha256": "f2a57e64a3ec03666134dd34714aded9ff80cd1d31fecee09c16bc6ef326b04e"
+      },
+      {
+        "file": "deployment/init/01-mall.sql",
+        "sha256": "2c862e6b8691449f07691878466062b723c62f16a3be3b8aad84f91e96eb8a80"
+      },
+      {
+        "file": "mall-admin-web/package-lock.json",
+        "sha256": "8ff5b958885639fa0420dcfc0ddb17998e25b9b7b96634161bc4e4592d66bb8d"
+      },
+      {
+        "file": "mall-admin-web/package.json",
+        "sha256": "8bf127391e2111076204d22ba09039239d34827223e48a1ccbd40849a38ca283"
+      },
+      {
+        "file": "mall-swarm/document/sql/mall.sql",
+        "sha256": "6a108aff493660df547aff838845b533033511168563e96e9edfab00f762b0af"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/config/MyBatisConfig.java",
+        "sha256": "a59dc33f783e335b9a4afed94f19ee3a546a1ff3d99470c78a7274f2a51ef680"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java",
+        "sha256": "1f0a3fab676646da2175fa3daa6afdd1441469d30e247b179cfb624e9caa9c4b"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/component/OrderTimeOutCancelTask.java",
+        "sha256": "ca85146964cb1748e4d8578d591233e16feab1614fa0e63667720ed050c0307e"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/config/MyBatisConfig.java",
+        "sha256": "2fa59e46c84a18eafdc3a7fe33e2c8edd41afdf2de0788c678812408ccf1a9c5"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/OmsPortalOrderService.java",
+        "sha256": "220118901bc83a34f0a95ff3b61953c19bdd2b677f4e9f89cf203ffc6117c5cc"
+      },
+      {
+        "file": "mall-swarm/mall-search/src/main/java/com/macro/mall/search/MallSearchApplication.java",
+        "sha256": "e5f8e203508f0128d762256038aed22ca9ecc39a911901aa49b7d9ce694fe755"
+      },
+      {
+        "file": "mall-swarm/mall-search/src/main/java/com/macro/mall/search/controller/EsProductController.java",
+        "sha256": "fe7112a16eebc184e2ec6b3160fa90de0f54dfd5c4bb32c585c4c178b21571f6"
+      },
+      {
+        "file": "mall-swarm/mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+        "sha256": "0fe00669195357eba165cc867014184bb2b2715b13b142a0667f21204c87c38d"
+      }
+    ],
+    "stabilityFixes": [
+      "cart ownership and input validation",
+      "checkout selection/address/quantity validation",
+      "buyer typecheck compatibility and component input types",
+      "child process restart and safe stop"
+    ],
+    "conservativeFixes": [
+      {
+        "stage": "member",
+        "files": [
+          "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/UmsMemberController.java",
+          "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/MemberInfoResponseSecurityTest.java"
+        ],
+        "acceptedAt": "2026-11-09T09:59:46.619Z",
+        "liveApiChecks": 95
+      },
+      {
+        "stage": "pagination",
+        "files": [
+          "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/PmsPortalProductController.java",
+          "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/ProductSearchPaginationTest.java"
+        ],
+        "acceptedAt": "2026-11-09T10:07:34.512Z",
+        "liveApiChecks": 106
+      },
+      {
+        "stage": "product",
+        "files": [
+          "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+          "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/ProductDetailValidationTest.java"
+        ],
+        "acceptedAt": "2026-11-09T10:15:38.646Z",
+        "liveApiChecks": 129
+      },
+      {
+        "stage": "encoding",
+        "files": [
+          "deployment/dev.cjs",
+          "deployment/test/dev-encoding.test.cjs",
+          "mall-swarm/mall-gateway/pom.xml",
+          "mall-swarm/mall-gateway/src/test/java/com/macro/mall/config/GatewayErrorEncodingTest.java"
+        ],
+        "acceptedAt": "2026-11-09T11:23:34.441Z",
+        "liveApiChecks": 131
+      },
+      {
+        "stage": "cancellation",
+        "files": [
+          "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/OmsPortalOrderController.java",
+          "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/GlobalOrderCancellationEntryTest.java"
+        ],
+        "acceptedAt": "2026-11-09T11:31:06.178Z",
+        "liveApiChecks": 137
+      },
+      {
+        "stage": "ownership",
+        "files": [
+          "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/controller/OmsPortalOrderController.java",
+          "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/controller/DemoPaymentOwnershipTest.java"
+        ],
+        "acceptedAt": "2026-11-09T11:38:33.373Z",
+        "liveApiChecks": 140
+      }
+    ]
+  },
+  "auditRepair20261110": {
+    "scope": "Current-session audit issues 4, 5, 6 and 8",
+    "completed": [
+      4,
+      5,
+      6
+    ],
+    "partiallyCompleted": [
+      8
+    ],
+    "stock": {
+      "ids": [
+        98,
+        102,
+        103,
+        106
+      ],
+      "lockStockAfter": 0,
+      "stockUnchanged": true,
+      "preservedAnomalies": [
+        "SKU 243 lock_stock=1",
+        "Order 73 references missing SKU 201"
+      ]
+    },
+    "order": {
+      "sharedTransactionalClosure": true,
+      "conditionalPendingTransition": true,
+      "atomicStockAndPoints": true,
+      "couponBoundToOrder": true,
+      "timeoutScanDefaultEnabled": false
+    },
+    "pagination": {
+      "sqlFirstPage": 1,
+      "searchFirstPage": 0,
+      "maxPageSize": 100,
+      "searchResultWindow": 10000
+    },
+    "frontendAudit": {
+      "scope": "npm audit including development dependencies",
+      "admin": {
+        "before": {
+          "info": 0,
+          "low": 1,
+          "moderate": 8,
+          "high": 26,
+          "critical": 1,
+          "total": 36
+        },
+        "after": {
+          "info": 0,
+          "low": 1,
+          "moderate": 14,
+          "high": 7,
+          "critical": 0,
+          "total": 22
+        }
+      },
+      "buyer": {
+        "before": {
+          "info": 0,
+          "low": 28,
+          "moderate": 19,
+          "high": 36,
+          "critical": 1,
+          "total": 84
+        },
+        "after": {
+          "info": 0,
+          "low": 28,
+          "moderate": 18,
+          "high": 27,
+          "critical": 0,
+          "total": 73
+        }
+      },
+      "newAdvisoriesIntroduced": 0,
+      "deferred": [
+        "TinyMCE major migration and served static bundle",
+        "uni-app coupled Vue/Vite migration",
+        "remaining legacy build dependency advisories"
+      ]
+    },
+    "validation": {
+      "regressionTests": 124,
+      "realMysqlTestsIncluded": 11,
+      "searchTestsRerunAfterWiringFix": 8,
+      "paginationLiveCases": 35,
+      "nonPendingCloseLiveChecks": 2,
+      "serviceHealthChecks": 6,
+      "packagedClassAndResourceComparisons": 2024,
+      "frontendTypesAndProductionBuildsPassed": true,
+      "browserSmoke": [
+        "admin login and product list",
+        "order statistics chart",
+        "TinyMCE loads",
+        "buyer home and product detail"
+      ],
+      "baselineBrowserObservation": "Identical MutationObserver iframe error reproduced before and after dependency changes"
+    },
+    "backups": {
+      "sourceAndJars": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\mall-conservative-fix-k4qfbl",
+      "dependenciesAndWebBuilds": "D:\\newshop\\deployment\\.run\\conservative-backup-k4qfbl",
+      "serverSeed": "/opt/mall-swarm/backups-conservative-20261110/01-mall.sql.before"
+    },
+    "verifiedAt": "2026-11-10T07:17:02.398Z"
+  },
+  "demoStageFixes": {
+    "verifiedAt": "2026-11-10T11:17:06.784Z",
+    "changes": [
+      "首页广告使用已配置的商城页面链接",
+      "会员地址默认标记唯一、事务回滚、并发和归属保护",
+      "全部22个后台分页接口统一参数校验"
+    ],
+    "preserved": [
+      "没有对应页面的演示占位入口",
+      "历史演示库存和订单",
+      "过期演示营销活动",
+      "Maven默认测试配置"
+    ],
+    "validation": {
+      "adminPaginationTests": 44,
+      "addressMysqlTests": 12,
+      "adminResponseRegressionTests": 5,
+      "liveAdminRequests": 44,
+      "liveAddressChecksPassed": true,
+      "browserBannerNavigation": "/pages/brand/brandDetail?id=6",
+      "frontendTypecheck": true,
+      "frontendH5Build": true
+    },
+    "dataRepair": {
+      "memberId": 11,
+      "retainedDefaultAddressId": 7,
+      "clearedDefaultAddressId": 5,
+      "remainingDuplicateMembers": 0
+    },
+    "backup": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\mall-demo-address-fix-9Ol0Ja",
+    "files": [
+      {
+        "file": "mall-app-web/src/pages/index/index.vue",
+        "sha256": "491ff21de567801b680cbda0e71ebde9d9ad566e9c58e1c8ad94a1938e2b9cb1"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/dao/MemberAddressDao.java",
+        "sha256": "c072d502833d1dcfae70c0ca63417ef771c82e6f77bf38c2932fbae363924d90"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/UmsMemberReceiveAddressService.java",
+        "sha256": "9f85687afdc351fa6ac2804c33fd9c25e1a489af0d8a8c2ca557923d69944f28"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberReceiveAddressServiceImpl.java",
+        "sha256": "5807dddd719cdd94cce541f5a443a6d6c0cdda382dc3b19eb3d02682725bba96"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/test/java/com/macro/mall/controller/AdminPaginationTest.java",
+        "sha256": "9c62bf9dba893006e5729c4aae873a3b0500f29bbb8637f34f6c472d765ed3af"
+      },
+      {
+        "file": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/MemberAddressDatabaseTest.java",
+        "sha256": "6262deb47832b1e6ef0a2be49ab2888c389304bc783876555c60cc10cb6ca7a4"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/CmsSubjectController.java",
+        "sha256": "5f407ff2301b82eee52340759364e65b6102094db6dcf7268247f9c346ab2e46"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/OmsOrderController.java",
+        "sha256": "02b1b91a55f42b8b906e42624d8f77b65476d2421f1b23ef8d508f1bdcc4d722"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/OmsOrderReturnApplyController.java",
+        "sha256": "b4eed63c595395f7289b680fccde1effccc37f58d46e648213a9518625db15d2"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/OmsOrderReturnReasonController.java",
+        "sha256": "09556f17bf3babc8e45d0a0ee732b06c77e42c5258f57baedc7a27c4231ec0e9"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+        "sha256": "f0d174c14a360f0b147c51e749fac14f299853bf0121e222ecc51ab078b6839b"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeCategoryController.java",
+        "sha256": "1be48ea3e7c6ed42423de7888f11102f4f5fee99c54b2af1c0a061fd27caaffb"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java",
+        "sha256": "b65797fe52358629f3a61a541e9b1a28af8e4142cd46273f625d5d3a45ba6998"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+        "sha256": "d869f81630dfcd27559c29ca9eca3c8173113fbc4d1a8958be98620c6b819ff1"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+        "sha256": "540c2660bafb832717d2bdf67288f64d86f950b5b7c3eb6cffa02eab768365b8"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsCouponController.java",
+        "sha256": "1f0db8acf0bcd575af2d47342a6be7d37fb2a4517a6252435c4361e8478cb5f2"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsCouponHistoryController.java",
+        "sha256": "07a6020a030b60090dd588808980c0ad578065eb55e2d98fb0bf6b413ca61c36"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionController.java",
+        "sha256": "baa42ceeae43968fb1550206673fd40ee5575ed23a005e07a01b7e3830d00457"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionProductRelationController.java",
+        "sha256": "e981d4ed67122ba6e7fe56f895461a6144dd5e268037a3837ae74f911a74cccf"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsHomeAdvertiseController.java",
+        "sha256": "d12dd9e832eda324f7fa3fea4684a2c530a2e62acf4ebceb22b2f77ceb1e8175"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsHomeBrandController.java",
+        "sha256": "f1c0a7839e0d36abc3cfc881785ba3762b6bc016be4310493850ef67732af580"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsHomeNewProductController.java",
+        "sha256": "537de3d05b6af9121380c0c27151e87a288bfb2ff4e2dcebff49a89469899a2c"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsHomeRecommendProductController.java",
+        "sha256": "322dc0f87fd6581980df02b4fa96d40cf0b11f47d5a60ebe6e0200f95e03ff74"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/SmsHomeRecommendSubjectController.java",
+        "sha256": "a65cb8a05bdb483c7e1a9b58e05f813d964bc873a99a937ea22b0b9fcbe5f21c"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+        "sha256": "21133049df323654c963ab76b9c642bb68ff88d4976e946939b8e0160af19f4b"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java",
+        "sha256": "765bbcdf0ca3ec974cf59bcde2e60ac92e6fe7de8e654b00478d2ebc7bc01b0b"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java",
+        "sha256": "b883b4d88d3fa5112b811dcc822382e13cb7b11d8903e19a7f07dcf433a78de6"
+      },
+      {
+        "file": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/UmsRoleController.java",
+        "sha256": "e67f17b576c7c342783f671c3da37d6b97bdd287954c192c0754f7e3fc531254"
+      }
+    ]
+  }
 }

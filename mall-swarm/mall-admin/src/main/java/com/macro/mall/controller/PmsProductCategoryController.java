@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.PmsProductCategoryParam;
 import com.macro.mall.dto.PmsProductCategoryWithChildrenItem;
 import com.macro.mall.model.PmsProductCategory;
@@ -59,6 +60,7 @@ public class PmsProductCategoryController {
     public CommonResult<CommonPage<PmsProductCategory>> getList(@PathVariable Long parentId,
                                                                 @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                                 @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<PmsProductCategory> productCategoryList = productCategoryService.getList(parentId, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(productCategoryList));
     }

@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.*;
 import com.macro.mall.model.OmsOrder;
 import com.macro.mall.service.OmsOrderService;
@@ -31,6 +32,7 @@ public class OmsOrderController {
     public CommonResult<CommonPage<OmsOrder>> list(OmsOrderQueryParam queryParam,
                                                    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<OmsOrder> orderList = orderService.list(queryParam, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));
     }

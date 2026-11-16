@@ -1,6 +1,8 @@
 package com.macro.mall.portal.config;
 
 import org.mybatis.spring.annotation.MapperScan;
+import com.macro.mall.order.OrderResourceService;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan({"com.macro.mall.mapper","com.macro.mall.portal.dao"})
+@MapperScan({"com.macro.mall.mapper","com.macro.mall.portal.dao","com.macro.mall.order.dao"})
+@Import(OrderResourceService.class)
 public class MyBatisConfig {
 }

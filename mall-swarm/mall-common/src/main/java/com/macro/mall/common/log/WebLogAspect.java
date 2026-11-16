@@ -68,6 +68,13 @@ public class WebLogAspect {
             webLog.setDescription(log.summary());
         }
         long endTime = System.currentTimeMillis();
+        if (request.getRequestURI().startsWith("/agent-bridge/")) {
+            // Raw signed bodies can contain short-lived confirmation attestations.
+            // Keep only request identity and timing for all internal bridge routes.
+            LOGGER.info("agent bridge method={} path={} request={} elapsedMs={}", request.getMethod(),
+                    request.getRequestURI(), request.getHeader("X-Request-ID"), endTime-startTime);
+            return result;
+        }
         String urlStr = request.getRequestURL().toString();
         webLog.setBasePath(StrUtil.removeSuffix(urlStr, URLUtil.url(urlStr).getPath()));
         webLog.setIp(request.getRemoteUser());

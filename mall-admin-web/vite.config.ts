@@ -12,6 +12,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 // https://vite.dev/config/
 export default defineConfig({
   base: './',
+  server: { proxy: { '/mall-agent': { target: 'http://127.0.0.1:8201', changeOrigin: false } } },
   plugins: [
     vue(),
     vueDevTools(),

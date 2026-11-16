@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Mall 智能客服 · UI 设计原型</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="review-bar">
+    <a href="../index.html" class="review-logo">M<span>设计中心</span></a>
+    <span class="review-label">交互原型 v0.1 · 示例数据</span>
+    <label class="scenario-label">场景
+      <select id="scenario" aria-label="选择评审场景">
+        <option value="normal">正常流程</option>
+        <option value="offline">网络中断</option>
+        <option value="failed">生成 / 构建失败</option>
+        <option value="expired">确认卡片过期</option>
+        <option value="changed">报价发生变化</option>
+      </select>
+    </label>
+    <button class="small" id="reset">重置演示</button>
+    <a href="../index.html#ui">设计说明</a>
+  </div>
+  <nav class="prototype-nav" aria-label="切换设计页面">
+    <a href="#buyer" data-route="buyer">买家客服</a>
+    <a href="#checkout" data-route="checkout">报价与下单</a>
+    <a href="#orders" data-route="orders">订单与售后</a>
+    <a href="#staff" data-route="staff">人工工作台</a>
+    <a href="#knowledge" data-route="knowledge">知识库</a>
+    <a href="#models" data-route="models">模型与用量</a>
+    <a href="#governance" data-route="governance">留存与审计</a>
+    <a href="#operations" data-route="operations">物流与售后处理</a>
+  </nav>
+  <main id="app"></main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="modal" aria-labelledby="modal-title">
+    <form method="dialog" class="dialog-header"><h2 id="modal-title"></h2><button class="icon-btn" aria-label="关闭弹窗">×</button></form>
+    <div id="modal-body"></div>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

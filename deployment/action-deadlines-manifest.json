@@ -1,0 +1,177 @@
+{
+  "stage": "four-card-deadlines-claim-races-legacy-cancel-20261114",
+  "created_at": "2026-11-14T04:02:46.148180+00:00",
+  "goal_status": "active",
+  "scope": "original groups1/4/9; deadlines, cancellation and human claim matrix; full ten groups incomplete",
+  "migration": "0010",
+  "design_operations": 130,
+  "runtime_python_operations": 101,
+  "checks": {
+    "first-tests": "30 passed in 269.78s (0:04:29)",
+    "regression": "41 passed in 329.77s (0:05:29)",
+    "claim-races": "8 passed in 186.10s (0:03:06)",
+    "buyer": "54 passed, 0 failed; actual compiled component handlers and synthetic transport",
+    "buyer_h5_build": "PASS; original Sass legacy-js-api warnings retained",
+    "buyer_types": "PASS --noEmit --skipLibCheck"
+  },
+  "final": {
+    "checked_at": "2026-11-14T04:00:14.834462+00:00",
+    "cleanup_state": "cleaned",
+    "test_conversations": 21,
+    "invalid_card_rejections": 19,
+    "supplier_calls_in_batch": 0,
+    "business": {
+      "allowed_new_operations": [
+        {
+          "action_type": "CANCEL_ORDER",
+          "state": "SUCCEEDED"
+        },
+        {
+          "action_type": "CREATE_ORDER",
+          "state": "SUCCEEDED"
+        }
+      ]
+    },
+    "checks": {
+      "original_business_policies_and_model_count_unchanged": true,
+      "stocks_restored": true
+    },
+    "legacy_rejected_before_expiry": {
+      "http": 409,
+      "code": "ACTION_STATE_CONFLICT",
+      "message": "此旧确认卡缺少可信订单号或金额，请重新读取订单并准备取消卡",
+      "checked_at": "2026-11-14T03:54:29.140474+00:00",
+      "expires_at": "2026-11-14T03:59:23.063661+00:00",
+      "state": "PENDING_CONFIRMATION"
+    },
+    "active": {
+      "runs": 0,
+      "jobs": 0,
+      "operations": 0,
+      "uploads": 0
+    },
+    "remaining_visible_test_conversations": 0,
+    "invalid_card_dispatches": 0,
+    "invalid_card_confirm_audits": 0,
+    "workers": [
+      {
+        "process_kind": "backups",
+        "fresh": 1
+      },
+      {
+        "process_kind": "generation",
+        "fresh": 1
+      },
+      {
+        "process_kind": "jobs",
+        "fresh": 1
+      },
+      {
+        "process_kind": "observability",
+        "fresh": 1
+      },
+      {
+        "process_kind": "outbox",
+        "fresh": 1
+      },
+      {
+        "process_kind": "scheduler",
+        "fresh": 1
+      }
+    ],
+    "counts": {
+      "calls": 505,
+      "unknown_meters": 6,
+      "active_knowledge": 3,
+      "migration": "0010"
+    },
+    "staff_presence": "OFFLINE",
+    "livez": {
+      "http": 200
+    },
+    "readyz": {
+      "http": 200,
+      "dependencies": {
+        "cloud": "UP",
+        "redis": "UP",
+        "milvus": "UP",
+        "gateway": "UP",
+        "postgres": "UP",
+        "rabbitmq": "UP",
+        "admin_bridge": "UP",
+        "portal_bridge": "UP",
+        "private_objects": "UP"
+      }
+    },
+    "runtime_python_operations": 101,
+    "stocks": [
+      {
+        "id": 239,
+        "stock": 248,
+        "lock_stock": 0
+      },
+      {
+        "id": 240,
+        "stock": 250,
+        "lock_stock": 0
+      },
+      {
+        "id": 241,
+        "stock": 250,
+        "lock_stock": 0
+      },
+      {
+        "id": 242,
+        "stock": 250,
+        "lock_stock": 0
+      }
+    ],
+    "original_requirement_sha256": "eaafdc3d0528572b9a7c337087927c85d01c2d10440928c5bdb79ac7d20081d3",
+    "browser_scenarios": 13
+  },
+  "remaining": [
+    "natural address/coupon/points/CART/two-order changes",
+    "actual provider stop/retry and broader permission/UNKNOWN/broker combinations",
+    "performance, larger knowledge/facts/memory evaluation",
+    "supplier billing/prices, cross-restore retention, disaster and reopening",
+    "independent whole-project voice/feedback/human buyer images/after-sale rule versions"
+  ],
+  "files": {
+    "mall-agent/app/application/actions.py": "d8217aa10b126e7fc6997ec1f4295b0ce96937db0d25f8960ee04bfed5df69ea",
+    "mall-agent/tests/test_action_deadlines.py": "10bc3d42d2550e992aaa31cfd0931594304bb4b5cf0122922dab5ab08fc59dcf",
+    "mall-agent/tests/test_claim_confirmation_races.py": "97437d5c27c7c00d1f7d0b2157ece72cf435281c30c3ab0889a0b16d7e07fd9c",
+    "mall-agent/scripts/smoke_action_deadlines.py": "0c2b811c953a275164a3122093bf6f2e187100f56fa0ae3d9ce39001b79f1f6d",
+    "mall-app-web/src/pages/agent/CartCards.vue": "a071ca787c0b80f46cf3d52451a664ecb62c0dfef999e98f8fecf80cf333d8a9",
+    "mall-app-web/test/action-command.test.mjs": "22ab615fd72c298e29191e870b59ea0c2242d03093a6020a8df64a2bb01671fb",
+    "mall-app-web/test/cancellation-card.test.mjs": "e787c80057bd486d1f35a9ffeb279f881d27d5f33f1be1b443e92457ba8a9639",
+    "docs/44-四类确认卡时效与人工接管验收.md": "2587387bc9ea00a1af4ce93d0d9bf6db1ce5c956d8c267ebf95055cb57d26493",
+    "docs/43-智能体模块当前完成度对照审计.md": "15f315e059a2d2770fe2b98f9a03bc0f25423afee8a8bbc6c0597e699bea8907",
+    "docs/22-智能体完整功能补齐跟踪.md": "fd1d78ca9ef955127cd73f5164e95ae8267b92492ab37a0942df008cbb2360d7",
+    "docs/00-设计导航.md": "04aa7a49103a79528cc6e46751332297f72096f01220a0213d9b57cc51a87264",
+    "mall-agent/README.md": "b44e84a6e2a13191a710dd3c8e8813b168f8465825abd8285ec90c6e4cb0d679",
+    "deployment/.run/completion-action-deadlines-before-20261114.log": "74f2d8f03e87a2f75bed54d0f5dc6b40c0fdb878d90dce4bba926ef28684b545",
+    "deployment/.run/completion-action-deadlines-before-details-20261114.log": "36621d1e695c477fbfe536877a2707b184fb530a3a0c54c917a711c1675b47fa",
+    "deployment/.run/completion-action-deadlines-browser-20261114.json": "d3c5c95d958ae7947b333a4656f144568cc5106833caabf6ff5b1682f33aeffe",
+    "deployment/.run/completion-action-deadlines-buyer-build-20261114.log": "25786e4694d3546bb4957e00f733c15de4c82a9ecbe8798cf52f565ffb9837fd",
+    "deployment/.run/completion-action-deadlines-buyer-delivery-20261114.log": "b7f5b1805c36bdbf8a0e2a156b717b2f585a7d9900f015fd255d3fde644a1dfa",
+    "deployment/.run/completion-action-deadlines-buyer-final-20261114.log": "c18556929bccb8bed3c89fda30a8cf165821ffa7624b2e9e75a986df286a496e",
+    "deployment/.run/completion-action-deadlines-buyer-final-types-20261114.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "deployment/.run/completion-action-deadlines-buyer-first-20261114.log": "e921655c707eed65f83924c2509f70703ced2197d7512d9f2684087f70d788fe",
+    "deployment/.run/completion-action-deadlines-buyer-types-20261114.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "deployment/.run/completion-action-deadlines-claim-races-20261114.log": "48a922f8ba702d1c3c8c7e17c186f87c073270bfa76686f51ae70bb1940606cc",
+    "deployment/.run/completion-action-deadlines-final-state-20261114.json": "7e20f2b78c488a3f3f9f220e1eb636ab86cec7868e52a57fb9baecc7479d6fbf",
+    "deployment/.run/completion-action-deadlines-first-tests-20261114.log": "863cb154db417c997d18ecc04dd928aff7f862e3c39c506c065082021a4c6a62",
+    "deployment/.run/completion-action-deadlines-legacy-card-browser-20261114.png": "cc75dd29224cc4b4fe9df8ddc2c662507443a181975963c8c328679cad910e4a",
+    "deployment/.run/completion-action-deadlines-legacy-reject-20261114.log": "97ea58a240c7020b770e0e0640318da503de30dd6fe7a806678ff7963bab0413",
+    "deployment/.run/completion-action-deadlines-legacy-visible-browser-20261114.png": "13bfb7729ea9cf0897a2d898831e4d41ab16cb9923d611dc6d13d9e51bfabfd2",
+    "deployment/.run/completion-action-deadlines-live-20261114.json": "a33beb11afdea36d9e0e804b52114943d45d823c90f7343c05ac9166e04cc321",
+    "deployment/.run/completion-action-deadlines-live-cleanup-20261114.log": "7afd00810a7c38a90308e8e655eb1c210fe01b150ccb2a4aaef7b175621a9b7e",
+    "deployment/.run/completion-action-deadlines-live-final-verify-20261114.log": "f001aaaddaacbe1075e2f01499c9813780e7f75f715f5704d520606ce59582dc",
+    "deployment/.run/completion-action-deadlines-live-prepare-20261114.log": "3c6ccaf2f5e473cd16382ace3a74a6dc91bf6462840931474df0e581773512c9",
+    "deployment/.run/completion-action-deadlines-live-verify-20261114.log": "417ff59e8739945a15336e193d935ae25419bfc1d5102533818e0274a7a92734",
+    "deployment/.run/completion-action-deadlines-pending-browser-20261114.png": "dabe276a9953af902676a3a82b5dbd890814e3b35c15e2611f645774bb76e8bc",
+    "deployment/.run/completion-action-deadlines-pending-visible-browser-20261114.png": "92331ac885307bf829841182a8848b934d84d30e1f38ee1dd798f8b1b9220856",
+    "deployment/.run/completion-action-deadlines-regression-20261114.log": "928a96961121db20bdda17688245126e8f5e45c4cd2ad52f2d40969ad07de93e",
+    "deployment/.run/completion-action-deadlines-return-takeover-browser-20261114.png": "893321ad426fe040e49c136df063755f66f9284de8a47563bf62be46e0739f4b"
+  }
+}

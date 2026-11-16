@@ -1,0 +1,91 @@
+{
+  "verified_at": "2026-11-11T10:49:40.690020+00:00",
+  "build": "cart-0.8",
+  "migration": "0006",
+  "domain_tables": 33,
+  "checkpoint_tables": 4,
+  "mysql_cart_tables": [
+    "oms_agent_quote",
+    "oms_agent_operation",
+    "oms_agent_cart_guard"
+  ],
+  "modules": 20,
+  "workflow_nodes": 12,
+  "active_python_operations": 52,
+  "reviewed_contract_operations": 116,
+  "full_business_runtime": "NOT_READY",
+  "actions": "ADD_CART_LIVE",
+  "other_actions": "NOT_ACTIVE",
+  "active_unresolved_actions": 0,
+  "demo_cart_quantities_restored": true,
+  "verification": {
+    "python_full_suite": {
+      "passed": 52,
+      "failed": 0,
+      "skipped": 0
+    },
+    "additional_new_python_tests": {
+      "passed": 2,
+      "scope": "shopping catalog fallback and stop-generation action invalidation"
+    },
+    "final_action_and_run_regression": {
+      "passed": 10,
+      "overlaps_full_suite": true
+    },
+    "java_selected_tests": {
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0,
+      "real_mysql_integration_tests": 6,
+      "security_and_hash_tests": 3
+    },
+    "buyer_h5_build": "passed",
+    "java_package_build": "passed",
+    "ruff": "passed",
+    "framework": "passed",
+    "shared_web_contracts": "passed",
+    "design_checks": 16,
+    "architecture_checks": 27,
+    "architecture_check_mode": "implementation; source drift listed, original requirement DOCX preserved",
+    "deployment_tests": 1,
+    "real_gateway_checks": [
+      "real_gpt_shopping_graph_returns_only_java_backed_sku_cards",
+      "preparation_is_readonly_and_quote_matches_current_java_sku",
+      "concurrent_duplicate_buyer_click_adds_exactly_one_unit",
+      "real_scheduler_reconciles_committed_result_without_second_add",
+      "cancellation_changes_no_cart_data",
+      "mysql_operation_and_confirmation_audit_evidence_persisted",
+      "browser_sku_selection_prepare_explicit_confirm_and_success_card",
+      "pg_mysql_quotes_actions_dispatch_and_confirmation_audit_survive_api_restart",
+      "all_cart_events_published_and_no_unresolved_actions"
+    ],
+    "published_cart_event_count": 16,
+    "post_restart_verified_at": "2026-11-11T10:47:35.330812+00:00",
+    "browser_screenshot": "deployment/.run/cart-ui.jpg"
+  },
+  "implementation": {
+    "execute": "one call by the initial authenticated buyer confirmation request only",
+    "recovery": "scheduler leases ag_action_dispatch and only reconciles the original operation",
+    "quote": "authoritative SKU base price; does not promise checkout discounts or reserve stock",
+    "credentials": "separate confirmation/reconciliation secrets; encrypted reconciliation grants; no persisted buyer bearer",
+    "legacy_cart": "shared per-buyer DB mutex and READ_COMMITTED writes; checkout joins mutex before cart reading"
+  },
+  "limits": [
+    "Only ADD_CART; create/cancel order and after-sale execution remain inactive",
+    "Unified final checkout pricing, address and discount selections remain to be implemented",
+    "Receipt renewal and staff handling of MANUAL_REQUIRED remain inactive",
+    "Unknown-operation blocking currently applies within one conversation",
+    "Long-running fault, load, and cross-service recovery exercises still needed",
+    "Formal business policies are not enabled"
+  ],
+  "report": "docs/16-加购确认与结果核对闭环验收.md",
+  "prior_evidence": [
+    "deployment/runtime-manifest.json",
+    "deployment/knowledge-manifest.json",
+    "deployment/handoff-manifest.json"
+  ],
+  "active_java_packages_sha256": {
+    "portal": "9998cc5c8158a4c780c8d04b3de39dde78346e87c9a1ffd3d06a527ae29e0225",
+    "gateway": "78851ec86eff1c32dd716441cab02cb4c4e9d131a21198f3ee59b132197249a5"
+  }
+}

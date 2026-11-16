@@ -1,0 +1,72 @@
+[
+  {
+    "id": "B01",
+    "title": "买家客服入口",
+    "route": "buyer",
+    "requirements": "R01 R04",
+    "description": "我的、商品详情、本人订单详情的客服入口；未登录返回现有登录页，登录后只恢复原上下文 ID。"
+  },
+  {
+    "id": "B02",
+    "title": "聊天与会话历史",
+    "route": "buyer",
+    "requirements": "R02 R03 R05 R06 R13 R14 R15",
+    "description": "历史、新建、重命名、删除、已读、流式消息、停止/重试、来源、图片、语音、反馈、人工入口。"
+  },
+  {
+    "id": "B03",
+    "title": "商品比较与规格选择",
+    "route": "buyer",
+    "requirements": "R04 R08",
+    "description": "聊天商品卡片；比较缺失字段明确标为未提供；选择 SKU/数量后生成确认卡片，按钮确认才加车。"
+  },
+  {
+    "id": "B04",
+    "title": "报价与下单确认",
+    "route": "checkout",
+    "requirements": "R09 R18",
+    "description": "选择已有地址、优惠券和积分，读取最终报价；明细、各项折扣、运费、应付与有效期完整展示；成功跳转现有模拟支付页面。"
+  },
+  {
+    "id": "B05",
+    "title": "订单物流与售后",
+    "route": "orders",
+    "requirements": "R10 R11 R12",
+    "description": "本人多订单选择、实际状态、模拟物流、取消确认、按订单明细退货、剩余数量、凭证与处理结果。"
+  },
+  {
+    "id": "A01",
+    "title": "人工接待工作台",
+    "route": "staff",
+    "requirements": "R01 R06",
+    "description": "等待/我的/历史、原子领取、人工消息、会员业务摘要、独立备注、在线状态、转交与关闭。"
+  },
+  {
+    "id": "A02",
+    "title": "知识维护与版本发布",
+    "route": "knowledge",
+    "requirements": "R05 R07",
+    "description": "资料列表、文本/PDF/DOCX、新版本、解析预览、构建任务、质量检查、发布与禁用。"
+  },
+  {
+    "id": "A03",
+    "title": "模型提示词与用量",
+    "route": "models",
+    "requirements": "R16",
+    "description": "按能力配置、脱敏状态、提示词草稿/发布、调用量、错误和延迟；供应商接入状态明确。"
+  },
+  {
+    "id": "A04",
+    "title": "员工配置留存与审计",
+    "route": "governance",
+    "requirements": "R06 R16 R17 R18",
+    "description": "客服容量、留存配置、影响试算、执行清理、任务状态、受限审计、备份恢复核对记录。"
+  },
+  {
+    "id": "A05",
+    "title": "模拟物流与人工售后",
+    "route": "operations",
+    "requirements": "R10 R12",
+    "description": "物流资料与节点维护、节点编辑审计、售后审批、收货登记、模拟退款完成，分权限显示按钮。"
+  }
+]

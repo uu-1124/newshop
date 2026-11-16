@@ -1,0 +1,405 @@
+{
+  "verified_at": "2026-11-14T11:45:52.212613+00:00",
+  "scope": [
+    "voice",
+    "feedback",
+    "human_member_images",
+    "return_rule_versions",
+    "order_choices"
+  ],
+  "checks": {
+    "python": 111,
+    "buyer_frontend": 61,
+    "java_expanded": 41,
+    "java_final_focused": 3,
+    "order_general_turns": 7,
+    "order_entry_turns": 2,
+    "livez": {
+      "http": 200
+    },
+    "readyz": {
+      "http": 200,
+      "dependencies": {
+        "cloud": "UP",
+        "redis": "UP",
+        "milvus": "UP",
+        "gateway": "UP",
+        "postgres": "UP",
+        "rabbitmq": "UP",
+        "admin_bridge": "UP",
+        "portal_bridge": "UP",
+        "private_objects": "UP"
+      }
+    },
+    "migration": "0011",
+    "unknown_meters_preserved": 6,
+    "original_facts_unchanged": true,
+    "cleaned": true
+  },
+  "limits": [
+    "Physical microphone capture awaits device permission; request/cancel verified in browser, capture/late-result/encoding verified by component tests, real ASR uses synthesized test voice.",
+    "H5 acceptance only; whole-project performance and fault matrix remain separately scoped."
+  ],
+  "files": [
+    {
+      "path": "mall-agent/app/application/feedback.py",
+      "sha256": "0cf35eec985e33c5aa1b344305c9e9f1f26cb741e5effe423ced4558578e10b5"
+    },
+    {
+      "path": "mall-agent/app/application/media.py",
+      "sha256": "80f7f2b155919e768248acdc1ba1c7db4dcfe957c9d651feb4bb4d6ed2045343"
+    },
+    {
+      "path": "mall-agent/app/application/attachments.py",
+      "sha256": "780ee74bf3bfb078bd935a4d52abdfa387644880f1f2504715e7ad7b47c6cd3b"
+    },
+    {
+      "path": "mall-agent/app/application/conversations.py",
+      "sha256": "3f44314042e3d865860a4ff1a64eb5dae2b99520c15a8c69afcc4839252e8101"
+    },
+    {
+      "path": "mall-agent/app/application/conversation_cleanup.py",
+      "sha256": "52d5b20f1ef587f6fdf22fb426c374cbbf1a3ce487e2e4eea40089e0966c0ec6"
+    },
+    {
+      "path": "mall-agent/app/application/retention.py",
+      "sha256": "be39e07aaffa8bfabc8c5c07076d9de3103c3531ed424f6da3922f08cdf944fe"
+    },
+    {
+      "path": "mall-agent/app/application/governance.py",
+      "sha256": "5da17ea2e05030ba6c24bb4523d90274e9c2a5f9408b98d7d3f9eeceb11d592f"
+    },
+    {
+      "path": "mall-agent/app/application/runtime_check.py",
+      "sha256": "c4cffa4f44cec78a42090f1e2363a66bd1ecbbb8a4407b3a842ed3ee0e7d3d8b"
+    },
+    {
+      "path": "mall-agent/app/infrastructure/audio.py",
+      "sha256": "f0106068d9931aa19334f04ebe06037ba459a904cf24077f883cd32c546b52ea"
+    },
+    {
+      "path": "mall-agent/app/infrastructure/aliyun_models.py",
+      "sha256": "2c43d1fea0089ac0ca2d872ac861aeca22e1036aebf55b79aef006f8650ae30f"
+    },
+    {
+      "path": "mall-agent/app/infrastructure/model_call_context.py",
+      "sha256": "4a8b96a1b4d8eb578117818b16c09b2578e799ebdae4adad558913dd4bb94753"
+    },
+    {
+      "path": "mall-agent/app/infrastructure/model_ledger.py",
+      "sha256": "22c031dcaa4e89bb94ab6c89c516de5d2966b3dd0aff56aa8d5276679d57b915"
+    },
+    {
+      "path": "mall-agent/app/api/member.py",
+      "sha256": "326f314d97afc56a846628a8ee587ff24495fe873aa0f79673da5e835efd19eb"
+    },
+    {
+      "path": "mall-agent/app/api/dto.py",
+      "sha256": "877eaaf2e8e8a86dbf80184a974ff552d74169144cda5a1e42af31b4eba695b6"
+    },
+    {
+      "path": "mall-agent/app/api/orders.py",
+      "sha256": "73d26bf718fd50ab8be2b11f568d1b1e129fbdab95b99dbc9271786c7848215c"
+    },
+    {
+      "path": "mall-agent/app/bootstrap.py",
+      "sha256": "4712f7ea68800b27a1fa8b16869a08822f5e66fbf5acf718d668ffc49ff1537c"
+    },
+    {
+      "path": "mall-agent/app/main.py",
+      "sha256": "1cebb63b0c44b72f88b09197404c6b96af9ea92f4fa68b5226531618ac2e49ea"
+    },
+    {
+      "path": "mall-agent/app/agents/dialog.py",
+      "sha256": "309bf5fce6784aec5e2c035e2ce909034d6bb71e68d3a3f3d5f26f5e12a1f337"
+    },
+    {
+      "path": "mall-agent/app/agents/order_choices.py",
+      "sha256": "f6da88e759e5c4204dba60bfafc0e11cd10f64a23d54dceb01642052253048cb"
+    },
+    {
+      "path": "mall-agent/tests/test_member_media.py",
+      "sha256": "7b2b12ffaa3090573e9157decdcfe00392404a77d254012b4376e10dd5d82581"
+    },
+    {
+      "path": "mall-agent/tests/test_feedback_and_human_images.py",
+      "sha256": "24c7b4105dcb3bae5ecf07287a794612b007ddb8a3913d3d3e378e7fc3c62f4c"
+    },
+    {
+      "path": "mall-agent/tests/test_return_rule_api.py",
+      "sha256": "24344a402ddf56171984a21869f260416be9fb92f35f612878c4a1d24f7d67a1"
+    },
+    {
+      "path": "mall-agent/tests/test_order_choices_graph.py",
+      "sha256": "333efd2652944bfdffeb43709e0f6b89a62f9a51efee1e6d2badb1ca0941203c"
+    },
+    {
+      "path": "mall-agent/scripts/verify_core_live.py",
+      "sha256": "7a573102fb6e3b42556715be29af86468cdb4158cab781062c7867546a0f112e"
+    },
+    {
+      "path": "mall-agent/scripts/verify_core_java.py",
+      "sha256": "e11c553e90758cf9f672d80c5ddd0fd4c8f120aa1afcd3c65634880cff7bdfb8"
+    },
+    {
+      "path": "mall-agent/scripts/verify_core_delivery.py",
+      "sha256": "36703b9582800d806988aa0d4653b6ae14ebfad95622b609e84f62bffd6bfebc"
+    },
+    {
+      "path": "mall-agent/scripts/evaluate_order_choices.py",
+      "sha256": "98e9e2d52c8ea1e583807df392af9bd5c560754157187876c81fa2fba482500d"
+    },
+    {
+      "path": "mall-app-web/src/services/agent.ts",
+      "sha256": "ea76b2219c16bf0b1e52a068f25b7c03b490bdaf3a91b223ae67b5bb176a8d16"
+    },
+    {
+      "path": "mall-app-web/src/services/agentAudio.ts",
+      "sha256": "92ac589751dc4207453e52791ec982a2675f19f62dbd24c9f7af87d34abf0bb9"
+    },
+    {
+      "path": "mall-app-web/src/services/agent-contracts.ts",
+      "sha256": "e800515a7cd892518dbc25d51ae504063391da68d5cadf293d561314e79d76e2"
+    },
+    {
+      "path": "mall-app-web/src/pages/agent/chat.vue",
+      "sha256": "ac8da736a642f4899835d1cfed2c7e7b43d4af25c99d2565bea6fc793c80ff26"
+    },
+    {
+      "path": "mall-app-web/src/pages/agent/AnswerFeedback.vue",
+      "sha256": "908a95d249adedea69a6255df6bec01f5ba294aa262f07e96bdec7da210d9d7e"
+    },
+    {
+      "path": "mall-app-web/src/pages/agent/AnswerSpeech.vue",
+      "sha256": "50dc5189e95f1e76d6f572963145b06c9f8925fe58cd03ede21b4f783d20c8e6"
+    },
+    {
+      "path": "mall-app-web/src/pages/agent/VoiceComposer.vue",
+      "sha256": "be3942b718e16af46f71402441acc415f2c0b2de1b86508fdbaac22fbf7d335e"
+    },
+    {
+      "path": "mall-app-web/src/pages/agent/OrderBrowser.vue",
+      "sha256": "ebc0861d588937eb748180c9fc056185f1af484ba09527d17c611586310da648"
+    },
+    {
+      "path": "mall-app-web/test/agent-audio.test.mjs",
+      "sha256": "9829deb63f51c5184e627552f2b791b93107a5cd602c9b01be2dcf2c95db4eee"
+    },
+    {
+      "path": "mall-app-web/test/media-components.test.mjs",
+      "sha256": "c63d2a5f44be4fe5538096f9cbcbc407a97f972d6616696c1a44f7f970c6b5ba"
+    },
+    {
+      "path": "mall-admin-web/src/apis/agent.ts",
+      "sha256": "67e28b45816adcdefa7e562b9eab558572b351936a64b7fc13dc304c094e2822"
+    },
+    {
+      "path": "mall-admin-web/src/apis/agent-contracts.ts",
+      "sha256": "e800515a7cd892518dbc25d51ae504063391da68d5cadf293d561314e79d76e2"
+    },
+    {
+      "path": "mall-admin-web/src/views/agent/Operations.vue",
+      "sha256": "15f5241cd0877a5055bc947da9d907986fdd8c457aca10ea7a0c215b5083cb0d"
+    },
+    {
+      "path": "mall-admin-web/src/views/agent/ReturnRules.vue",
+      "sha256": "471afb654b6cab858ecbab3cfc06aa7a76d43aa0e659ef9deaa2c8816b4dad8d"
+    },
+    {
+      "path": "mall-admin-web/src/views/agent/Governance.vue",
+      "sha256": "65157b99b1b636ad0d9e49f916823ac6ae2e4e2d56ed4587d22d2b5822aec6e6"
+    },
+    {
+      "path": "deployment/init/agent-after-sale-rules.sql",
+      "sha256": "1b416d66457d3dd66dead5c15657095702a4363b60c41b838cc83f7434b91a14"
+    },
+    {
+      "path": "deployment/prepare-order-return-schema.cjs",
+      "sha256": "15d2122503f8fa4d26c09903c7a633a4ca671220c00e81ba7b02b2d63cf088e3"
+    },
+    {
+      "path": "deployment/backup_data.py",
+      "sha256": "b72cd7b5583a92d67908142f7d53be789e3a5d001b8efe2c12ebe54d18f9ca1e"
+    },
+    {
+      "path": "docs/api/openapi.json",
+      "sha256": "593e7aa275419e294469be9f1f3b83a12db6f005bdc0cfac752dcb03bc477b55"
+    },
+    {
+      "path": "docs/architecture/coverage.json",
+      "sha256": "d71ce1524b2180fb1fcd169784e8f38659bc8ffd6a70a6131fe7b33ec05aa491"
+    },
+    {
+      "path": "docs/47-核心媒体反馈与售后规则收尾验收.md",
+      "sha256": "90a4ae1982fec244658226b0baf5912102e8c570553261fb12a3c1f5abb77d68"
+    },
+    {
+      "path": "mall-agent/migrations/versions/0011_media_requests.py",
+      "sha256": "9932fa0c21ffeb9366afaaf28f548a89f4fe0eae524347c5f51512892ad88562"
+    },
+    {
+      "path": "mall-swarm/mall-mbg/src/main/java/com/macro/mall/order/AgentAfterSaleStore.java",
+      "sha256": "89350920ae3834994f11d3d4c61522f6310ad0790415940d2678500822180188"
+    },
+    {
+      "path": "mall-swarm/mall-admin/src/main/java/com/macro/mall/controller/AgentAfterSaleBridgeController.java",
+      "sha256": "6690b987d35a420be6302c0613ddc49fb2154409e8d641386155d6f28b06c6b1"
+    },
+    {
+      "path": "mall-swarm/mall-portal/src/main/java/com/macro/mall/portal/service/AgentOrderLifecycle.java",
+      "sha256": "f417d1dad45f2d6c13986d7008b28dade0ea136e785e0260026ec61ce3c948de"
+    },
+    {
+      "path": "mall-swarm/mall-portal/src/test/java/com/macro/mall/portal/service/AgentOrderDatabaseTest.java",
+      "sha256": "a024383cebbe4acfc9e42b759032f0343e5f3d001fcbab044d7051902af6a563"
+    },
+    {
+      "path": "mall-swarm/mall-admin/src/test/java/com/macro/mall/controller/AgentAfterSaleBridgeTest.java",
+      "sha256": "6c42ea86581f7167cad6a19730098692ce85745ed27ccb69204ef9deb6abddc8"
+    },
+    {
+      "path": "deployment/.run/core-admin-build-20261114.log",
+      "sha256": "46b4cb124a85eb6df27af69e3fbf45af3f826c3daead9b4293f7d8e8611df43d"
+    },
+    {
+      "path": "deployment/.run/core-admin-delivery-build-20261114.log",
+      "sha256": "ea0abe359ae9c699c2fe2e5d7158a87d1129405dca5c0bf594a83b8797fae0ff"
+    },
+    {
+      "path": "deployment/.run/core-admin-delivery-types-20261114.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deployment/.run/core-admin-final-build-20261114.log",
+      "sha256": "dcf2fdae3a79d682f916fdf5afab47cc637df03f3cfb4f3664ff22251b96b46e"
+    },
+    {
+      "path": "deployment/.run/core-admin-types-20261114.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deployment/.run/core-buyer-browser-20261114.png",
+      "sha256": "2f04b441b2eefbaeebdfcbe50fb078e3ca58fa93c19809343d0549bed8ac8dc2"
+    },
+    {
+      "path": "deployment/.run/core-buyer-build-20261114.log",
+      "sha256": "be81caf7f59074b16809fdbc48a7acbc9b6b01d35c5d1867def23ba95496ae7a"
+    },
+    {
+      "path": "deployment/.run/core-buyer-final-build-20261114.log",
+      "sha256": "ccf2aeb1e7cd789315d463c141fef1d4e219ec57a7f4a71cec513215eb4b1c8f"
+    },
+    {
+      "path": "deployment/.run/core-buyer-final-tests-20261114.log",
+      "sha256": "179b580c6f57dc14fa6b5107880b2b6c5b83340a1cf472ac292924c5f452647a"
+    },
+    {
+      "path": "deployment/.run/core-buyer-final-types-20261114.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deployment/.run/core-buyer-tests-20261114.log",
+      "sha256": "71daa153673df2f59c87718c4061b523daa38465a84eab37706033e969f86188"
+    },
+    {
+      "path": "deployment/.run/core-buyer-types-20261114.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "deployment/.run/core-feedback-human-images-tests-20261114.log",
+      "sha256": "673adfabfe500ca996c917b3e2b9bcb55f83c2fd2b0317084a23e482021683eb"
+    },
+    {
+      "path": "deployment/.run/core-final-acceptance-tests-20261114.log",
+      "sha256": "ffa23ff3f190a6549efe92fc0b49e0f01e2fba33a9d1860630dfb9595de5a9e4"
+    },
+    {
+      "path": "deployment/.run/core-framework-final-20261114.log",
+      "sha256": "a9d088885aed11687a27ec9592894f9cf027099d6a2883d7840953053f1b51ef"
+    },
+    {
+      "path": "deployment/.run/core-functional-final-20261114.log",
+      "sha256": "c635a7235a0143fcafe3a200a4b149203f3bcd24b26d19b3c3978194796ec97b"
+    },
+    {
+      "path": "deployment/.run/core-functions-cleanup-20261114.log",
+      "sha256": "770babac42c19d9cab31af6b2607ef05f7efb43a6c9b64cfbeae39f35ee78758"
+    },
+    {
+      "path": "deployment/.run/core-functions-live-20261114.json",
+      "sha256": "691b34071edd4e3c78d8c4be29352f7ef9455e634b180641986fde2ed6c60140"
+    },
+    {
+      "path": "deployment/.run/core-media-delivery-tests-20261114.log",
+      "sha256": "149aed81aa3c01aedcc0d196480e9ce93b8696d26b0b7dbfe1c154a56e9468ee"
+    },
+    {
+      "path": "deployment/.run/core-media-expanded-20261114.log",
+      "sha256": "a894d74e39e5ee51a98f8a9697427491e251e5b377245c9e636c0dc089a01050"
+    },
+    {
+      "path": "deployment/.run/core-media-final-tests-20261114.log",
+      "sha256": "545d16f0415c3065edfdfc88dacc339a4874bc099f609073c71e0c81bfcafea0"
+    },
+    {
+      "path": "deployment/.run/core-media-focused-20261114.log",
+      "sha256": "d4bc86ffe370186a6f0f1d219a19bf5835374d41dc0d22d71f0a2db24c8db215"
+    },
+    {
+      "path": "deployment/.run/core-media-integration-20261114.log",
+      "sha256": "363576d45434f1da886c952ec920f19cf3feb2773e786b872be093eb189f3ec1"
+    },
+    {
+      "path": "deployment/.run/core-order-completion-fix-20261114.log",
+      "sha256": "8908fb25962d80820515f1acc1a9040f1b084033ac458802d8e0e62dcdc8d119"
+    },
+    {
+      "path": "deployment/.run/core-order-fallback-offline-20261114.log",
+      "sha256": "b8695ddccb00946bdb299524e78a3c4e274780c97174445a9d493f6c35dd02e7"
+    },
+    {
+      "path": "deployment/.run/core-order-final-cleanup-20261114.log",
+      "sha256": "4f996439946f052f29ad3ca22581d163436c56268e4100e5be459b1d3d9658cb"
+    },
+    {
+      "path": "deployment/.run/core-order-final-seed-20261114.log",
+      "sha256": "59e87216eb8a20c2bfe4866b9df17fa2e0e51c1bb78841af0ab789e00efadb88"
+    },
+    {
+      "path": "deployment/.run/core-order-final-verified-20261114.log",
+      "sha256": "5764f8d79c79690120563a835bec2bb7066f592326f0699adc34947aeee84643"
+    },
+    {
+      "path": "deployment/.run/core-real-voice-20261114-attempt2.log",
+      "sha256": "eb845d00252a2a3d1864018808561feb01698aa8ec1a82c0a86613c5258b0d93"
+    },
+    {
+      "path": "deployment/.run/core-real-voice-20261114.log",
+      "sha256": "eb845d00252a2a3d1864018808561feb01698aa8ec1a82c0a86613c5258b0d93"
+    },
+    {
+      "path": "deployment/.run/core-real-voice-fixed-20261114.log",
+      "sha256": "2587e01a5b5d8fd21fdd331aaba0b78c3ef00fcf27dd59c58aa386d89047e566"
+    },
+    {
+      "path": "deployment/.run/core-rules-browser-20261114.png",
+      "sha256": "5bb4187ecf7646018e59cfc9d6164e89a148d505c0e12b9e01aba382601b1f38"
+    },
+    {
+      "path": "deployment/.run/core-rules-java-expanded-20261114.log",
+      "sha256": "79ab056c35f86ee22a3bc3c18a9dabec1b3c5e0d87d0c857d76c62c89251156f"
+    },
+    {
+      "path": "deployment/.run/core-rules-java-focused-20261114.log",
+      "sha256": "0025828db76b1452549582ca00463185be204815840a42a5e6222c819d78ce89"
+    },
+    {
+      "path": "deployment/.run/core-rules-live-read-20261114.log",
+      "sha256": "2e6648af7e89a2c893322216dc25e77bf44014c1f1ebfc8ab1bf5f37855f06d6"
+    }
+  ],
+  "java_packages": {
+    "admin": "c5bae68e1f9db3a274e04b025fb1c0a3920dccf3d6acc8d0060312991dfb5d45",
+    "portal": "66c9cc4576a11693489a2f2fec697dd669d2f6b0a2b76db5748fb1a111f0a35e"
+  }
+}

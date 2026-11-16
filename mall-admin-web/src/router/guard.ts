@@ -7,7 +7,7 @@ import usePermissionStore from '@/stores/permission'
 // 无需登陆的白名单路径
 const whiteList = ['/login']
 // 配置路由前置守卫函数（每次路由跳转都会执行）
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
   const userStore = useUserStore()
   const permissionStore = usePermissionStore()
@@ -18,6 +18,14 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       if (permissionStore.addRouters.length === 0) {
+        try {
+          await userStore.getUserInfo()
+        } catch {
+          userStore.fedLogout()
+          next('/login')
+          NProgress.done()
+          return
+        }
         // 登录状态下无动态路由时根据menus生成动态路由
         permissionStore.generateRoutes({
           menus: userStore.userInfo.menus,
@@ -26,7 +34,12 @@ router.beforeEach((to, from, next) => {
         permissionStore.addRouters.forEach(route => {
           router.addRoute(route)
         })
-        next({ ...to, replace: true })
+        const target = router.resolve(to.fullPath)
+        next(
+          target.matched.length
+            ? { path: to.fullPath, replace: true }
+            : { path: '/404', replace: true },
+        )
       } else {
         next()
       }

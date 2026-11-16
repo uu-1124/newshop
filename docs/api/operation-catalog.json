@@ -1,0 +1,2387 @@
+[
+  {
+    "id": "memberMe",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/me",
+    "title": "获取当前会员身份",
+    "result": "Identity",
+    "body": null,
+    "requirements": [
+      "R01"
+    ],
+    "ui": [
+      "B01"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createConversation",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/conversations",
+    "title": "创建本人会话",
+    "result": "Conversation",
+    "body": "ConversationCreate",
+    "requirements": [
+      "R02"
+    ],
+    "ui": [
+      "B01",
+      "B02"
+    ],
+    "permission": null,
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "listConversations",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/conversations",
+    "title": "分页查询本人会话",
+    "result": "ConversationPage",
+    "body": null,
+    "requirements": [
+      "R02"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getConversation",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}",
+    "title": "获取会话快照及事件高水位",
+    "result": "Snapshot",
+    "body": null,
+    "requirements": [
+      "R02",
+      "R03"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "renameConversation",
+    "method": "PATCH",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}",
+    "title": "重命名本人会话",
+    "result": "Conversation",
+    "body": "ConversationRename",
+    "requirements": [
+      "R02"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "deleteConversation",
+    "method": "DELETE",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}",
+    "title": "删除本人会话并使上下文失效",
+    "result": "Empty",
+    "body": "VersionInput",
+    "requirements": [
+      "R02",
+      "R17"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listMessages",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/messages",
+    "title": "查询本人可见消息",
+    "result": "MessagePage",
+    "body": null,
+    "requirements": [
+      "R02",
+      "R03"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "sendMemberMessage",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/messages",
+    "title": "幂等发送文字与附件",
+    "result": "MessageAccepted",
+    "body": "MessageInput",
+    "requirements": [
+      "R03",
+      "R13"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 202,
+    "errors": [
+      "RUN_ALREADY_ACTIVE",
+      "MESSAGE_ID_REUSED"
+    ]
+  },
+  {
+    "id": "updateReadCursor",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/read",
+    "title": "同步本人已读位置",
+    "result": "ReadPosition",
+    "body": "ReadInput",
+    "requirements": [
+      "R02"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "memberEvents",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/events",
+    "title": "订阅及补传本人会话事件",
+    "result": "Empty",
+    "body": null,
+    "requirements": [
+      "R03",
+      "R18"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getRun",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/runs/{run_id}",
+    "title": "查询生成状态",
+    "result": "Run",
+    "body": null,
+    "requirements": [
+      "R03"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "stopRun",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/runs/{run_id}/stop",
+    "title": "停止本人生成任务",
+    "result": "Run",
+    "body": "VersionInput",
+    "requirements": [
+      "R03"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "retryRun",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/runs/{run_id}/retry",
+    "title": "重试回答且不重放业务操作",
+    "result": "Run",
+    "body": "VersionInput",
+    "requirements": [
+      "R03",
+      "R18"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "prepareAction",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/actions",
+    "title": "准备不可变确认卡片",
+    "result": "Action",
+    "body": "ActionPrepareInput",
+    "requirements": [
+      "R08",
+      "R09",
+      "R11",
+      "R12",
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "getAction",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/actions/{action_id}",
+    "title": "查询操作及业务核对结果",
+    "result": "Action",
+    "body": null,
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "confirmAction",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/actions/{action_id}/confirm",
+    "title": "用户明确点击确认执行",
+    "result": "Action",
+    "body": "VersionInput",
+    "requirements": [
+      "R08",
+      "R09",
+      "R11",
+      "R12",
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 202,
+    "errors": [
+      "ACTION_EXPIRED",
+      "ACTION_STALE",
+      "QUOTE_CHANGED",
+      "STOCK_INSUFFICIENT",
+      "RESULT_UNKNOWN"
+    ]
+  },
+  {
+    "id": "cancelAction",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/actions/{action_id}/cancel",
+    "title": "取消尚未执行的卡片",
+    "result": "Action",
+    "body": "VersionInput",
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "requestHandoff",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/handoff",
+    "title": "申请转人工",
+    "result": "Handoff",
+    "body": "HandoffInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "withdrawHandoff",
+    "method": "DELETE",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/handoff",
+    "title": "撤销仍在等待的人工请求",
+    "result": "Handoff",
+    "body": "VersionInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "setWaitingAI",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/conversations/{conversation_id}/waiting-ai-mode",
+    "title": "选择等待人工时是否继续 AI",
+    "result": "Conversation",
+    "body": "WaitingAIInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "uploadMemberAttachment",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/attachments",
+    "title": "上传本人图片或录音",
+    "result": "Attachment",
+    "body": "AttachmentUpload",
+    "requirements": [
+      "R13",
+      "R14",
+      "R17"
+    ],
+    "ui": [
+      "B02",
+      "B05"
+    ],
+    "permission": null,
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "readMemberAttachment",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/attachments/{attachment_id}/content",
+    "title": "鉴权读取本人私有附件",
+    "result": "Binary",
+    "body": null,
+    "requirements": [
+      "R13",
+      "R14"
+    ],
+    "ui": [
+      "B02",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "transcribeAudio",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/audio/transcriptions",
+    "title": "转写后返回可编辑文字",
+    "result": "Transcription",
+    "body": "TranscriptionInput",
+    "requirements": [
+      "R14"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "synthesizeSpeech",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/messages/{message_id}/speech",
+    "title": "主动生成可见回答播报",
+    "result": "Speech",
+    "body": "SpeechInput",
+    "requirements": [
+      "R14"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "submitFeedback",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/messages/{message_id}/feedback",
+    "title": "提交或替换本人回答反馈",
+    "result": "Feedback",
+    "body": "FeedbackInput",
+    "requirements": [
+      "R15"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "readFeedback",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/messages/{message_id}/feedback",
+    "title": "读取本人回答反馈",
+    "result": "NullableFeedback",
+    "body": null,
+    "requirements": [
+      "R15"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "searchProducts",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/products",
+    "title": "按预算规格检索当前可见商品",
+    "result": "ProductPage",
+    "body": null,
+    "requirements": [
+      "R04"
+    ],
+    "ui": [
+      "B01",
+      "B03"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getProduct",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/products/{product_id}",
+    "title": "读取商品实际规格与库存",
+    "result": "Product",
+    "body": null,
+    "requirements": [
+      "R04",
+      "R08"
+    ],
+    "ui": [
+      "B03"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getCheckoutOptions",
+    "method": "POST",
+    "path": "/mall-agent/v1/member/checkout-options",
+    "title": "读取地址优惠与积分选项",
+    "result": "CheckoutOptions",
+    "body": "CheckoutSelection",
+    "requirements": [
+      "R09"
+    ],
+    "ui": [
+      "B04"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listMemberOrders",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/orders",
+    "title": "查询本人订单并支持订单号筛选",
+    "result": "OrderPage",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getMemberOrder",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/orders/{order_id}",
+    "title": "读取本人订单详情",
+    "result": "OrderSummary",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getMemberLogistics",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/orders/{order_id}/logistics",
+    "title": "读取明确标记的模拟物流",
+    "result": "Logistics",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listOrderReturns",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/orders/{order_id}/returns",
+    "title": "读取本人订单售后摘要",
+    "result": "ReturnPage",
+    "body": null,
+    "requirements": [
+      "R10",
+      "R12"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "checkReturnEligibility",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/orders/{order_id}/items/{order_item_id}/return-eligibility",
+    "title": "核验具体明细的可退条件",
+    "result": "ReturnEligibility",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "readCitation",
+    "method": "GET",
+    "path": "/mall-agent/v1/member/citations/{version_id}/chunks/{chunk_id}",
+    "title": "读取仍可访问的知识来源片段",
+    "result": "SourceContent",
+    "body": null,
+    "requirements": [
+      "R05"
+    ],
+    "ui": [
+      "B02"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminMe",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/me",
+    "title": "获取员工稳定身份及权限",
+    "result": "Identity",
+    "body": null,
+    "requirements": [
+      "R01"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminListConversations",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/conversations",
+    "title": "按分配关系查询接待会话",
+    "result": "ConversationPage",
+    "body": null,
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminConversationSnapshot",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}",
+    "title": "读取获授权会话快照",
+    "result": "Snapshot",
+    "body": null,
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminListMessages",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}/messages",
+    "title": "读取可访问的买家消息",
+    "result": "MessagePage",
+    "body": null,
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "sendStaffMessage",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}/messages",
+    "title": "发送人工消息与业务卡片",
+    "result": "Message",
+    "body": "StaffMessageInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:reply",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "getStaffBusinessContext",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}/context",
+    "title": "按授权查看关联会员和订单摘要",
+    "result": "StaffBusinessContext",
+    "body": null,
+    "requirements": [
+      "R01",
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:business:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listStaffNotes",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}/notes",
+    "title": "读取独立内部备注",
+    "result": "NotePage",
+    "body": null,
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:note",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createStaffNote",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}/notes",
+    "title": "添加不会进入模型的备注",
+    "result": "Note",
+    "body": "NoteInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:note",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "adminReadCursor",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/conversations/{conversation_id}/read",
+    "title": "同步员工已读位置",
+    "result": "ReadPosition",
+    "body": "ReadInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:conversation:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminEvents",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/events",
+    "title": "订阅已授权接待或管理事件",
+    "result": "Empty",
+    "body": null,
+    "requirements": [
+      "R06",
+      "R07",
+      "R16"
+    ],
+    "ui": [
+      "A01",
+      "A02",
+      "A04"
+    ],
+    "permission": "agent:events:subscribe",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listHandoffs",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/handoffs",
+    "title": "读取等待接待队列",
+    "result": "HandoffPage",
+    "body": null,
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:handoff:claim",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "claimHandoff",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/handoffs/{handoff_id}/claim",
+    "title": "原子领取并停止 AI",
+    "result": "Handoff",
+    "body": "VersionInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:handoff:claim",
+    "status": 200,
+    "errors": [
+      "HANDOFF_ALREADY_CLAIMED",
+      "STAFF_CAPACITY_REACHED"
+    ]
+  },
+  {
+    "id": "transferHandoff",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/handoffs/{handoff_id}/transfer",
+    "title": "按容量与权限转交接待",
+    "result": "Handoff",
+    "body": "TransferInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:handoff:transfer",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "closeHandoff",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/handoffs/{handoff_id}/close",
+    "title": "关闭接待和会话",
+    "result": "Handoff",
+    "body": "CloseInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:handoff:close",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listStaff",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/staff",
+    "title": "查询可转交客服及容量",
+    "result": "StaffPage",
+    "body": null,
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01",
+      "A04"
+    ],
+    "permission": "agent:staff:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "setPresence",
+    "method": "PUT",
+    "path": "/mall-agent/v1/admin/presence",
+    "title": "设置本人接待状态",
+    "result": "Staff",
+    "body": "PresenceInput",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:presence:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "presenceHeartbeat",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/presence/heartbeat",
+    "title": "续约本人在线状态",
+    "result": "Staff",
+    "body": "Empty",
+    "requirements": [
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:presence:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "updateStaffProfile",
+    "method": "PATCH",
+    "path": "/mall-agent/v1/admin/staff/{staff_id}",
+    "title": "维护客服名称与容量",
+    "result": "Staff",
+    "body": "StaffProfileInput",
+    "requirements": [
+      "R06",
+      "R16"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:staff:manage",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "uploadStaffAttachment",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/attachments",
+    "title": "上传员工图片或知识原件",
+    "result": "Attachment",
+    "body": "AttachmentUpload",
+    "requirements": [
+      "R07",
+      "R13"
+    ],
+    "ui": [
+      "A01",
+      "A02"
+    ],
+    "permission": "agent:attachment:upload",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "readStaffAttachment",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/attachments/{attachment_id}/content",
+    "title": "按会话知识或售后授权读取附件",
+    "result": "Binary",
+    "body": null,
+    "requirements": [
+      "R01",
+      "R07",
+      "R13"
+    ],
+    "ui": [
+      "A01",
+      "A02",
+      "A05"
+    ],
+    "permission": "agent:attachment:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listKBDocuments",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/kb/documents",
+    "title": "分页查询知识资料",
+    "result": "KBDocumentPage",
+    "body": null,
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createKBDocument",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/kb/documents",
+    "title": "创建知识逻辑文档",
+    "result": "KBDocument",
+    "body": "KBInput",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:edit",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "getKBDocument",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/kb/documents/{document_id}",
+    "title": "读取知识资料元数据",
+    "result": "KBDocument",
+    "body": null,
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "updateKBDocument",
+    "method": "PATCH",
+    "path": "/mall-agent/v1/admin/kb/documents/{document_id}",
+    "title": "编辑知识标题范围和分类",
+    "result": "KBDocument",
+    "body": "KBUpdate",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:edit",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listKBVersions",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/kb/documents/{document_id}/versions",
+    "title": "查询版本历史",
+    "result": "KBVersionPage",
+    "body": null,
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createKBVersion",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/kb/documents/{document_id}/versions",
+    "title": "创建待解析的资料版本",
+    "result": "KBVersion",
+    "body": "KBVersionInput",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:edit",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "getKBVersion",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/kb/versions/{version_id}",
+    "title": "读取知识版本状态",
+    "result": "KBVersion",
+    "body": null,
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "parseKBVersion",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/kb/versions/{version_id}/parse",
+    "title": "启动解析任务",
+    "result": "Job",
+    "body": "VersionInput",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:edit",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "previewKBVersion",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/kb/versions/{version_id}/preview",
+    "title": "预览解析文本及警告",
+    "result": "KBPreview",
+    "body": null,
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "editKBPreview",
+    "method": "PATCH",
+    "path": "/mall-agent/v1/admin/kb/versions/{version_id}/preview",
+    "title": "编辑待构建版本解析结果",
+    "result": "KBVersion",
+    "body": "KBPreviewUpdate",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:edit",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "buildKBVersion",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/kb/versions/{version_id}/build",
+    "title": "创建新索引并执行质量检查",
+    "result": "Job",
+    "body": "VersionInput",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:edit",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "publishKBVersion",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/kb/documents/{document_id}/publish",
+    "title": "原子切换已就绪活动版本",
+    "result": "KBDocument",
+    "body": "KBPublishInput",
+    "requirements": [
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:publish",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "setKBEnabled",
+    "method": "PUT",
+    "path": "/mall-agent/v1/admin/kb/documents/{document_id}/enabled",
+    "title": "启用或立即停用知识来源",
+    "result": "KBDocument",
+    "body": "KBEnabledInput",
+    "requirements": [
+      "R05",
+      "R07"
+    ],
+    "ui": [
+      "A02"
+    ],
+    "permission": "agent:kb:publish",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listJobs",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/jobs",
+    "title": "分页查询获授权任务",
+    "result": "JobPage",
+    "body": null,
+    "requirements": [
+      "R07",
+      "R17",
+      "R18"
+    ],
+    "ui": [
+      "A02",
+      "A04"
+    ],
+    "permission": "agent:job:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getJob",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/jobs/{job_id}",
+    "title": "查看进度和脱敏失败原因",
+    "result": "Job",
+    "body": null,
+    "requirements": [
+      "R07",
+      "R17",
+      "R18"
+    ],
+    "ui": [
+      "A02",
+      "A04"
+    ],
+    "permission": "agent:job:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "retryJob",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/jobs/{job_id}/retry",
+    "title": "有限重试失败任务",
+    "result": "Job",
+    "body": "VersionInput",
+    "requirements": [
+      "R07",
+      "R17",
+      "R18"
+    ],
+    "ui": [
+      "A02",
+      "A04"
+    ],
+    "permission": "agent:job:retry",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "listModelProfiles",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/model-profiles",
+    "title": "读取脱敏模型能力配置",
+    "result": "ModelProfilePage",
+    "body": null,
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getModelRegistry",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/model-registry",
+    "title": "读取受控适配器与端点引用",
+    "result": "ModelRegistry",
+    "body": null,
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "testModelProfile",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/model-profiles/{profile_id}/test",
+    "title": "显式执行真实模型兼容验收",
+    "result": "Job",
+    "body": "VersionInput",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:write",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "createModelProfile",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/model-profiles",
+    "title": "新增独立能力配置引用",
+    "result": "ModelProfile",
+    "body": "ModelProfileCreate",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:write",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "updateModelProfile",
+    "method": "PATCH",
+    "path": "/mall-agent/v1/admin/model-profiles/{profile_id}",
+    "title": "更新受控模型配置",
+    "result": "ModelProfile",
+    "body": "ModelProfileUpdate",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "activateModelProfile",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/model-profiles/{profile_id}/activate",
+    "title": "切换活动能力配置",
+    "result": "ModelProfile",
+    "body": "ModelActivationInput",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:activate",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listPrompts",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/prompt-versions",
+    "title": "查询获授权提示词版本",
+    "result": "PromptPage",
+    "body": null,
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:prompt:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createPrompt",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/prompt-versions",
+    "title": "创建提示词草稿版本",
+    "result": "Prompt",
+    "body": "PromptInput",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:prompt:write",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "publishPrompt",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/prompt-versions/{prompt_id}/publish",
+    "title": "发布或恢复指定提示词版本",
+    "result": "Prompt",
+    "body": "VersionInput",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:prompt:publish",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getSettings",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/settings",
+    "title": "读取留存限额和接待参数",
+    "result": "Settings",
+    "body": null,
+    "requirements": [
+      "R16",
+      "R17"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:settings:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "updateSettings",
+    "method": "PUT",
+    "path": "/mall-agent/v1/admin/settings",
+    "title": "更新版本化设置",
+    "result": "Settings",
+    "body": "SettingsInput",
+    "requirements": [
+      "R16",
+      "R17"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:settings:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "previewRetention",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/retention/preview",
+    "title": "试算留存调整影响范围",
+    "result": "Job",
+    "body": "RetentionPreviewInput",
+    "requirements": [
+      "R17"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:retention:preview",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "executeRetention",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/retention/execute",
+    "title": "按已核对批次执行清理",
+    "result": "Job",
+    "body": "RetentionExecuteInput",
+    "requirements": [
+      "R17"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:retention:execute",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "getStatistics",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/statistics",
+    "title": "读取用量错误和延迟统计",
+    "result": "Statistics",
+    "body": null,
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:statistics:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listUnknownModelUsage",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/model-usage/unknown",
+    "title": "读取未知供应商用量及保守预留",
+    "result": "UnknownModelUsagePage",
+    "body": null,
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:usage:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "reconcileModelUsage",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/model-usage/{call_id}/reconcile",
+    "title": "按供应商凭据审计结算未知用量",
+    "result": "UsageSettlementResult",
+    "body": "UsageSettlement",
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:usage:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listUnresolvedActions",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/actions/unresolved",
+    "title": "读取长期未决业务操作",
+    "result": "ActionRecoveryPage",
+    "body": null,
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:action:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "resumeActionReconciliation",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/actions/{action_id}/reconcile",
+    "title": "续签原编号仅核对凭据并恢复调度",
+    "result": "ActionRecoveryResult",
+    "body": "ActionRecoveryInput",
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:action:reconcile",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "listAuditLogs",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/audit-logs",
+    "title": "读取获授权审计摘要",
+    "result": "AuditPage",
+    "body": null,
+    "requirements": [
+      "R16",
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:audit:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "verifyBackup",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/backups/verify",
+    "title": "对登记备份创建隔离恢复核对任务",
+    "result": "Job",
+    "body": "BackupVerifyInput",
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:backup:verify",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "listBackups",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/backups",
+    "title": "读取登记备份策略与验证状态",
+    "result": "BackupPage",
+    "body": null,
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:backup:verify",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createBackup",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/backups",
+    "title": "明确维护窗口后创建一致备份任务",
+    "result": "Job",
+    "body": "BackupCreateInput",
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:backup:verify",
+    "status": 202,
+    "errors": []
+  },
+  {
+    "id": "updateBackupPolicy",
+    "method": "PUT",
+    "path": "/mall-agent/v1/admin/backups/policy",
+    "title": "更新每日备份与每周恢复策略",
+    "result": "BackupPolicyState",
+    "body": "BackupPolicyInput",
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "A04"
+    ],
+    "permission": "agent:backup:verify",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeMemberIdentity",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/identity",
+    "title": "Java 复核会员最小身份",
+    "result": "Identity",
+    "body": null,
+    "requirements": [
+      "R01"
+    ],
+    "ui": [
+      "B01"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeProducts",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/products",
+    "title": "Java 复核可见性预算和规格过滤",
+    "result": "ProductPage",
+    "body": null,
+    "requirements": [
+      "R04"
+    ],
+    "ui": [
+      "B03"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeProductDetail",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/products/{product_id}",
+    "title": "Java 返回实际商品与 SKU",
+    "result": "Product",
+    "body": null,
+    "requirements": [
+      "R04",
+      "R08"
+    ],
+    "ui": [
+      "B03"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeCheckoutOptions",
+    "method": "POST",
+    "path": "/mall-portal/agent-bridge/v1/checkout-options",
+    "title": "Java 返回可用地址优惠和积分",
+    "result": "CheckoutOptions",
+    "body": "CheckoutSelection",
+    "requirements": [
+      "R09"
+    ],
+    "ui": [
+      "B04"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeCart",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/cart",
+    "title": "Java 分页读取当前会员购物车快照",
+    "result": "CartSnapshot",
+    "body": null,
+    "requirements": [
+      "R08",
+      "R09"
+    ],
+    "ui": [
+      "B04"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeQuote",
+    "method": "POST",
+    "path": "/mall-portal/agent-bridge/v1/quotes",
+    "title": "Java 共用计算器报价且不写购物车",
+    "result": "Quote",
+    "body": "ActionParameters",
+    "requirements": [
+      "R08",
+      "R09",
+      "R11",
+      "R12"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "executeBridgeOperation",
+    "method": "POST",
+    "path": "/mall-portal/agent-bridge/v1/operations",
+    "title": "Java 按操作编号事务执行一次",
+    "result": "BusinessResult",
+    "body": "ExecuteOperationInput",
+    "requirements": [
+      "R08",
+      "R09",
+      "R11",
+      "R12",
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getBridgeOperation",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/operations/{operation_id}",
+    "title": "核对原操作已提交结果",
+    "result": "BusinessResult",
+    "body": null,
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeOrders",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/orders",
+    "title": "Java 查询本人订单号或近期订单",
+    "result": "OrderPage",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeOrder",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/orders/{order_id}",
+    "title": "Java 读取本人订单详情",
+    "result": "OrderSummary",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeLogistics",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/orders/{order_id}/logistics",
+    "title": "Java 读取本人模拟物流",
+    "result": "Logistics",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeReturns",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/orders/{order_id}/returns",
+    "title": "Java 读取本人售后详情列表",
+    "result": "ReturnPage",
+    "body": null,
+    "requirements": [
+      "R10",
+      "R12"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeReturnEligibility",
+    "method": "GET",
+    "path": "/mall-portal/agent-bridge/v1/orders/{order_id}/items/{order_item_id}/return-eligibility",
+    "title": "Java 计算明细可退条件与金额",
+    "result": "ReturnEligibility",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeStaffIdentity",
+    "method": "GET",
+    "path": "/mall-admin/agent-bridge/v1/identity",
+    "title": "Java 返回员工 ID 状态与权限",
+    "result": "Identity",
+    "body": null,
+    "requirements": [
+      "R01"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeStaffContext",
+    "method": "POST",
+    "path": "/mall-admin/agent-bridge/v1/business-context",
+    "title": "Java 核验员工代查业务上下文",
+    "result": "StaffBusinessContext",
+    "body": "StaffContextInput",
+    "requirements": [
+      "R01",
+      "R06"
+    ],
+    "ui": [
+      "A01"
+    ],
+    "permission": "agent:business:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "updateLogistics",
+    "method": "PUT",
+    "path": "/mall-admin/agent-bridge/v1/orders/{order_id}/logistics",
+    "title": "维护订单模拟物流资料",
+    "result": "Logistics",
+    "body": "LogisticsInput",
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "createLogisticsNode",
+    "method": "POST",
+    "path": "/mall-admin/agent-bridge/v1/shipments/{shipment_id}/events",
+    "title": "新增模拟物流节点",
+    "result": "LogisticsNode",
+    "body": "LogisticsNodeInput",
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:write",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "updateLogisticsNode",
+    "method": "PATCH",
+    "path": "/mall-admin/agent-bridge/v1/shipments/{shipment_id}/events/{event_id}",
+    "title": "编辑节点并保存前后审计",
+    "result": "LogisticsNode",
+    "body": "LogisticsNodeUpdate",
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeStaffReturns",
+    "method": "GET",
+    "path": "/mall-admin/agent-bridge/v1/returns",
+    "title": "查询演示售后列表",
+    "result": "StaffReturnPage",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeReturnAddresses",
+    "method": "GET",
+    "path": "/mall-admin/agent-bridge/v1/return-addresses",
+    "title": "读取可用退货地址",
+    "result": "ReturnAddressPage",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:review",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminListReturns",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/returns",
+    "title": "查询有权处理的售后列表",
+    "result": "StaffReturnPage",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminReturnAddresses",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/return-addresses",
+    "title": "读取可用退货地址",
+    "result": "ReturnAddressPage",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:review",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgeListReturnRules",
+    "method": "GET",
+    "path": "/mall-admin/agent-bridge/v1/return-rules",
+    "title": "读取不可变售后规则版本",
+    "result": "ReturnRulePage",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "bridgePublishReturnRule",
+    "method": "POST",
+    "path": "/mall-admin/agent-bridge/v1/return-rules",
+    "title": "发布新演示售后规则版本",
+    "result": "ReturnRule",
+    "body": "ReturnRuleInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:review",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminListReturnRules",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/return-rules",
+    "title": "读取售后规则及当前版本",
+    "result": "ReturnRulePage",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminPublishReturnRule",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/return-rules",
+    "title": "发布不可变演示售后规则",
+    "result": "ReturnRule",
+    "body": "ReturnRuleInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:review",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "reviewReturn",
+    "method": "POST",
+    "path": "/mall-admin/agent-bridge/v1/returns/{return_id}/review",
+    "title": "人工批准或拒绝退货申请",
+    "result": "ReturnSummary",
+    "body": "ReturnReviewInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:review",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "receiveReturn",
+    "method": "POST",
+    "path": "/mall-admin/agent-bridge/v1/returns/{return_id}/receive",
+    "title": "人工登记收到退货",
+    "result": "ReturnSummary",
+    "body": "ReturnReceiveInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:receive",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "simulateRefund",
+    "method": "POST",
+    "path": "/mall-admin/agent-bridge/v1/returns/{return_id}/simulate-refund",
+    "title": "人工标记模拟退款完成",
+    "result": "ReturnSummary",
+    "body": "ReturnRefundInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:refund",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getStaffReturn",
+    "method": "GET",
+    "path": "/mall-admin/agent-bridge/v1/returns/{return_id}",
+    "title": "读取有权处理的售后申请",
+    "result": "ReturnSummary",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "getStaffLogistics",
+    "method": "GET",
+    "path": "/mall-admin/agent-bridge/v1/orders/{order_id}/logistics",
+    "title": "读取有权维护的物流资料",
+    "result": "Logistics",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminUpdateLogistics",
+    "method": "PUT",
+    "path": "/mall-agent/v1/admin/orders/{order_id}/logistics",
+    "title": "维护模拟物流资料",
+    "result": "Logistics",
+    "body": "LogisticsInput",
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminReadLogistics",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/orders/{order_id}/logistics",
+    "title": "读取模拟物流资料",
+    "result": "Logistics",
+    "body": null,
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminCreateLogisticsNode",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/shipments/{shipment_id}/events",
+    "title": "新增模拟物流节点",
+    "result": "LogisticsNode",
+    "body": "LogisticsNodeInput",
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:write",
+    "status": 201,
+    "errors": []
+  },
+  {
+    "id": "adminEditLogisticsNode",
+    "method": "PATCH",
+    "path": "/mall-agent/v1/admin/shipments/{shipment_id}/events/{event_id}",
+    "title": "编辑模拟物流节点",
+    "result": "LogisticsNode",
+    "body": "LogisticsNodeUpdate",
+    "requirements": [
+      "R10"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:logistics:write",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminReadReturn",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/returns/{return_id}",
+    "title": "读取售后申请",
+    "result": "ReturnSummary",
+    "body": null,
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminReviewReturn",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/returns/{return_id}/review",
+    "title": "人工审核退货申请",
+    "result": "ReturnSummary",
+    "body": "ReturnReviewInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:review",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminReceiveReturn",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/returns/{return_id}/receive",
+    "title": "登记收到退货",
+    "result": "ReturnSummary",
+    "body": "ReturnReceiveInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:receive",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "adminSimulateRefund",
+    "method": "POST",
+    "path": "/mall-agent/v1/admin/returns/{return_id}/simulate-refund",
+    "title": "标记模拟退款完成",
+    "result": "ReturnSummary",
+    "body": "ReturnRefundInput",
+    "requirements": [
+      "R12"
+    ],
+    "ui": [
+      "A05"
+    ],
+    "permission": "agent:return:refund",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "listModelProfileVersions",
+    "method": "GET",
+    "path": "/mall-agent/v1/admin/model-profiles/{profile_id}/versions",
+    "title": "查询不可变模型配置版本",
+    "result": "ModelProfileVersionPage",
+    "body": null,
+    "requirements": [
+      "R16"
+    ],
+    "ui": [
+      "A03"
+    ],
+    "permission": "agent:model:read",
+    "status": 200,
+    "errors": []
+  },
+  {
+    "id": "reconcileBridgeOperation",
+    "method": "POST",
+    "path": "/mall-portal/agent-bridge/v1/operations/{operation_id}/reconcile",
+    "title": "服务端核对或封闭未提交的原操作",
+    "result": "BusinessResult",
+    "body": "ReconcileOperationInput",
+    "requirements": [
+      "R18"
+    ],
+    "ui": [
+      "B03",
+      "B04",
+      "B05"
+    ],
+    "permission": null,
+    "status": 200,
+    "errors": [],
+    "internal_reconciliation_only": true
+  }
+]

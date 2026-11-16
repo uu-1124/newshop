@@ -13,12 +13,14 @@ public interface UmsMemberReceiveAddressService {
     /**
      * 添加收货地址
      */
+    @Transactional
     int add(UmsMemberReceiveAddress address);
 
     /**
      * 删除收货地址
      * @param id 地址表的id
      */
+    @Transactional
     int delete(Long id);
 
     /**

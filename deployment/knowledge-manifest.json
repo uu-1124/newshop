@@ -1,0 +1,58 @@
+{
+  "verified_at": "2026-11-11T07:32:24.921119+00:00",
+  "build": "knowledge-0.6",
+  "migration": "0004",
+  "domain_tables": 33,
+  "checkpoint_tables": 4,
+  "modules": 20,
+  "active_python_operations": 31,
+  "reviewed_contract_operations": 116,
+  "full_business_runtime": "NOT_READY",
+  "knowledge_scope": "published global MEMBER documents only",
+  "active_published_documents": 0,
+  "enabled_synthetic_documents": 0,
+  "active_job_handlers": [
+    "RUNTIME_CHECK",
+    "KB_PARSE",
+    "KB_INDEX"
+  ],
+  "verification": {
+    "python_tests": {
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deployment_tests": {
+      "passed": 1
+    },
+    "ruff": "passed",
+    "admin_typecheck_and_build": "passed",
+    "buyer_h5_build": "passed",
+    "offline_design_checks": 16,
+    "real_gateway_checks": [
+      "fresh_staff_knowledge_permissions",
+      "private_original_upload_replay_and_authenticated_read",
+      "parse_preview_edit_real_embedding_milvus_build_without_auto_publish",
+      "real_gpt_knowledge_answer_with_readable_authorized_citation",
+      "version_replacement_old_citation_410_and_new_answer_uses_current_source",
+      "disabled_document_stops_retrieval_and_source_reading",
+      "knowledge_message_and_revoked_citation_survive_api_restart",
+      "knowledge_message_and_revoked_citation_survive_api_restart"
+    ],
+    "database_checkpoint_checks": [
+      "two_real_versions_built_published_and_old_version_retired",
+      "four_task_wakeups_published_through_outbox",
+      "three_completed_runs_use_knowledge_node_and_current_graph",
+      "two_gpt_knowledge_calls_record_prompt_version",
+      "no_config_secrets_in_completed_checkpoints",
+      "test_document_disabled_and_citation_records_preserved"
+    ]
+  },
+  "limits": [
+    "Formal business policies not imported",
+    "Product/category scoped retrieval not active",
+    "Technical self-recall is not semantic accuracy evaluation",
+    "OCR, full document layout/page mapping, index cleanup, rollback and capacity/recovery tests pending",
+    "Handoff, transactions, full governance and voice workflows pending"
+  ]
+}

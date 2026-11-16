@@ -42,6 +42,15 @@ function getMenu(name: string, menus: UmsMenu[]) {
   return menus.find(menu => name === menu.name) || null
 }
 
+// Keep the source route tree intact when another login has different menus.
+// Components are functions, so clone the route containers without JSON serialization.
+function copyRoute(route: RouteRecordExt): RouteRecordExt {
+  const copy = { ...route } as RouteRecordExt
+  if (route.meta) copy.meta = { ...route.meta }
+  if (route.children) copy.children = route.children.map(copyRoute)
+  return copy
+}
+
 // 对菜单进行排序
 function sortRouters(accessedRouters: RouteRecordExt[]) {
   accessedRouters.forEach(router => {
@@ -72,7 +81,7 @@ export const usePermissionStore = defineStore('permission', () => {
   // 生成可访问的路由表
   const generateRoutes = (data: { menus: UmsMenu[]; username: string }) => {
     const { menus, username } = data
-    const accessedRouters = asyncRouterMap.filter(v => {
+    const accessedRouters = asyncRouterMap.map(copyRoute).filter(v => {
       // 测试模式下admin帐号直接返回所有菜单
       if (testMode && username === 'admin') return true
       if (hasPermission(menus, v)) {

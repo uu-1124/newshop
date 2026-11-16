@@ -1,0 +1,72 @@
+{
+  "verified_at": "2026-11-11T09:03:30.183488+00:00",
+  "build": "handoff-0.7",
+  "migration": "0005",
+  "runtime": "local Java, Python and Vue; cloud middleware via loopback SSH forwards",
+  "domain_tables": 33,
+  "checkpoint_tables": 4,
+  "modules": 20,
+  "workflow_nodes": 12,
+  "active_python_operations": 48,
+  "reviewed_contract_operations": 116,
+  "full_business_runtime": "NOT_READY",
+  "handoffs": "LIVE_TEXT",
+  "knowledge": "GLOBAL_MEMBER_LIVE",
+  "active_published_documents": 0,
+  "active_test_handoffs": 0,
+  "temporary_staff_disabled": true,
+  "verification": {
+    "python_tests": {
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0
+    },
+    "java_staff_bridge_tests": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deployment_tests": {
+      "passed": 1
+    },
+    "ruff": "passed",
+    "shared_web_contracts": "passed",
+    "framework": "passed",
+    "admin_typecheck_and_build": "passed",
+    "buyer_h5_build": "passed",
+    "offline_design_checks": 16,
+    "offline_architecture_checks": 27,
+    "architecture_check_mode": "--implementation; source drift listed, original DOCX preserved",
+    "real_gateway_checks": [
+      "fresh_staff_permissions_and_target_profile",
+      "real_running_generation_fenced_and_waiting_member_message_has_no_run",
+      "claim_staff_reply_idempotency_member_reply_and_private_note",
+      "real_authenticated_member_sse_delivers_staff_message",
+      "disabled_target_rejected_fresh_then_transfer_old_owner_blocked_and_close",
+      "closed_reception_messages_and_note_isolation_survive_api_restart",
+      "all_15_conversation_events_published_to_real_outbox",
+      "browser_member_request_claim_reply_note_member_reply_and_close"
+    ],
+    "outbox_event_count": 15,
+    "outbox_published_count": 15,
+    "browser": "member request, staff claim/reply/note, member reply, close; test staff offline afterwards",
+    "screenshot": "deployment/.run/handoff-ui.jpg",
+    "post_refactor_knowledge_and_handoff_regression": {
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "limits": [
+    "Human reception supports text only; staff attachments and business cards are rejected",
+    "Admin workspace uses 3-second snapshot polling; admin SSE and unread/read state pending",
+    "N09 suggests explicit member action; model classification never auto-enqueues a handoff",
+    "No enabled formal business knowledge policies",
+    "Transactions, after-sale and full governance are not active",
+    "Capacity, load, outage and recovery exercises beyond functional concurrency pending"
+  ],
+  "prior_evidence": [
+    "deployment/runtime-manifest.json",
+    "deployment/knowledge-manifest.json"
+  ],
+  "report": "docs/15-人工接待闭环实施与验收.md"
+}

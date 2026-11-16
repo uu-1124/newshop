@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.model.SmsHomeNewProduct;
 import com.macro.mall.service.SmsHomeNewProductService;
 
@@ -75,6 +76,7 @@ public class SmsHomeNewProductController {
                                                             @RequestParam(value = "recommendStatus", required = false) Integer recommendStatus,
                                                             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<SmsHomeNewProduct> homeBrandList = homeNewProductService.list(productName, recommendStatus, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(homeBrandList));
     }

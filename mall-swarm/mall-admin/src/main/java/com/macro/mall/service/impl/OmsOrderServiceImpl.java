@@ -5,6 +5,7 @@ import com.macro.mall.dao.OmsOrderDao;
 import com.macro.mall.dao.OmsOrderOperateHistoryDao;
 import com.macro.mall.dto.*;
 import com.macro.mall.mapper.OmsOrderMapper;
+import com.macro.mall.order.OrderResourceService;
 import com.macro.mall.mapper.OmsOrderOperateHistoryMapper;
 import com.macro.mall.model.OmsOrder;
 import com.macro.mall.model.OmsOrderExample;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OmsOrderServiceImpl implements OmsOrderService {
+    @Autowired
+    private OrderResourceService orderResources;
     @Autowired
     private OmsOrderMapper orderMapper;
     @Autowired
@@ -59,22 +62,26 @@ public class OmsOrderServiceImpl implements OmsOrderService {
 
     @Override
     public int close(List<Long> ids, String note) {
-        OmsOrder record = new OmsOrder();
-        record.setStatus(4);
-        OmsOrderExample example = new OmsOrderExample();
-        example.createCriteria().andDeleteStatusEqualTo(0).andIdIn(ids);
-        int count = orderMapper.updateByExampleSelective(record, example);
-        List<OmsOrderOperateHistory> historyList = ids.stream().map(orderId -> {
+        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(java.util.Objects::isNull)) {
+            return 0;
+        }
+        List<OmsOrderOperateHistory> histories = new java.util.ArrayList<>();
+        for (Long orderId : ids.stream().distinct().sorted().collect(Collectors.toList())) {
+            if (!orderResources.closePendingOrder(orderId)) {
+                continue;
+            }
             OmsOrderOperateHistory history = new OmsOrderOperateHistory();
             history.setOrderId(orderId);
             history.setCreateTime(new Date());
             history.setOperateMan("后台管理员");
             history.setOrderStatus(4);
-            history.setNote("订单关闭:"+note);
-            return history;
-        }).collect(Collectors.toList());
-        orderOperateHistoryDao.insertList(historyList);
-        return count;
+            history.setNote("订单关闭:" + note);
+            histories.add(history);
+        }
+        if (!histories.isEmpty()) {
+            orderOperateHistoryDao.insertList(histories);
+        }
+        return histories.size();
     }
 
     @Override

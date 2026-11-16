@@ -87,6 +87,14 @@
       </view>
       <!-- 浏览历史 -->
       <view class="history-section icon">
+        <!-- #ifdef H5 -->
+        <mix-list-cell
+          icon="icon-pingjia"
+          iconColor="#fa436a"
+          title="智能客服"
+          @eventClick="handleNavTo('/pages/agent/chat')"
+        ></mix-list-cell>
+        <!-- #endif -->
         <mix-list-cell
           icon="icon-dizhi"
           iconColor="#5fcda2"

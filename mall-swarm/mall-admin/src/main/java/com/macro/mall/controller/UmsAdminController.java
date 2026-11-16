@@ -1,9 +1,11 @@
 package com.macro.mall.controller;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.UmsAdminLoginParam;
 import com.macro.mall.dto.UmsAdminParam;
 import com.macro.mall.dto.UpdateAdminPasswordParam;
@@ -16,6 +18,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,11 +48,21 @@ public class UmsAdminController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult<UmsAdmin> register(@Validated @RequestBody UmsAdminParam umsAdminParam) {
+        if (!StpUtil.isLogin()) {
+            return CommonResult.unauthorized(null);
+        }
+        UmsAdmin current = adminService.getCurrentAdmin();
+        boolean mayCreate = adminService.getResourceList(current.getId()).stream()
+                .anyMatch(resource -> resource.getUrl() != null
+                        && new AntPathMatcher().match(resource.getUrl(), "/admin/register"));
+        if (!mayCreate) {
+            return CommonResult.forbidden(null);
+        }
         UmsAdmin umsAdmin = adminService.register(umsAdminParam);
         if (umsAdmin == null) {
             return CommonResult.failed();
         }
-        return CommonResult.success(umsAdmin);
+        return CommonResult.success(withoutPassword(umsAdmin));
     }
 
     @Operation(summary = "登录以后返回token")
@@ -96,8 +110,11 @@ public class UmsAdminController {
     public CommonResult<CommonPage<UmsAdmin>> list(@RequestParam(value = "keyword", required = false) String keyword,
                                                    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        PageValidation.sql(pageNum, pageSize);
         List<UmsAdmin> adminList = adminService.list(keyword, pageSize, pageNum);
-        return CommonResult.success(CommonPage.restPage(adminList));
+        CommonPage<UmsAdmin> page = CommonPage.restPage(adminList);
+        page.setList(adminList.stream().map(this::withoutPassword).collect(Collectors.toList()));
+        return CommonResult.success(page);
     }
 
     @Operation(summary = "获取指定用户信息")
@@ -105,7 +122,16 @@ public class UmsAdminController {
     @ResponseBody
     public CommonResult<UmsAdmin> getItem(@PathVariable Long id) {
         UmsAdmin admin = adminService.getItem(id);
-        return CommonResult.success(admin);
+        return CommonResult.success(withoutPassword(admin));
+    }
+
+    private UmsAdmin withoutPassword(UmsAdmin source) {
+        if (source == null) {
+            return null;
+        }
+        UmsAdmin response = new UmsAdmin();
+        BeanUtils.copyProperties(source, response, "password");
+        return response;
     }
 
     @Operation(summary = "修改指定用户信息")

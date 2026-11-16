@@ -1,0 +1,2298 @@
+[
+  {
+    "name": "ag_staff_profile",
+    "title": "客服接待资料",
+    "requirements": [
+      "R01",
+      "R06"
+    ],
+    "fields": [
+      [
+        "admin_id",
+        "bigint PRIMARY KEY CHECK (admin_id > 0)",
+        "Java 员工 ID，不存登录密码"
+      ],
+      [
+        "display_name",
+        "varchar(80) NOT NULL",
+        "买家可见接待名称"
+      ],
+      [
+        "presence",
+        "varchar(32) NOT NULL DEFAULT 'OFFLINE' CHECK (presence IN ('ONLINE','BUSY','OFFLINE'))",
+        "枚举：ONLINE BUSY OFFLINE"
+      ],
+      [
+        "capacity",
+        "smallint NOT NULL DEFAULT 3 CHECK (capacity BETWEEN 1 AND 20)",
+        "并行接待容量；建议默认 3"
+      ],
+      [
+        "heartbeat_at",
+        "timestamptz",
+        "最后心跳时间"
+      ],
+      [
+        "presence_expires_at",
+        "timestamptz",
+        "心跳租约，超时展示离线，保留接待归属"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE INDEX ix_staff_presence ON ag_staff_profile(presence, presence_expires_at);"
+    ]
+  },
+  {
+    "name": "ag_conversation",
+    "title": "买家会话",
+    "requirements": [
+      "R01",
+      "R02",
+      "R06"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "member_id",
+        "bigint NOT NULL CHECK (member_id > 0)",
+        "Java 会员 ID；跨库不设物理外键"
+      ],
+      [
+        "title",
+        "varchar(100) NOT NULL DEFAULT '新会话'",
+        "用户可修改标题"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'AI_ACTIVE' CHECK (state IN ('AI_ACTIVE','WAITING_HUMAN','HUMAN_ACTIVE','CLOSED'))",
+        "枚举：AI_ACTIVE WAITING_HUMAN HUMAN_ACTIVE CLOSED"
+      ],
+      [
+        "waiting_ai_enabled",
+        "boolean NOT NULL DEFAULT false",
+        "等待人工期间用户是否选择继续 AI"
+      ],
+      [
+        "assigned_admin_id",
+        "bigint REFERENCES ag_staff_profile(admin_id)",
+        "当前接待人"
+      ],
+      [
+        "entry_context",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "仅入口类型和商品/订单 ID，不存未经核验的价格"
+      ],
+      [
+        "next_message_seq",
+        "bigint NOT NULL DEFAULT 1 CHECK (next_message_seq > 0)",
+        "会话行锁内分配消息序号"
+      ],
+      [
+        "memory_epoch",
+        "bigint NOT NULL DEFAULT 1 CHECK (memory_epoch > 0)",
+        "删除/清理时递增，使旧总结及检查点失效"
+      ],
+      [
+        "waiting_since",
+        "timestamptz",
+        "排队时间"
+      ],
+      [
+        "closed_at",
+        "timestamptz",
+        "关闭时间"
+      ],
+      [
+        "deleted_at",
+        "timestamptz",
+        "买家逻辑删除后所有买家入口立即拒绝"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "control_epoch",
+        "bigint NOT NULL DEFAULT 1 CHECK (control_epoch > 0)",
+        "接管、关闭、删除等控制变化递增；普通改名、已读不使生成失效"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "CHECK (state <> 'HUMAN_ACTIVE' OR assigned_admin_id IS NOT NULL)",
+      "CHECK (state = 'WAITING_HUMAN' OR NOT waiting_ai_enabled)"
+    ],
+    "indexes": [
+      "CREATE INDEX ix_conversation_member ON ag_conversation(member_id, updated_at DESC, id DESC) WHERE deleted_at IS NULL;",
+      "CREATE INDEX ix_conversation_queue ON ag_conversation(waiting_since, id) WHERE state = 'WAITING_HUMAN' AND deleted_at IS NULL;",
+      "CREATE INDEX ix_conversation_staff ON ag_conversation(assigned_admin_id, updated_at DESC, id DESC) WHERE deleted_at IS NULL;"
+    ]
+  },
+  {
+    "name": "ag_message",
+    "title": "对买家可见的消息",
+    "requirements": [
+      "R02",
+      "R03",
+      "R06",
+      "R13",
+      "R14"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "seq",
+        "bigint NOT NULL CHECK (seq > 0)",
+        "会话内递增序号；历史分页使用"
+      ],
+      [
+        "sender_kind",
+        "varchar(32) NOT NULL DEFAULT 'MEMBER' CHECK (sender_kind IN ('MEMBER','ASSISTANT','STAFF','SYSTEM'))",
+        "枚举：MEMBER ASSISTANT STAFF SYSTEM"
+      ],
+      [
+        "sender_id",
+        "bigint NOT NULL DEFAULT 0 CHECK (sender_id >= 0)",
+        "人类主体 ID；系统与 AI 为 0"
+      ],
+      [
+        "client_message_id",
+        "uuid",
+        "发送方提供的幂等 UUID；AI/系统消息可空"
+      ],
+      [
+        "status",
+        "varchar(32) NOT NULL DEFAULT 'ACCEPTED' CHECK (status IN ('ACCEPTED','GENERATING','COMPLETED','STOPPED','FAILED','INTERRUPTED'))",
+        "枚举：ACCEPTED GENERATING COMPLETED STOPPED FAILED INTERRUPTED"
+      ],
+      [
+        "text_content",
+        "text NOT NULL DEFAULT ''",
+        "已过滤可展示文本；不存内部思考"
+      ],
+      [
+        "blocks",
+        "jsonb NOT NULL DEFAULT '[]'::jsonb",
+        "按接口定义的商品、订单、来源及操作卡片"
+      ],
+      [
+        "run_id",
+        "uuid",
+        "生成任务 ID，建表后补外键"
+      ],
+      [
+        "reply_to_message_id",
+        "uuid REFERENCES ag_message(id)",
+        "重试/回复关联；不得自动重放写操作"
+      ],
+      [
+        "retention_until",
+        "timestamptz NOT NULL",
+        "默认消息时间加 90 天"
+      ],
+      [
+        "deleted_at",
+        "timestamptz",
+        "删除后禁止读取与进入模型上下文"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(conversation_id, seq)",
+      "UNIQUE(conversation_id, client_message_id)",
+      "CHECK ((sender_kind IN ('MEMBER','STAFF') AND sender_id > 0) OR (sender_kind IN ('ASSISTANT','SYSTEM') AND sender_id = 0))"
+    ],
+    "indexes": [
+      "CREATE INDEX ix_message_history ON ag_message(conversation_id, seq DESC) WHERE deleted_at IS NULL;",
+      "CREATE INDEX ix_message_expiry ON ag_message(retention_until) WHERE deleted_at IS NULL;"
+    ]
+  },
+  {
+    "name": "ag_staff_note",
+    "title": "内部备注",
+    "requirements": [
+      "R06"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "admin_id",
+        "bigint NOT NULL REFERENCES ag_staff_profile(admin_id)",
+        "备注作者"
+      ],
+      [
+        "client_note_id",
+        "uuid NOT NULL",
+        "员工发送幂等键"
+      ],
+      [
+        "body",
+        "text NOT NULL CHECK (length(body) BETWEEN 1 AND 5000)",
+        "仅有权员工可读，不进入买家事件或模型"
+      ],
+      [
+        "retention_until",
+        "timestamptz NOT NULL",
+        "备注留存策略"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(conversation_id, admin_id, client_note_id)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_read_cursor",
+    "title": "已读位置",
+    "requirements": [
+      "R02",
+      "R06"
+    ],
+    "fields": [
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "actor_kind",
+        "varchar(8) NOT NULL CHECK (actor_kind IN ('MEMBER','STAFF'))",
+        "主体类型"
+      ],
+      [
+        "actor_id",
+        "bigint NOT NULL CHECK (actor_id > 0)",
+        "从身份上下文取得"
+      ],
+      [
+        "last_seq",
+        "bigint NOT NULL DEFAULT 0 CHECK (last_seq >= 0)",
+        "仅允许向前移动，不超过可见最大序号"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "PRIMARY KEY(conversation_id, actor_kind, actor_id)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_attachment",
+    "title": "私有附件",
+    "requirements": [
+      "R07",
+      "R13",
+      "R14",
+      "R17"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "owner_kind",
+        "varchar(8) NOT NULL CHECK (owner_kind IN ('MEMBER','STAFF'))",
+        "上传主体类型"
+      ],
+      [
+        "owner_id",
+        "bigint NOT NULL CHECK (owner_id > 0)",
+        "上传主体 ID"
+      ],
+      [
+        "purpose",
+        "varchar(24) NOT NULL CHECK (purpose IN ('CHAT_IMAGE','KNOWLEDGE','RECORDING','SPEECH'))",
+        "用途决定限额和留存"
+      ],
+      [
+        "object_key",
+        "varchar(512) NOT NULL UNIQUE",
+        "私有桶内随机对象键，不接受任意 URL"
+      ],
+      [
+        "original_name",
+        "varchar(255) NOT NULL",
+        "展示文件名，不参与拼接存储路径"
+      ],
+      [
+        "mime_type",
+        "varchar(100) NOT NULL",
+        "实际字节检测所得 MIME"
+      ],
+      [
+        "byte_size",
+        "bigint NOT NULL CHECK (byte_size > 0)",
+        "实际字节数"
+      ],
+      [
+        "sha256",
+        "char(64) NOT NULL CHECK (sha256 ~ '^[0-9a-f]{64}$')",
+        "实际内容哈希"
+      ],
+      [
+        "duration_ms",
+        "integer CHECK (duration_ms BETWEEN 1 AND 60000)",
+        "录音时长，TTS 限制另由配置控制"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'UPLOADING' CHECK (state IN ('UPLOADING','READY','FAILED','DELETING','DELETED'))",
+        "枚举：UPLOADING READY FAILED DELETING DELETED"
+      ],
+      [
+        "retention_until",
+        "timestamptz",
+        "普通图片 90 天；音频 7 天；知识由引用决定"
+      ],
+      [
+        "storage_deleted_at",
+        "timestamptz",
+        "对象物理删除时间"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE INDEX ix_attachment_gc ON ag_attachment(retention_until, id) WHERE state = 'READY';"
+    ]
+  },
+  {
+    "name": "ag_run",
+    "title": "独立生成任务",
+    "requirements": [
+      "R03",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "trigger_message_id",
+        "uuid NOT NULL REFERENCES ag_message(id)",
+        "用户消息；重试沿用原消息"
+      ],
+      [
+        "attempt",
+        "integer NOT NULL DEFAULT 1 CHECK (attempt > 0)",
+        "每条触发消息第几次生成"
+      ],
+      [
+        "retry_of_run_id",
+        "uuid REFERENCES ag_run(id)",
+        "上一失败/停止的生成"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'QUEUED' CHECK (state IN ('QUEUED','RUNNING','COMPLETED','STOP_REQUESTED','STOPPED','FAILED','INTERRUPTED'))",
+        "枚举：QUEUED RUNNING COMPLETED STOP_REQUESTED STOPPED FAILED INTERRUPTED"
+      ],
+      [
+        "conversation_version",
+        "bigint NOT NULL",
+        "对象乐观版本快照，仅供追踪；生成/确认失效使用control_epoch"
+      ],
+      [
+        "memory_epoch",
+        "bigint NOT NULL",
+        "检查点与会话删除世代一致"
+      ],
+      [
+        "checkpoint_thread_id",
+        "varchar(128) NOT NULL",
+        "独立图 schema 的 thread_id，不存令牌"
+      ],
+      [
+        "lease_owner",
+        "varchar(100)",
+        "工作进程租约"
+      ],
+      [
+        "lease_until",
+        "timestamptz",
+        "工作进程续约"
+      ],
+      [
+        "fencing_token",
+        "bigint NOT NULL DEFAULT 1",
+        "旧工作进程不得续写"
+      ],
+      [
+        "started_at",
+        "timestamptz",
+        "开始执行时间"
+      ],
+      [
+        "finished_at",
+        "timestamptz",
+        "终止时间"
+      ],
+      [
+        "error_code",
+        "varchar(80)",
+        "对外稳定错误码，不含供应商原始敏感响应"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "control_epoch",
+        "bigint NOT NULL CHECK (control_epoch > 0)",
+        "生成或准备时的控制世代"
+      ],
+      [
+        "config_snapshot",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "模型与提示词版本、图版本、运行限额；不含秘密"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(trigger_message_id, attempt)"
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX uq_run_active_conversation ON ag_run(conversation_id) WHERE state IN ('QUEUED','RUNNING','STOP_REQUESTED');",
+      "CREATE INDEX ix_run_queue ON ag_run(created_at, id) WHERE state = 'QUEUED';"
+    ]
+  },
+  {
+    "name": "ag_generation_slot",
+    "title": "全局生成名额",
+    "requirements": [
+      "R18"
+    ],
+    "fields": [
+      [
+        "slot_no",
+        "smallint PRIMARY KEY CHECK (slot_no BETWEEN 1 AND 3)",
+        "固定三个名额"
+      ],
+      [
+        "run_id",
+        "uuid UNIQUE REFERENCES ag_run(id)",
+        "被占用的任务"
+      ],
+      [
+        "lease_until",
+        "timestamptz",
+        "异常时等待请求超时及清算后回收"
+      ],
+      [
+        "fencing_token",
+        "bigint NOT NULL DEFAULT 1",
+        "每次领取递增"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": []
+  },
+  {
+    "name": "ag_action",
+    "title": "不可变业务确认操作",
+    "requirements": [
+      "R08",
+      "R09",
+      "R11",
+      "R12",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "member_id",
+        "bigint NOT NULL CHECK (member_id > 0)",
+        "Java 会员 ID；跨库不设物理外键"
+      ],
+      [
+        "action_type",
+        "varchar(24) NOT NULL CHECK (action_type IN ('ADD_CART','CREATE_ORDER','CANCEL_ORDER','CREATE_RETURN'))",
+        "四种受控写操作"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'PENDING_CONFIRMATION' CHECK (state IN ('PENDING_CONFIRMATION','EXECUTING','SUCCEEDED','FAILED','UNKNOWN','CANCELLED','EXPIRED','STALE'))",
+        "枚举：PENDING_CONFIRMATION EXECUTING SUCCEEDED FAILED UNKNOWN CANCELLED EXPIRED STALE"
+      ],
+      [
+        "conversation_version",
+        "bigint NOT NULL",
+        "对象乐观版本快照，仅供追踪；生成/确认失效使用control_epoch"
+      ],
+      [
+        "parameters",
+        "jsonb NOT NULL",
+        "已规范化不可变业务参数；不含令牌"
+      ],
+      [
+        "parameters_hash",
+        "char(64) NOT NULL CHECK (parameters_hash ~ '^[0-9a-f]{64}$')",
+        "按共享规范化算法计算"
+      ],
+      [
+        "quote_id",
+        "uuid",
+        "Java 报价；加车/取消也可带准备快照"
+      ],
+      [
+        "operation_no",
+        "uuid NOT NULL UNIQUE",
+        "等于 action_id；Java/MySQL 唯一操作编号"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "默认准备后 5 分钟"
+      ],
+      [
+        "confirmed_at",
+        "timestamptz",
+        "有效用户点击时间"
+      ],
+      [
+        "result",
+        "jsonb",
+        "业务结果与脱敏卡片，不包含原始令牌"
+      ],
+      [
+        "error_code",
+        "varchar(80)",
+        "已知失败/失效原因"
+      ],
+      [
+        "reconcile_after",
+        "timestamptz",
+        "UNKNOWN 使用原编号核对时间"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "control_epoch",
+        "bigint NOT NULL CHECK (control_epoch > 0)",
+        "生成或准备时的控制世代"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE INDEX ix_action_reconcile ON ag_action(reconcile_after) WHERE state IN ('EXECUTING','UNKNOWN');",
+      "CREATE INDEX ix_action_conversation ON ag_action(conversation_id, created_at DESC);"
+    ]
+  },
+  {
+    "name": "ag_handoff",
+    "title": "排队与接待请求",
+    "requirements": [
+      "R06"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "member_id",
+        "bigint NOT NULL CHECK (member_id > 0)",
+        "Java 会员 ID；跨库不设物理外键"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'WAITING' CHECK (state IN ('WAITING','CLAIMED','WITHDRAWN','CLOSED'))",
+        "枚举：WAITING CLAIMED WITHDRAWN CLOSED"
+      ],
+      [
+        "claimed_admin_id",
+        "bigint REFERENCES ag_staff_profile(admin_id)",
+        "领取人；转交后跟随会话"
+      ],
+      [
+        "reason",
+        "varchar(500)",
+        "转人工原因"
+      ],
+      [
+        "claimed_at",
+        "timestamptz",
+        "领取时间"
+      ],
+      [
+        "finished_at",
+        "timestamptz",
+        "结束时间"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE UNIQUE INDEX uq_handoff_active ON ag_handoff(conversation_id) WHERE state IN ('WAITING','CLAIMED');",
+      "CREATE INDEX ix_handoff_wait ON ag_handoff(created_at, id) WHERE state = 'WAITING';"
+    ]
+  },
+  {
+    "name": "ag_event_outbox",
+    "title": "持久事件与推送发件箱",
+    "requirements": [
+      "R03",
+      "R06",
+      "R18"
+    ],
+    "fields": [
+      [
+        "event_id",
+        "bigint PRIMARY KEY CHECK (event_id > 0)",
+        "在事务末尾锁 ag_event_clock 后显式分配，持锁到提交；禁止 nextval"
+      ],
+      [
+        "conversation_id",
+        "uuid REFERENCES ag_conversation(id)",
+        "会话事件必填；管理任务事件可空"
+      ],
+      [
+        "conversation_version",
+        "bigint",
+        "会话版本；旧生成不可继续展示"
+      ],
+      [
+        "control_epoch",
+        "bigint",
+        "控制世代；与 run_id 一起屏蔽过时生成"
+      ],
+      [
+        "event_type",
+        "varchar(80) NOT NULL",
+        "SSE 类型，见事件契约"
+      ],
+      [
+        "visibility",
+        "varchar(24) NOT NULL CHECK (visibility IN ('CONVERSATION','STAFF_ONLY','PERMISSION'))",
+        "每次订阅/补传重新鉴权"
+      ],
+      [
+        "required_permission",
+        "varchar(100)",
+        "全局管理事件要求的权限"
+      ],
+      [
+        "payload",
+        "jsonb NOT NULL",
+        "只包含该受众可见内容；内部备注单独 STAFF_ONLY"
+      ],
+      [
+        "published_at",
+        "timestamptz",
+        "向通知通道发布成功时间；补传不依赖 Redis"
+      ],
+      [
+        "publish_attempts",
+        "integer NOT NULL DEFAULT 0 CHECK (publish_attempts >= 0)",
+        "有限重试与监控"
+      ],
+      [
+        "retention_until",
+        "timestamptz NOT NULL",
+        "建议事件补传保留 7 天，消息仍按 90 天"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "CHECK ((visibility = 'PERMISSION' AND required_permission IS NOT NULL) OR (visibility <> 'PERMISSION' AND conversation_id IS NOT NULL))"
+    ],
+    "indexes": [
+      "CREATE INDEX ix_outbox_unpublished ON ag_event_outbox(event_id) WHERE published_at IS NULL;",
+      "CREATE INDEX ix_outbox_replay ON ag_event_outbox(conversation_id, event_id);"
+    ]
+  },
+  {
+    "name": "ag_model_profile",
+    "title": "按能力隔离的模型配置",
+    "requirements": [
+      "R16"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "name",
+        "varchar(100) NOT NULL",
+        "配置显示名"
+      ],
+      [
+        "capability",
+        "varchar(20) NOT NULL CHECK (capability IN ('DIALOG','EMBEDDING','RERANK','VISION','ASR','TTS'))",
+        "模型能力"
+      ],
+      [
+        "provider",
+        "varchar(80) NOT NULL",
+        "供应商标识"
+      ],
+      [
+        "model_name",
+        "varchar(160) NOT NULL",
+        "候选模型名，以实际接入验收为准"
+      ],
+      [
+        "endpoint_ref",
+        "varchar(160) NOT NULL",
+        "受控端点注册名，不让普通配置绕过出站白名单"
+      ],
+      [
+        "secret_ref",
+        "varchar(200) NOT NULL",
+        "秘密管理中的引用，普通读取接口不返回"
+      ],
+      [
+        "public_options",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "允许字段白名单，禁止放 API 密钥"
+      ],
+      [
+        "enabled",
+        "boolean NOT NULL DEFAULT false",
+        "实测通过后启用"
+      ],
+      [
+        "is_active",
+        "boolean NOT NULL DEFAULT false",
+        "每种能力唯一活动配置"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "CHECK (NOT is_active OR enabled)"
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX uq_model_active_capability ON ag_model_profile(capability) WHERE is_active;"
+    ]
+  },
+  {
+    "name": "ag_prompt_version",
+    "title": "提示词版本",
+    "requirements": [
+      "R16"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "prompt_key",
+        "varchar(80) NOT NULL",
+        "节点/职责标识"
+      ],
+      [
+        "version_no",
+        "integer NOT NULL CHECK (version_no > 0)",
+        "独立版本序号"
+      ],
+      [
+        "content",
+        "text NOT NULL",
+        "后台受权限保护；不向买家输出"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'DRAFT' CHECK (state IN ('DRAFT','PUBLISHED','RETIRED'))",
+        "枚举：DRAFT PUBLISHED RETIRED"
+      ],
+      [
+        "sha256",
+        "char(64) NOT NULL",
+        "模板摘要"
+      ],
+      [
+        "created_by",
+        "bigint NOT NULL",
+        "Java 员工 ID"
+      ],
+      [
+        "published_at",
+        "timestamptz",
+        "发布时间"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(prompt_key,version_no)"
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX uq_prompt_published ON ag_prompt_version(prompt_key) WHERE state='PUBLISHED';"
+    ]
+  },
+  {
+    "name": "ag_kb_document",
+    "title": "知识逻辑文档",
+    "requirements": [
+      "R05",
+      "R07"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "title",
+        "varchar(200) NOT NULL",
+        "知识标题"
+      ],
+      [
+        "category",
+        "varchar(80) NOT NULL",
+        "配送/售后/FAQ/商品说明"
+      ],
+      [
+        "visibility",
+        "varchar(16) NOT NULL CHECK (visibility IN ('MEMBER','STAFF'))",
+        "检索前授权，回答前复核"
+      ],
+      [
+        "scope",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "适用分类/商品等范围，空对象表示全站"
+      ],
+      [
+        "enabled",
+        "boolean NOT NULL DEFAULT true",
+        "停用后所有新回答立即排除"
+      ],
+      [
+        "active_version_id",
+        "uuid",
+        "活动版本，建表后补同文档复合外键"
+      ],
+      [
+        "created_by",
+        "bigint NOT NULL",
+        "维护员工 ID"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": []
+  },
+  {
+    "name": "ag_kb_version",
+    "title": "知识不可变版本",
+    "requirements": [
+      "R05",
+      "R07"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "document_id",
+        "uuid NOT NULL REFERENCES ag_kb_document(id)",
+        "所属文档"
+      ],
+      [
+        "version_no",
+        "integer NOT NULL CHECK (version_no > 0)",
+        "文档内版本"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'DRAFT' CHECK (state IN ('DRAFT','PARSING','PREVIEW_READY','INDEXING','READY','FAILED','RETIRED'))",
+        "枚举：DRAFT PARSING PREVIEW_READY INDEXING READY FAILED RETIRED"
+      ],
+      [
+        "source_attachment_id",
+        "uuid REFERENCES ag_attachment(id)",
+        "原始 PDF/DOCX；纯文本可空"
+      ],
+      [
+        "source_text",
+        "text",
+        "原始文本或编辑版原文"
+      ],
+      [
+        "parsed_text",
+        "text",
+        "预览确认后的文本"
+      ],
+      [
+        "source_sha256",
+        "char(64) NOT NULL",
+        "内容哈希"
+      ],
+      [
+        "embedding_profile_id",
+        "uuid REFERENCES ag_model_profile(id)",
+        "向量配置版本关联"
+      ],
+      [
+        "embedding_dimension",
+        "integer CHECK (embedding_dimension > 0)",
+        "候选 1024，以实际验收锁定"
+      ],
+      [
+        "index_collection",
+        "varchar(160)",
+        "含模型/维度代号的 Milvus 暂存集合"
+      ],
+      [
+        "chunk_count",
+        "integer NOT NULL DEFAULT 0 CHECK (chunk_count >= 0)",
+        "成功切片数"
+      ],
+      [
+        "quality_report",
+        "jsonb",
+        "质检题集结果，发布前检查"
+      ],
+      [
+        "published_at",
+        "timestamptz",
+        "活动切换时间"
+      ],
+      [
+        "created_by",
+        "bigint NOT NULL",
+        "创建员工 ID"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "embedding_profile_version",
+        "bigint",
+        "与 embedding_profile_id 成对保存的不可变配置版本"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(document_id,version_no)",
+      "UNIQUE(document_id,id)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_kb_chunk",
+    "title": "知识父子切片",
+    "requirements": [
+      "R05",
+      "R07"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "version_id",
+        "uuid NOT NULL REFERENCES ag_kb_version(id)",
+        "所属知识版本"
+      ],
+      [
+        "ordinal",
+        "integer NOT NULL CHECK (ordinal >= 0)",
+        "版本内序号"
+      ],
+      [
+        "chunk_kind",
+        "varchar(8) NOT NULL CHECK (chunk_kind IN ('PARENT','CHILD'))",
+        "子块召回、父块供回答"
+      ],
+      [
+        "parent_chunk_id",
+        "uuid",
+        "同版本父切片；复合外键"
+      ],
+      [
+        "content",
+        "text NOT NULL",
+        "可重建向量的可靠文本"
+      ],
+      [
+        "section_path",
+        "jsonb NOT NULL DEFAULT '[]'::jsonb",
+        "章节路径"
+      ],
+      [
+        "page_start",
+        "integer CHECK (page_start > 0)",
+        "源文档可验证页码；无页码则空"
+      ],
+      [
+        "page_end",
+        "integer",
+        "源结束页码"
+      ],
+      [
+        "vector_key",
+        "varchar(100)",
+        "Milvus 子切片主键"
+      ],
+      [
+        "metadata",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "来源定位和范围"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(version_id,ordinal)",
+      "UNIQUE(version_id,id)",
+      "FOREIGN KEY(version_id,parent_chunk_id) REFERENCES ag_kb_chunk(version_id,id) DEFERRABLE INITIALLY DEFERRED",
+      "CHECK ((chunk_kind='PARENT' AND parent_chunk_id IS NULL) OR (chunk_kind='CHILD' AND parent_chunk_id IS NOT NULL))",
+      "CHECK (page_end IS NULL OR (page_start IS NOT NULL AND page_end >= page_start))"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_attachment_ref",
+    "title": "附件引用与售后保护",
+    "requirements": [
+      "R07",
+      "R13",
+      "R17"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "attachment_id",
+        "uuid NOT NULL REFERENCES ag_attachment(id)",
+        "附件"
+      ],
+      [
+        "ref_kind",
+        "varchar(20) NOT NULL CHECK (ref_kind IN ('MESSAGE','KB_VERSION','RETURN_PROOF','SPEECH'))",
+        "引用类型"
+      ],
+      [
+        "message_id",
+        "uuid REFERENCES ag_message(id)",
+        "消息或播报对应消息"
+      ],
+      [
+        "kb_version_id",
+        "uuid REFERENCES ag_kb_version(id)",
+        "知识版本"
+      ],
+      [
+        "action_id",
+        "uuid REFERENCES ag_action(id)",
+        "售后准备/执行关联；保护 UNKNOWN"
+      ],
+      [
+        "return_apply_id",
+        "bigint",
+        "Java 售后申请 ID，无跨库外键"
+      ],
+      [
+        "protected",
+        "boolean NOT NULL DEFAULT false",
+        "活动售后或结果未知时禁止物理删除"
+      ],
+      [
+        "released_at",
+        "timestamptz",
+        "释放引用的时间"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "CHECK ((ref_kind IN ('MESSAGE','SPEECH') AND message_id IS NOT NULL AND kb_version_id IS NULL AND action_id IS NULL) OR (ref_kind='KB_VERSION' AND kb_version_id IS NOT NULL AND message_id IS NULL AND action_id IS NULL) OR (ref_kind='RETURN_PROOF' AND action_id IS NOT NULL AND message_id IS NULL AND kb_version_id IS NULL))"
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX uq_attachment_message_ref ON ag_attachment_ref(attachment_id,message_id,ref_kind) WHERE released_at IS NULL AND message_id IS NOT NULL;",
+      "CREATE UNIQUE INDEX uq_attachment_kb_ref ON ag_attachment_ref(attachment_id,kb_version_id) WHERE released_at IS NULL AND kb_version_id IS NOT NULL;",
+      "CREATE UNIQUE INDEX uq_attachment_action_ref ON ag_attachment_ref(attachment_id,action_id) WHERE released_at IS NULL AND action_id IS NOT NULL;",
+      "CREATE INDEX ix_attachment_active_refs ON ag_attachment_ref(attachment_id) WHERE released_at IS NULL;"
+    ]
+  },
+  {
+    "name": "ag_job",
+    "title": "后台任务与清理恢复记录",
+    "requirements": [
+      "R07",
+      "R17",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "job_type",
+        "varchar(32) NOT NULL CHECK (job_type IN ('KB_PARSE','KB_INDEX','MODEL_COMPATIBILITY','RETENTION_PREVIEW','RETENTION_EXECUTE','BACKUP_VERIFY','RESTORE_VERIFY','ATTACHMENT_DELETE','ACTION_RECONCILE'))",
+        "任务种类"
+      ],
+      [
+        "state",
+        "varchar(32) NOT NULL DEFAULT 'QUEUED' CHECK (state IN ('QUEUED','RUNNING','SUCCEEDED','FAILED','CANCELLED'))",
+        "枚举：QUEUED RUNNING SUCCEEDED FAILED CANCELLED"
+      ],
+      [
+        "dedupe_key",
+        "varchar(180) NOT NULL",
+        "同版本/同批次不重复执行"
+      ],
+      [
+        "parameters",
+        "jsonb NOT NULL",
+        "类型校验后的 ID 与配置版本，不存凭据"
+      ],
+      [
+        "result",
+        "jsonb",
+        "数量、游标、质检或恢复核对结果"
+      ],
+      [
+        "attempts",
+        "integer NOT NULL DEFAULT 0 CHECK (attempts >= 0)",
+        "有限重试"
+      ],
+      [
+        "max_attempts",
+        "integer NOT NULL DEFAULT 3 CHECK (max_attempts BETWEEN 1 AND 10)",
+        "重试上限"
+      ],
+      [
+        "progress",
+        "smallint NOT NULL DEFAULT 0 CHECK (progress BETWEEN 0 AND 100)",
+        "已处理进度"
+      ],
+      [
+        "lease_until",
+        "timestamptz",
+        "工作进程租约"
+      ],
+      [
+        "error_code",
+        "varchar(80)",
+        "稳定失败码"
+      ],
+      [
+        "error_message",
+        "varchar(500)",
+        "已脱敏失败原因"
+      ],
+      [
+        "created_by",
+        "bigint",
+        "发起员工 ID；系统任务可空"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "lease_owner",
+        "varchar(100)",
+        "任务执行者；写进度时必须匹配"
+      ],
+      [
+        "fencing_token",
+        "bigint NOT NULL DEFAULT 1 CHECK (fencing_token > 0)",
+        "租约重新领取时递增，阻止旧执行者覆盖结果"
+      ],
+      [
+        "next_attempt_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "首次领取与延时重试的最早时间；扫描不能提前执行"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(job_type,dedupe_key)"
+    ],
+    "indexes": [
+      "CREATE INDEX ix_job_queue ON ag_job(next_attempt_at,id) WHERE state='QUEUED';"
+    ]
+  },
+  {
+    "name": "ag_model_call",
+    "title": "调用用量与错误",
+    "requirements": [
+      "R16",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "run_id",
+        "uuid REFERENCES ag_run(id)",
+        "对话生成可关联；独立媒体任务可空"
+      ],
+      [
+        "job_id",
+        "uuid REFERENCES ag_job(id)",
+        "知识/清理等任务关联"
+      ],
+      [
+        "profile_id",
+        "uuid NOT NULL REFERENCES ag_model_profile(id)",
+        "配置"
+      ],
+      [
+        "profile_version",
+        "bigint NOT NULL",
+        "调用时配置版本"
+      ],
+      [
+        "prompt_version_id",
+        "uuid REFERENCES ag_prompt_version(id)",
+        "使用的提示词版本"
+      ],
+      [
+        "provider_request_id",
+        "varchar(160)",
+        "供应商请求追踪号"
+      ],
+      [
+        "capability",
+        "varchar(20) NOT NULL",
+        "按能力统计"
+      ],
+      [
+        "status",
+        "varchar(16) NOT NULL CHECK (status IN ('SUCCEEDED','FAILED','CANCELLED','UNKNOWN'))",
+        "调用结果"
+      ],
+      [
+        "input_tokens",
+        "bigint CHECK (input_tokens >= 0)",
+        "未报告时为空，不伪记为 0"
+      ],
+      [
+        "output_tokens",
+        "bigint CHECK (output_tokens >= 0)",
+        "未报告时为空"
+      ],
+      [
+        "billable_units",
+        "numeric(20,6) CHECK (billable_units >= 0)",
+        "语音时长、字符或其他计费单位"
+      ],
+      [
+        "estimated_cost",
+        "numeric(20,6) CHECK (estimated_cost >= 0)",
+        "估算值；不是供应商最终账单"
+      ],
+      [
+        "latency_ms",
+        "bigint NOT NULL CHECK (latency_ms >= 0)",
+        "耗时"
+      ],
+      [
+        "media_request_id",
+        "uuid",
+        "关联会员语音请求，与run/job互斥"
+      ],
+      [
+        "error_code",
+        "varchar(80)",
+        "稳定错误码"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE INDEX ix_model_call_time ON ag_model_call(created_at DESC,capability);"
+    ]
+  },
+  {
+    "name": "ag_audit_log",
+    "title": "受限操作审计",
+    "requirements": [
+      "R01",
+      "R06",
+      "R16",
+      "R17",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "actor_kind",
+        "varchar(16) NOT NULL",
+        "MEMBER/STAFF/SYSTEM"
+      ],
+      [
+        "actor_id",
+        "bigint",
+        "责任主体；系统可空"
+      ],
+      [
+        "operation",
+        "varchar(100) NOT NULL",
+        "领取/发布/查看受限资料/执行等"
+      ],
+      [
+        "resource_type",
+        "varchar(60) NOT NULL",
+        "资源类型"
+      ],
+      [
+        "resource_id",
+        "varchar(120) NOT NULL",
+        "资源主键"
+      ],
+      [
+        "request_id",
+        "uuid NOT NULL",
+        "贯穿 API、任务和 Java 的追踪号"
+      ],
+      [
+        "outcome",
+        "varchar(24) NOT NULL",
+        "成功/拒绝/失败"
+      ],
+      [
+        "details",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "脱敏摘要与版本差异，禁止秘密和整段私聊"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE INDEX ix_audit_resource ON ag_audit_log(resource_type,resource_id,created_at DESC);",
+      "CREATE INDEX ix_audit_request ON ag_audit_log(request_id);"
+    ]
+  },
+  {
+    "name": "ag_feedback",
+    "title": "回答反馈",
+    "requirements": [
+      "R15"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "message_id",
+        "uuid NOT NULL REFERENCES ag_message(id)",
+        "只能反馈本人会话中的可见 AI 回答"
+      ],
+      [
+        "member_id",
+        "bigint NOT NULL CHECK (member_id > 0)",
+        "Java 会员 ID；跨库不设物理外键"
+      ],
+      [
+        "vote",
+        "smallint NOT NULL CHECK (vote IN (-1,1))",
+        "赞为 1，踩为 -1"
+      ],
+      [
+        "reason",
+        "varchar(500)",
+        "可选理由"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(member_id,message_id)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_setting",
+    "title": "版本化业务与运维配置",
+    "requirements": [
+      "R16",
+      "R17"
+    ],
+    "fields": [
+      [
+        "key",
+        "varchar(100) PRIMARY KEY",
+        "只允许受控键；秘密禁止入此表"
+      ],
+      [
+        "value",
+        "jsonb NOT NULL",
+        "用对应配置 schema 校验"
+      ],
+      [
+        "updated_by",
+        "bigint NOT NULL",
+        "员工 ID"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "更新时间，由应用在同一事务内维护"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本，成功更新递增"
+      ]
+    ],
+    "constraints": [],
+    "indexes": []
+  },
+  {
+    "name": "ag_context_summary",
+    "title": "可清理上下文总结",
+    "requirements": [
+      "R02",
+      "R17",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "服务端生成 UUID v4"
+      ],
+      [
+        "conversation_id",
+        "uuid NOT NULL REFERENCES ag_conversation(id)",
+        "所属会话"
+      ],
+      [
+        "memory_epoch",
+        "bigint NOT NULL",
+        "旧 epoch 的总结禁止使用"
+      ],
+      [
+        "through_seq",
+        "bigint NOT NULL CHECK (through_seq > 0)",
+        "覆盖至消息序号"
+      ],
+      [
+        "summary",
+        "text NOT NULL",
+        "不作为业务事实，随源消息删除失效"
+      ],
+      [
+        "retention_until",
+        "timestamptz NOT NULL",
+        "不长于最早源消息的保留期"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(conversation_id,memory_epoch,through_seq)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_request_dedupe",
+    "title": "普通写接口幂等记录",
+    "requirements": [
+      "R03",
+      "R06",
+      "R18"
+    ],
+    "fields": [
+      [
+        "scope",
+        "varchar(120) NOT NULL",
+        "接口操作作用域"
+      ],
+      [
+        "actor_kind",
+        "varchar(8) NOT NULL CHECK (actor_kind IN ('MEMBER','STAFF'))",
+        "主体类型"
+      ],
+      [
+        "actor_id",
+        "bigint NOT NULL",
+        "当前身份"
+      ],
+      [
+        "idempotency_key",
+        "uuid NOT NULL",
+        "请求头 Idempotency-Key"
+      ],
+      [
+        "request_hash",
+        "char(64) NOT NULL",
+        "同键不同请求返回 409"
+      ],
+      [
+        "response_ref",
+        "jsonb NOT NULL",
+        "已提交结果引用，重放前重新鉴权"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "建议普通请求至少保留 24 小时；业务幂等由 MySQL 永久约束"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "PRIMARY KEY(scope,actor_kind,actor_id,idempotency_key)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_erasure_tombstone",
+    "title": "删除标记",
+    "requirements": [
+      "R02",
+      "R17",
+      "R18"
+    ],
+    "fields": [
+      [
+        "resource_type",
+        "varchar(40) NOT NULL",
+        "CONVERSATION/MESSAGE/ATTACHMENT"
+      ],
+      [
+        "resource_id",
+        "varchar(120) NOT NULL",
+        "最小必要不可恢复标识"
+      ],
+      [
+        "memory_epoch",
+        "bigint",
+        "会话删除世代"
+      ],
+      [
+        "erased_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "所有消费者与恢复流程必须检查"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "PRIMARY KEY(resource_type,resource_id)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_event_clock",
+    "title": "提交有序事件时钟",
+    "requirements": [
+      "R03",
+      "R06",
+      "R18"
+    ],
+    "fields": [
+      [
+        "singleton_id",
+        "smallint PRIMARY KEY CHECK (singleton_id=1)",
+        "全库单行事件时钟"
+      ],
+      [
+        "last_event_id",
+        "bigint NOT NULL DEFAULT 0 CHECK (last_event_id >= 0)",
+        "仅由事件写入器在事务末尾更新"
+      ],
+      [
+        "replay_floor",
+        "bigint NOT NULL DEFAULT 0 CHECK (replay_floor >= 0 AND replay_floor <= last_event_id)",
+        "已删除连续事件前缀上界；after 小于此值要求快照重同步"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "同事务维护更新时间"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本"
+      ]
+    ],
+    "constraints": [],
+    "indexes": []
+  },
+  {
+    "name": "ag_action_dispatch",
+    "title": "确认投递与结果核对",
+    "requirements": [
+      "R08",
+      "R09",
+      "R11",
+      "R12",
+      "R18"
+    ],
+    "fields": [
+      [
+        "action_id",
+        "uuid PRIMARY KEY REFERENCES ag_action(id)",
+        "一个业务操作只有一个投递记录"
+      ],
+      [
+        "state",
+        "varchar(24) NOT NULL DEFAULT 'READY' CHECK (state IN ('READY','DISPATCHING','RECONCILING','TERMINAL','MANUAL_REQUIRED'))",
+        "首次投递及仅核对状态"
+      ],
+      [
+        "confirmation_audit_id",
+        "uuid NOT NULL REFERENCES ag_audit_log(id)",
+        "实际点击确认的审计记录"
+      ],
+      [
+        "reconcile_grant_ciphertext",
+        "bytea NOT NULL",
+        "仅核对凭据的加密信封；不含会员登录令牌，不授予执行业务权"
+      ],
+      [
+        "grant_key_version",
+        "varchar(80) NOT NULL",
+        "库外信封加密密钥的版本"
+      ],
+      [
+        "grant_expires_at",
+        "timestamptz NOT NULL",
+        "过期重新认证后续签原操作核对权"
+      ],
+      [
+        "dispatch_started_at",
+        "timestamptz",
+        "首次执行尝试时刻；恢复不再次投递执行业务请求"
+      ],
+      [
+        "next_attempt_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "核对调度时刻"
+      ],
+      [
+        "attempts",
+        "integer NOT NULL DEFAULT 0 CHECK (attempts >= 0)",
+        "核对次数"
+      ],
+      [
+        "lease_owner",
+        "varchar(100)",
+        "核对 worker"
+      ],
+      [
+        "lease_until",
+        "timestamptz",
+        "核对租约"
+      ],
+      [
+        "fencing_token",
+        "bigint NOT NULL DEFAULT 1 CHECK (fencing_token > 0)",
+        "旧 worker 禁止覆盖结果"
+      ],
+      [
+        "last_error_code",
+        "varchar(80)",
+        "脱敏失败码"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "同事务维护更新时间"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本"
+      ]
+    ],
+    "constraints": [],
+    "indexes": [
+      "CREATE INDEX ix_dispatch_due ON ag_action_dispatch(next_attempt_at,action_id) WHERE state IN ('READY','DISPATCHING','RECONCILING');"
+    ]
+  },
+  {
+    "name": "ag_model_profile_version",
+    "title": "不可变模型配置版本",
+    "requirements": [
+      "R07",
+      "R16",
+      "R18"
+    ],
+    "fields": [
+      [
+        "profile_id",
+        "uuid NOT NULL REFERENCES ag_model_profile(id)",
+        "所属能力配置"
+      ],
+      [
+        "version_no",
+        "bigint NOT NULL CHECK (version_no > 0)",
+        "对应保存时 profile.version，不覆盖旧版本"
+      ],
+      [
+        "name",
+        "varchar(100) NOT NULL",
+        "保存时显示名称"
+      ],
+      [
+        "enabled",
+        "boolean NOT NULL",
+        "该版本启用状态"
+      ],
+      [
+        "is_active",
+        "boolean NOT NULL",
+        "该版本活动状态；切换产生新版本"
+      ],
+      [
+        "capability",
+        "varchar(20) NOT NULL",
+        "调用能力"
+      ],
+      [
+        "provider",
+        "varchar(80) NOT NULL",
+        "供应商标识"
+      ],
+      [
+        "model_name",
+        "varchar(160) NOT NULL",
+        "实际模型标识"
+      ],
+      [
+        "endpoint_ref",
+        "varchar(160) NOT NULL",
+        "不可变端点注册版本名"
+      ],
+      [
+        "secret_version_ref",
+        "varchar(200) NOT NULL",
+        "仅受限适配器可解析；普通读取不返回"
+      ],
+      [
+        "public_options",
+        "jsonb NOT NULL",
+        "白名单内非秘密参数快照"
+      ],
+      [
+        "snapshot_sha256",
+        "char(64) NOT NULL CHECK (snapshot_sha256 ~ '^[0-9a-f]{64}$')",
+        "公开快照规范化哈希"
+      ],
+      [
+        "compatibility_evidence",
+        "jsonb NOT NULL DEFAULT '{}'::jsonb",
+        "脱敏证据快照；激活时引用匹配配置哈希与适配器版本的成功任务，不覆盖旧证据"
+      ],
+      [
+        "created_by",
+        "bigint NOT NULL",
+        "配置保存责任人"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "PRIMARY KEY(profile_id,version_no)"
+    ],
+    "indexes": []
+  },
+  {
+    "name": "ag_quota_reservation",
+    "title": "供应商调用额度预留",
+    "requirements": [
+      "R16",
+      "R18"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "预留记录标识"
+      ],
+      [
+        "call_id",
+        "uuid NOT NULL",
+        "在供应商调用之前生成的稳定编号"
+      ],
+      [
+        "bucket_key",
+        "varchar(180) NOT NULL",
+        "能力/配置/主体/UTC日；不因版本切换清零"
+      ],
+      [
+        "period_start",
+        "timestamptz NOT NULL",
+        "计量窗口起点"
+      ],
+      [
+        "unit_kind",
+        "varchar(24) NOT NULL CHECK (unit_kind IN ('TOKEN','SECOND','CHARACTER','REQUEST'))",
+        "不同单位禁止混加"
+      ],
+      [
+        "reserved_units",
+        "numeric(20,6) NOT NULL CHECK (reserved_units >= 0)",
+        "调用前保守预留量"
+      ],
+      [
+        "settled_units",
+        "numeric(20,6) CHECK (settled_units >= 0)",
+        "未报告时为空"
+      ],
+      [
+        "state",
+        "varchar(16) NOT NULL DEFAULT 'RESERVED' CHECK (state IN ('RESERVED','SETTLED','RELEASED','UNKNOWN'))",
+        "未知计费不能因租约到期自动释放"
+      ],
+      [
+        "profile_id",
+        "uuid NOT NULL REFERENCES ag_model_profile(id)",
+        "计费所属配置"
+      ],
+      [
+        "profile_version",
+        "bigint NOT NULL",
+        "不可变模型版本"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "异常核对期限；不等于自动返还额度"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ],
+      [
+        "updated_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "同事务维护更新时间"
+      ],
+      [
+        "version",
+        "bigint NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "乐观锁版本"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(call_id,bucket_key)",
+      "FOREIGN KEY(profile_id,profile_version) REFERENCES ag_model_profile_version(profile_id,version_no)"
+    ],
+    "indexes": [
+      "CREATE INDEX ix_quota_bucket ON ag_quota_reservation(bucket_key,period_start,state);"
+    ]
+  },
+  {
+    "name": "ag_media_request",
+    "title": "会员语音请求与调用归属",
+    "requirements": [
+      "R14",
+      "R16",
+      "R17"
+    ],
+    "fields": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "语音请求编号"
+      ],
+      [
+        "member_id",
+        "bigint NOT NULL CHECK(member_id>0)",
+        "Java会员身份"
+      ],
+      [
+        "kind",
+        "varchar(8) NOT NULL CHECK(kind IN ('ASR','TTS'))",
+        "转写或播报"
+      ],
+      [
+        "idempotency_key",
+        "uuid NOT NULL",
+        "会员逻辑请求键"
+      ],
+      [
+        "request_hash",
+        "char(64) NOT NULL",
+        "来源与请求参数哈希"
+      ],
+      [
+        "cache_key",
+        "char(64)",
+        "当前回答文本、段落、音色及模型版本缓存键"
+      ],
+      [
+        "attachment_id",
+        "uuid REFERENCES ag_attachment(id)",
+        "转写的本人录音"
+      ],
+      [
+        "message_id",
+        "uuid REFERENCES ag_message(id)",
+        "播报的本人可见回答"
+      ],
+      [
+        "state",
+        "varchar(16) NOT NULL DEFAULT 'RUNNING' CHECK(state IN ('RUNNING','SUCCEEDED','FAILED','UNKNOWN'))",
+        "中断不自动重调供应商"
+      ],
+      [
+        "lease_owner",
+        "varchar(100) NOT NULL",
+        "当前HTTP执行者"
+      ],
+      [
+        "fencing_token",
+        "bigint NOT NULL DEFAULT 1",
+        "请求执行栅栏"
+      ],
+      [
+        "lease_until",
+        "timestamptz NOT NULL DEFAULT now()+interval '5 minutes'",
+        "供应商调用授权期限"
+      ],
+      [
+        "result",
+        "jsonb",
+        "转写或私有播报引用，按期限清理"
+      ],
+      [
+        "error_code",
+        "varchar(80)",
+        "脱敏错误码"
+      ],
+      [
+        "retention_until",
+        "timestamptz NOT NULL DEFAULT now()+interval '7 days'",
+        "最多7天保留"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "创建时间，统一 UTC 存储"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE(member_id,kind,idempotency_key)",
+      "CHECK((kind='ASR' AND attachment_id IS NOT NULL AND message_id IS NULL) OR (kind='TTS' AND message_id IS NOT NULL AND attachment_id IS NULL))"
+    ],
+    "indexes": [
+      "CREATE INDEX ix_media_retention ON ag_media_request(retention_until);"
+    ]
+  }
+]

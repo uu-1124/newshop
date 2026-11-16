@@ -13,6 +13,8 @@ public class CartPromotionItem extends OmsCartItem{
     private String promotionMessage;
     //促销活动减去的金额，针对每个商品
     private BigDecimal reduceAmount;
+    // Exact discount for this cart row. reduceAmount remains a display-only unit average.
+    private BigDecimal promotionTotal;
     //商品的真实库存（剩余库存-锁定库存）
     private Integer realStock;
     //购买商品赠送积分
@@ -33,6 +35,18 @@ public class CartPromotionItem extends OmsCartItem{
 
     public void setReduceAmount(BigDecimal reduceAmount) {
         this.reduceAmount = reduceAmount;
+    }
+
+    public BigDecimal getPromotionTotal() {
+        return promotionTotal != null ? promotionTotal : reduceAmount.multiply(BigDecimal.valueOf(getQuantity()));
+    }
+
+    public void setPromotionTotal(BigDecimal promotionTotal) {
+        this.promotionTotal = promotionTotal;
+    }
+
+    public BigDecimal getPayableTotal() {
+        return getPrice().multiply(BigDecimal.valueOf(getQuantity())).subtract(getPromotionTotal());
     }
 
     public Integer getRealStock() {

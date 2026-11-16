@@ -1,6 +1,10 @@
 # mall-swarm 本机开发环境
 
-当前采用 **本机运行 Java 后端、两个 Vue 前端，服务器运行中间件容器** 的方式。业务源码来自官方仓库，版本固定在 [source-lock.json](deployment/source-lock.json)。本次仅增加运行配置、演示资源和启停工具，没有修改官方 Java/Vue 业务代码。
+当前采用 **本机运行 Java 后端、两个 Vue 前端及 Python 智能体，服务器运行中间件容器** 的方式。上游版本固定在 [source-lock.json](deployment/source-lock.json)，工作区包含后续业务修复及智能体增量代码。
+
+截至2026-11-12，本轮订单聊天/确认取消、按明细退货闭环/演示物流、DIRECT直购已完成本机运行验收；支付与退款保持演示。最新完成项、未完成范围及证据见 [20](docs/20-订单售后与直购实施跟踪.md)，当前部署为 `deployment/order-lifecycle-manifest.json`。已有20模块、122设计操作、88激活Python操作及12工作流节点；整体仍为PARTIAL，通用留存、完整统计/治理、备份恢复核验和语音业务尚未完成。
+
+此前已运行文字/图片咨询、知识检索引用、人工接待、加购/购物车下单及六组扩展，见 [14](docs/14-知识管理与引用闭环验收.md)、[15](docs/15-人工接待闭环实施与验收.md)、[16](docs/16-加购确认与结果核对闭环验收.md)、[17](docs/17-复用Java计价与订单创建闭环验收.md)、[19](docs/19-扩展功能实施跟踪.md)。启动见 [mall-agent/README](mall-agent/README.md)，运行基础与结构清单见 [13](docs/13-运行基础实施与验收.md)、[12](docs/12-整体工程框架与模块落地清单.md)。
 
 ## 访问
 
@@ -8,6 +12,10 @@
 | --- | --- | --- |
 | 买家端，支持前端热更新 | http://127.0.0.1:5173/ | `member` / `MallDemo2026!` |
 | 管理后台，支持前端热更新 | http://127.0.0.1:5100/ | `admin` / `MallDemo2026!` |
+| 员工人工接待 | http://127.0.0.1:5100/#/agent/service | 使用后台登录态，专用接待角色 |
+| 员工知识管理 | http://127.0.0.1:5100/#/agent/knowledge | 使用后台登录态，新增专用知识角色 |
+| 员工订单售后与演示物流 | http://127.0.0.1:5100/#/agent/operations | 使用后台登录态，专用售后/物流权限 |
+| 智能体架构演示 | http://127.0.0.1:5173/#/pages/agent/chat | 使用买家登录态 |
 | 后端网关 | http://127.0.0.1:8201/ | 业务接口需要登录令牌 |
 | Spring Boot Admin | http://127.0.0.1:8101/ | 官方内存账号 `macro` / `123456`，仅本机监听 |
 | Nacos | http://127.0.0.1:18848/nacos/ | 开发环境内部控制台 |
@@ -24,7 +32,7 @@
 & D:\newshop\deployment\stop-local.ps1
 ```
 
-第一个命令启动 SSH 隧道、演示图片服务、6 个 Java 服务和两个前端开发服务器；第二个命令停止这批本机进程。服务器中间件不受停止本机的操作影响。SSH 断线会自动尝试重连，连接恢复前业务接口可能报错。
+第一个命令启动 SSH 隧道、演示图片服务、6 个 Java 服务和两个前端开发服务器；启用智能体配置时还启动 API、generation、scheduler、jobs、outbox 五类进程。第二个命令停止受管理的本机进程树。服务器中间件不受停止本机的操作影响。SSH 断线会自动尝试重连，连接恢复前业务接口可能报错。
 
 源码位置：`mall-swarm/` 是 Java 后端，`mall-admin-web/` 是管理前端，`mall-app-web/` 是买家前端。前端保存源码后由 Vite 热更新。
 
@@ -33,6 +41,8 @@
 ```powershell
 & D:\newshop\deployment\rebuild-backend.ps1
 ```
+
+智能体启用后 portal/gateway/admin 使用 `.run/agent-jars` 中的暂存包，完整重建脚本会同步刷新。只构建这三个模块时可使用 [智能体构建和切包流程](mall-agent/README.md)。
 
 也可用 IDE 启动某个后端模块；先停止该模块当前的 Java 进程，再给 IDE 配置下面的启动参数，其余服务和 SSH 隧道继续运行。以 admin 为例：
 
@@ -45,7 +55,7 @@ JDK 17：`D:\develop\jdk-17`；Maven：`D:\develop\maven`；Node 22：`D:\develo
 
 ## 服务器与连接
 
-服务器 `113.249.103.102` 的 `/opt/mall-swarm/` 只保留以下 7 个中间件容器及其数据：MySQL 8、Redis 7、MongoDB 7、RabbitMQ 3、Nacos 2、Elasticsearch 8.18（IK 8.18）、MinIO。
+服务器 `113.249.103.102` 的 `/opt/mall-swarm/` 保留以下 7 个中间件容器及其数据：MySQL 8、Redis 7、MongoDB 7、RabbitMQ 3、Nacos 2、Elasticsearch 8.18（IK 8.18）、MinIO。另在 `/opt/mall-agent/` 部署独立 PostgreSQL 16，在 `/opt/mall-agent-vector/` 部署 Milvus、etcd 和专用 MinIO 三容器栈。聊天图片使用商城 MinIO 中的独立私有桶，详情见 11。
 
 中间件只绑定服务器 `127.0.0.1`，通过已有 SSH 22 端口转发到本机，无需开放公网 80 或 9000 端口。
 
@@ -54,11 +64,13 @@ JDK 17：`D:\develop\jdk-17`；Maven：`D:\develop\maven`；Node 22：`D:\develo
 | 13306 | 3306 | MySQL，数据库 `mall`，账号 `mall` |
 | 16379 | 6379 | Redis |
 | 27018 | 27017 | MongoDB |
-| 15672 | 5672 | RabbitMQ AMQP，虚拟主机 `/mall` |
+| 15672 | 5672 | RabbitMQ AMQP，商城虚拟主机 `/mall`，智能体隔离虚拟主机 `/mall-agent` |
 | 15673 | 15672 | RabbitMQ 管理页面 |
 | 18848 / 19848 | 8848 / 9848 | Nacos HTTP / 客户端 gRPC |
 | 19200 | 9200 | Elasticsearch |
 | 19000 / 19001 | 9000 / 9001 | MinIO API / 控制台 |
+| 15432 | 15432 | 智能体 PostgreSQL；数据库 mall_agent |
+| 19530 / 19091 | 19530 / 19091 | 智能体 Milvus RPC / 健康检查 |
 | 18080 | 本机资源目录 | 演示图片服务 |
 
 连接凭据保存在本机 `deployment/.dev-ssh.json`、`deployment/secrets.json`，生成配置在 `deployment/config/`、`deployment/compose.yaml`。这些文件和运行日志、jar、node_modules 均已排除 Git；请保留这些本机配置。服务器上的 Compose 文件也包含连接密码，权限为 600。
@@ -78,3 +90,7 @@ JDK 17：`D:\develop\jdk-17`；Maven：`D:\develop\maven`；Node 22：`D:\develo
 ## 旧项目备份
 
 旧本机项目移至 `D:\newshop-backup-20261108`。旧服务器项目和数据库备份在 `/opt/project-backups/newbee-before-mall-swarm-20261108/`。旧项目容器已移除。Docker 引擎运行目录保留用于新中间件，不属于旧业务程序。
+
+当前版本字符串仍为 `order-0.9`，PG迁移0007。CART/DIRECT报价与确认下单、未付款取消、本人订单查询、退货处理和演示物流已接入。入口为咨询页的结算、直接购买及“我的订单、物流与售后”，详见 [本轮验收](docs/20-订单售后与直购实施跟踪.md)。真实支付/退款按用户要求不接入。
+
+2026-11-12 结算金额门槛与优惠尾差修复 `ORDER_CHECKOUT_CENTS_V2` 已切换至运行包。此前 66 项 Java 回归及最终源码补测、Python 离线专项、两端类型检查和构建均通过；现已完成真实网关旧卡失效、重复确认、原编号恢复、智能体及普通下单与关闭恢复，并核对浏览器确认卡至原订单详情。测试订单 110、111 已取消，库存与积分恢复；未支付、未调用模型、未重启服务器容器。该结算阶段部署记录见 `deployment/pricing-manifest.json`，当前以文档20为准；该阶段完整证据见 [本轮结果与下一步](docs/18-结算金额修复与质量检查收口.md)。

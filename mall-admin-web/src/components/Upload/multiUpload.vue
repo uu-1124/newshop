@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
 import { ossPolicyAPI } from '@/apis/oss' // 假设这是API文件的正确路径
 import { Plus } from '@element-plus/icons-vue'
 import {
@@ -39,6 +40,8 @@ const dataObj = ref({
 const dialogVisible = ref(false)
 // 是否使用OSS上传
 const useOss = import.meta.env.VITE_USE_OSS === 'true'
+const userStore = useUserStore()
+const uploadHeaders = computed(() => useOss ? {} : { Authorization: userStore.userInfo.token })
 // oss上传路径
 const ossUploadUrl = import.meta.env.VITE_OSS_UPLOAD_URL
 // minio上传路径
@@ -138,7 +141,7 @@ const ossHttpRequest = (options: UploadRequestOptions) => {
 
 // 处理图片上传成功
 const handleUploadSuccess: UploadProps['onSuccess'] = (res, file) => {
-  if (!useOss && res.code === 500) {
+  if (!useOss && res.code !== 200) {
     // MinIO文件上传失败处理
     ElMessage({
       message: '文件上传失败！',
@@ -164,6 +167,7 @@ const handleUploadSuccess: UploadProps['onSuccess'] = (res, file) => {
   <div>
     <el-upload
       :action="useOss ? ossUploadUrl : minioUploadUrl"
+      :headers="uploadHeaders"
       list-type="picture-card"
       :file-list="fileList"
       :limit="maxCount"

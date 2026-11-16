@@ -7,7 +7,7 @@
       class="uni-numbox-value"
       type="number"
       :disabled="disabled"
-      :value="inputValue"
+      :value="String(inputValue)"
       @blur="_onBlur"
     />
     <view class="uni-numbox-plus" @click="_calcValue('add')">
@@ -109,12 +109,10 @@ const _getDecimalScale = () => {
 }
 
 const _onBlur = (event: { detail: { value: string } }) => {
-  let value = event.detail.value
-  if (!value) {
-    inputValue.value = 0
+  let value = Number(event.detail.value)
+  if (!Number.isFinite(value)) {
     return
   }
-  value = +value
   if (value > (props.max ?? Infinity)) {
     value = props.max ?? Infinity
   } else if (value < (props.min ?? -Infinity)) {

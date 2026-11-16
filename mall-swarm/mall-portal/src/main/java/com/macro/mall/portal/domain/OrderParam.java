@@ -23,4 +23,7 @@ public class OrderParam {
     private Integer payType;
     @Schema(title = "被选中的购物车商品ID")
     private List<Long> cartIds;
+    // Only trusted Java adapters may construct direct selections. Never bind these from public JSON.
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private List<com.macro.mall.model.OmsCartItem> directItems;
 }

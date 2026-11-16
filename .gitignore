@@ -17,3 +17,9 @@ deployment/*.tar.gz
 deployment/evidence/
 deployment/minio-runtime/minio
 deployment/minio-runtime/minio.sha256
+mall-agent/.venv/
+mall-agent/.env
+mall-agent/.pytest_cache/
+mall-agent/.ruff_cache/
+**/__pycache__/
+*.pyc

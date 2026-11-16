@@ -1,0 +1,67 @@
+{
+  "schema": "consistent-backup-delivery-v1",
+  "created_at": "2026-11-13T10:38:29.608873+00:00",
+  "goal_status": "active",
+  "report": "docs/27-一致备份与隔离恢复阶段验收.md",
+  "implementation_scope": "CLI consistent backup and isolated restore; backend binding and periodic operations incomplete",
+  "source_sha256": {
+    "deployment/backup_archive.py": "aa917797dd5e34f7b48573c76de6ce6b77ccc31a184939b8ba82d35f7f15cf5c",
+    "deployment/backup_data.py": "b846b916c21ebe936d04c579e30f63277f8f5b05630c275c6a50a7fa758c2300",
+    "deployment/backup-agent-consistent.py": "9b3ed6384550331516a87d5dafee7dc5dd02376f96abff577d7190b16887e73f",
+    "deployment/backup-remote.py": "a292aa3cda3899a743d0d577d838d617c5c9bfd16d0984b536198f2911daba63",
+    "deployment/backup-transport.cjs": "8582bf0a6e3ebbedb97d93328a3ffa2459b3d20f78bb1850492ba559316aa0ad",
+    "deployment/restore_safety.py": "a2050898ccad11ea903d36dec9430bbb43daddefba02ed1d2894386772e6e04a",
+    "deployment/restore-agent-isolated.py": "e0c28820355fb802fca28d8858ed696fe8ec2448d81e89d3f1cc8b3e707194d9",
+    "deployment/agent-maintenance.ps1": "7b7a4c161f9c6686de9f15d2763ce89070f2b77e3535d6949e35e33256441cdb",
+    "deployment/maintenance-state.cjs": "2c136070359f12fdd75d51d1a111b490740abeabf85772b9ef87f33432a29f8b",
+    "deployment/dev.cjs": "f18da50cb7b99604ec537b9e78adf67e5cd087872545d1cb6af3d39e5bde7dbb",
+    "deployment/test/maintenance-state.test.cjs": "4cc9229bd8a624100b55168fa188a5af3c33633aa387641846fc2bd585d82acf",
+    "deployment/test/dev-encoding.test.cjs": "cd01632023ab2d2303d9c236296bed7d0655158bd8bb0b8e77f75599fe986782",
+    "deployment/test/process-state.test.cjs": "791b03ee68f4dd79c798610ed7aba21b69bbd5e4e63686b2b58cfb75af2e81ea",
+    "mall-agent/tests/test_backup_archive.py": "ad1e9928990fd4531376bd1e4778aca58876f81034fd753c93dd9eda668e7e5f",
+    "mall-agent/tests/test_restore_safety.py": "dfe5b916e151300d6e95ce48066660a1b3319265db64115c553697f9bbdabed2",
+    "docs/27-一致备份与隔离恢复阶段验收.md": "91cb370881986f8ea8cdd4829fe28f79c32bf9c14d2b53b4cbe803e86337eda6",
+    "docs/22-智能体完整功能补齐跟踪.md": "18ba984acc20335bb4312658d0c0d2e2b4b78b316ab426eeb35dc1325ee291cd",
+    "docs/26-智能体需求架构现状复核.md": "b4740f69e14ea8adc8a86c620db4ea6356105a498543272a9537e68f3a2aec1f",
+    "docs/00-设计导航.md": "2c319aa21478839922d3c85ae473bb34c7eae25dd480990bad27fca6860f93b6"
+  },
+  "evidence_sha256": {
+    "completion-consistent-backup-20261113.log": "08f1729993a7121d9866a0bcac281b20d842e1e2abd0e45b13a7ee0e1bfbe0aa",
+    "completion-consistent-backup-erasure-20261113.log": "8bf7f465d17620d0e82a6320d96fe1980cfdce2104ba0430067ac7298abd06bb",
+    "completion-isolated-restore-20261113.log": "e05c3df050831682f9060a57b6e1b517010e20451e889e70adb5ec7a4557fcff",
+    "completion-isolated-restore-direct-network-20261113.log": "57b7cafeaeef9d79d57971ac1ae0ee3ddd24393cdf7d9fa9455745f9981df22a",
+    "completion-isolated-restore-batch-overlay-20261113.json": "209986b4ccb732634a35fa538db15abc47652d7a45933134e6a87fcc30a2c439",
+    "completion-isolated-restore-erasure-20261113.log": "f57b266037c131bbe6b76790fe90647650bfb4dc451356a4ec2cf97920f6733d",
+    "completion-isolated-restore-offline-journal-20261113.log": "f1641e3b6d9fcbb9d9f4a1d786995def42505a349f6a0d018e34ebcd324333e2",
+    "completion-backup-erasure-fixture-20261113.json": "37d9c20d6ca940fe9a1c2a33e8f1ce4b1ccc940c3556ec7027ea7d670257437e",
+    "completion-backup-erasure-delete-20261113.log": "c95cfcfec716ee9cd8a387d10e806af0b5a40da01d0dfbd4bedc7a3c942c68d5",
+    "completion-erasure-journal-20261113.log": "6d26c58c19b71461df41e566c9ebbe533a8e7c0679a5f9707e4bde5580d7be21",
+    "completion-backup-delivery-tests-20261113.log": "2561c9827c658f9ade0eac8b541c80c1256ac922f3698d7ba565630e3bee7bb0",
+    "completion-backup-maintenance-final-20261113.log": "8d92eca63fbf8e57942df5f658260a6a19a0b3e4c8c723d7435f5b2312cdacd3",
+    "completion-backup-final-state-20261113.json": "bce9aa1ec25bc10bb7376e1e76fdde66209d1f8485f253f919e57ab0ba5ba5c2",
+    "completion-isolated-restore-cleanup-20261113.log": "80014ee547217f47973123ca6dbe718c15296a811dc60b14f937a85f75ae0a9e",
+    "isolated-restores/87fb3696-49b3-4c40-a738-b7aa8c16a013/result.json": "30e762ab3973d7961e0fbd0962633a71fa3b0aa7714d5490b698b7dc9e910b23",
+    "isolated-restores/3e4aaabe-6e00-4f54-ac46-7998b639b735/result.json": "d51f3003f23ef89cf3400f4acd0e8f283c3e10fd8566269681baab760be452e0"
+  },
+  "checks": {
+    "python": "6 passed in 15.78s",
+    "deployment_node": "5 passed",
+    "static": "ruff, format, node syntax, diff and framework passed",
+    "all_ten_groups_complete": false
+  },
+  "remaining": [
+    "backups extension/API/jobs and governance UI",
+    "periodic backup and deletion journal policy",
+    "backup/restore freshness and operational alerts",
+    "capacity 10 buyers 3 staff 15 minutes",
+    "full active/unknown restore failure matrix",
+    "disaster restore on another host and reopening",
+    "groups 1-9 remaining scope unchanged"
+  ],
+  "runtime": {
+    "build": "governance-1.0",
+    "migration": "0010",
+    "designed_operations": 127,
+    "actual_python_routes": 97
+  }
+}

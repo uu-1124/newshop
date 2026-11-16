@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.dto.PmsBrandParam;
 import com.macro.mall.model.PmsBrand;
 import com.macro.mall.service.PmsBrandService;
@@ -80,6 +81,7 @@ public class PmsBrandController {
     public CommonResult<CommonPage<PmsBrand>> getList(@RequestParam(value = "keyword", required = false) String keyword,
                                                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                       @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
+        PageValidation.sql(pageNum, pageSize);
         List<PmsBrand> brandList = brandService.listBrand(keyword, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(brandList));
     }

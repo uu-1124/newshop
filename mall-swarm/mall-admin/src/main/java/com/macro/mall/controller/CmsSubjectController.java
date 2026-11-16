@@ -2,6 +2,7 @@ package com.macro.mall.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.api.PageValidation;
 import com.macro.mall.model.CmsSubject;
 import com.macro.mall.service.CmsSubjectService;
 
@@ -41,6 +42,7 @@ public class CmsSubjectController {
     public CommonResult<CommonPage<CmsSubject>> getList(@RequestParam(value = "keyword", required = false) String keyword,
                                                         @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                         @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
+        PageValidation.sql(pageNum, pageSize);
         List<CmsSubject> subjectList = subjectService.list(keyword, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(subjectList));
     }

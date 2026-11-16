@@ -1,0 +1,225 @@
+{
+  "stage": "member-item-choices-natural-revisions-20261114",
+  "created_at": "2026-11-14T01:09:13.558403+00:00",
+  "goal_status": "active",
+  "scope": "original ten groups; member-selected item binding, natural revisions and clarification",
+  "migration": "0010",
+  "design_operations": 130,
+  "runtime_python_operations": 101,
+  "schema_change": null,
+  "checks": {
+    "delivery_regression": "144 passed in 156.02s",
+    "readwording_offline": "137 passed; final broker 1 passed in 89.26s",
+    "pause_offline": "138 passed in 4.59s",
+    "final_checkout_and_offline": "140 passed in 55.17s",
+    "ruff_check": "PASS app/scripts/tests",
+    "format": "PASS 11 changed Python files",
+    "framework": "PASS 20 modules/12 nodes/130 design/97 offline default routes",
+    "web_contracts": "PASS --check",
+    "architecture_validator": "not rerun; historical 26/27 freeze assertion failure remains"
+  },
+  "live": {
+    "checked_at": "2026-11-14T01:06:34.636839+00:00",
+    "live_summary": {
+      "runs": 10,
+      "passed": 8,
+      "failed_acceptance": 2,
+      "supplier_calls": 41,
+      "confirm_requests": 0
+    },
+    "deleted": {
+      "ADD_CART": true,
+      "ADD_CART_FIXED": true,
+      "DIRECT": true,
+      "DIRECT_FIXED": true
+    },
+    "active": {
+      "runs": 0,
+      "jobs": 0,
+      "actions": 0
+    },
+    "migration": "0010",
+    "workers": [
+      {
+        "process_kind": "backups",
+        "n": 1
+      },
+      {
+        "process_kind": "generation",
+        "n": 1
+      },
+      {
+        "process_kind": "jobs",
+        "n": 1
+      },
+      {
+        "process_kind": "observability",
+        "n": 1
+      },
+      {
+        "process_kind": "outbox",
+        "n": 1
+      },
+      {
+        "process_kind": "scheduler",
+        "n": 1
+      }
+    ],
+    "knowledge_active": 3,
+    "unknown_meters": 6,
+    "price_rules": 0,
+    "case_runs": [
+      {
+        "state": "COMPLETED",
+        "n": 10
+      }
+    ],
+    "case_dispatches": 0,
+    "active_case_conversations": 0,
+    "case_model_calls": [
+      {
+        "capability": "DIALOG",
+        "status": "SUCCEEDED",
+        "n": 41
+      }
+    ],
+    "other_window_calls": [
+      {
+        "capability": "EMBEDDING",
+        "status": "SUCCEEDED",
+        "run_id": null,
+        "n": 1
+      },
+      {
+        "capability": "RERANK",
+        "status": "SUCCEEDED",
+        "run_id": null,
+        "n": 1
+      }
+    ],
+    "livez": 200,
+    "ready": {
+      "http": 200,
+      "dependencies": {
+        "cloud": "UP",
+        "redis": "UP",
+        "milvus": "UP",
+        "gateway": "UP",
+        "postgres": "UP",
+        "rabbitmq": "UP",
+        "admin_bridge": "UP",
+        "portal_bridge": "UP",
+        "private_objects": "UP"
+      },
+      "business": "PARTIAL"
+    },
+    "framework": {
+      "module_count": 20,
+      "contract_operation_count": 130,
+      "active_python_operation_count": 101,
+      "full_business_runtime": "NOT_READY"
+    },
+    "runtime_python_operations": 101,
+    "baseline_unchanged": {
+      "business": true,
+      "policies": true
+    },
+    "total_model_calls": 500,
+    "model_calls_delta": 43,
+    "source_word_sha256": "eaafdc3d0528572b9a7c337087927c85d01c2d10440928c5bdb79ac7d20081d3",
+    "checks": {
+      "cleanup": true,
+      "drained": true,
+      "no_dispatch": true,
+      "business_and_policies": true,
+      "call_accounting": true,
+      "unchanged_unknown_and_prices": true
+    }
+  },
+  "remaining": [
+    "targeted clarification UX and broader natural references/selection ambiguity",
+    "actual address/coupon/points changes,CART changes,two-order target switch",
+    "all four card expiry/takeover/revocation/browser combinations",
+    "latency and mixed knowledge/fact/provider fault matrix",
+    "supplier prices/statements and auxiliary model-call run correlation",
+    "cross-restore retention,long-term erasure/key lifecycle",
+    "real broker/UNKNOWN crossed windows,different-host disaster and reopening"
+  ],
+  "files": {
+    "mall-agent/app/agents/item_choices.py": "7ed1001bba1c570f7c5275cad899d542a2753f602c649b412805fda202de9b8b",
+    "mall-agent/app/agents/member_choices.py": "c0ce8f6f4956af654e9300d4cec934bce459fd6b8a2a3c97dffb52ba25444368",
+    "mall-agent/app/agents/dialog.py": "f9e4bf6de0df01b146256580cb06d1a89d2109b24fe2ec5b0e2e6eb632e8452e",
+    "mall-agent/app/agents/live_workflow.py": "8a3ed2f7152be6315f0a394c2408f16c9d6a7054e2ff630e3a889c2778c22e53",
+    "mall-agent/app/api/runtime_tools.py": "0c400dfecd58f599ce7623682757cbc836c544968d0387704458683c7e4afa6f",
+    "mall-agent/scripts/evaluate_item_choices.py": "d87a80dd1c101a50651fe2e4750b75120c0c0791247938141a6d798bd9f34870",
+    "mall-agent/tests/test_item_choices.py": "1956adfe46d7b855b4720ae431461433cd86c5842740680ee0b605782cb2a637",
+    "mall-agent/tests/test_item_choices_graph.py": "71689ad44afecea2b6e559d0fa00521fc8e8e9a4936c2d403d4f6646996ea2cf",
+    "mall-agent/tests/test_member_choices.py": "aa7fb51738d0881365f080fed3843e4251093961fb3ebc012aae2c626e82001a",
+    "mall-agent/tests/test_preparation_tools.py": "3a237d345973e14902ef8b1bed0b94a5690af2aa5c6b7423a06a7dc84f520abb",
+    "mall-agent/tests/test_reply_recovery.py": "fc0f7e9894556479cf426b95611badc2fa27830f41c13a0cb9c6536d9777abe5",
+    "docs/41-会员商品选择与自然改选验收.md": "60232a022fabbb052203387c0bd1de423b6c0b7b909a7be48c63a6ecba72b11d",
+    "docs/40-智能体需求架构完成度复核与缺口清单.md": "d0f467f30c7d2a4254cefae65dd5f0463b8e05b89313a66a8ab10d9734ae35ba",
+    "docs/22-智能体完整功能补齐跟踪.md": "efacf67264d2075504cb1eed59ce2b4271737b504472f35c8486444b2009d4b0",
+    "docs/00-设计导航.md": "50ec12dc341ca2c1928bffe2626b1c48d3dcec3de57f4bc68d1625b7fc6fe6b5",
+    "mall-agent/README.md": "06e737f0121d9d902180ba66765f2908fe2243b590c2c75c6fc4206106c77d2e",
+    "deployment/.run/completion-item-choices-add-final-browser-20261114.png": "40020f240e770e50b799ae58a92eeb1b23ccab40d0759005b9defb63b7382310",
+    "deployment/.run/completion-item-choices-add-final-browser-20261114.txt": "9e9e634a15f51b1dc68db387c1e4e11fc0918583cfefedd7f998c2a288a4cf52",
+    "deployment/.run/completion-item-choices-add-revision-browser-20261114.png": "79243ec6ff74f8b65dae5fdf3c9afe3db612dfbffecc6b40994f9bbab80fe0fe",
+    "deployment/.run/completion-item-choices-add-revision-browser-20261114.txt": "f7e06d8edd91c79a000936d1709d2281d79bc4d4bb3ba39a984c6816b01ee125",
+    "deployment/.run/completion-item-choices-api-checkout-reload-20261114.log": "0e9acc398938ee3c3d01289c1c926ec2693cf83c348d298290bbbb17ca454675",
+    "deployment/.run/completion-item-choices-api-pause-reload-20261114.log": "bf2f30bbbd4abb5f02171fbdcc2e81d728d1f2fdcac8184cad3ccb036f5dd840",
+    "deployment/.run/completion-item-choices-api-reload-20261114.log": "a6a09a8a44584a948cbdf30be27b1edda001177a04a7290f4c50b06bc608b88d",
+    "deployment/.run/completion-item-choices-api-wording-reload-20261114.log": "5c1b4b992fbe894da4b88741ef9b31759bd3334f4962ae385686f36707ff2696",
+    "deployment/.run/completion-item-choices-before-20261114.log": "ac10ad9df78909690be6e7f6f726f5d422ef060e7fdfbe3e37dfbaa99113214a",
+    "deployment/.run/completion-item-choices-broker-final-20261114.log": "1cb1a5691980810b4cd5fb119ad8f1b191c5a2b618608b340b84f442a858bdf4",
+    "deployment/.run/completion-item-choices-checkout-final-tests-20261114.log": "55c571d51e8eb47cd0b1090b230cd30eb408a8b274a8b3ff3148e29098553128",
+    "deployment/.run/completion-item-choices-delivery-tests-20261114.log": "1e3c2b852de4615554570683e389046a591da9f3eb6de2f06c8846aa3083de58",
+    "deployment/.run/completion-item-choices-direct-clarification-browser-20261114.png": "7502ba120ff278b6b7927da27613a97131c9935d02bbec9d94c4f6c2e11ec47d",
+    "deployment/.run/completion-item-choices-direct-clarification-browser-20261114.txt": "c7d3701093c38ae29fa33f5dfbf5f25285507a924620beb1ffb7ce6da440c4c1",
+    "deployment/.run/completion-item-choices-direct-first-browser-20261114.png": "ed752b7fc8c1ff794bb821e3f8a029127c6f3247f42f87d173d75368522c28a3",
+    "deployment/.run/completion-item-choices-direct-first-browser-20261114.txt": "d62a58011c4e0c7666ddb8aeb6017d4207f4ad1c4ae5b90fad79e3a9c950099c",
+    "deployment/.run/completion-item-choices-direct-revision-browser-20261114.png": "305e3f84249c732daf8eda2fc71b8b8c44092009cf80c531847c5149ec5b9512",
+    "deployment/.run/completion-item-choices-direct-revision-browser-20261114.txt": "75ab478dc0b4927e0c15959ad173243af28085c26cc6a323ff2ee7cc6fa9ac77",
+    "deployment/.run/completion-item-choices-evidence-provenance-20261114.json": "9b7d502a629ff4f3088e6778167306dbedb09dfe3dc70d94c55c624fe4576211",
+    "deployment/.run/completion-item-choices-expanded-20261114.log": "23c61efd211894517bd07ab7526e45715175bf88883d5beb961e2eb50a8679a1",
+    "deployment/.run/completion-item-choices-expanded-second-20261114.log": "77d70ddda1a182f6de2d37871c7ff449467b455a7bd41258d6b0cb5768f98669",
+    "deployment/.run/completion-item-choices-final-regression-20261114.log": "8a0abff2cb313171a4dfff90c103b6fc5121453aef3bd2e757ba6606798ca272",
+    "deployment/.run/completion-item-choices-final-state-20261114.json": "c63e993aff56ca6cab12f69f39b038c006b6464412aaabae703fac91fd0cac3a",
+    "deployment/.run/completion-item-choices-final-tests-20261114.log": "8e1bad9e761ec7b404c21fc1b2af1f4f5816d90d8e97ce0bbc1a0c27dc6e5c42",
+    "deployment/.run/completion-item-choices-first-20261114.log": "a8cb34de88ca1f6dc9b16a95eb85f8337b3ad87c3007e80afe75557782f44bec",
+    "deployment/.run/completion-item-choices-first-failure-browser-20261114.png": "8e08bd9a53afdb4759a8af6ae381ef7efe24d4915302fe789c8efdb2bfaa6be1",
+    "deployment/.run/completion-item-choices-generation-checkout-reload-20261114.log": "88fbff3e30cdb9d5383bc60a0ffd3b5c5bb6400a9a7ff42fb7e66f329202a1ea",
+    "deployment/.run/completion-item-choices-generation-pause-reload-20261114.log": "41aa63d424a450fa8ceb15a5cfdf251fe9135e1020ac701e96264c1795fa6e26",
+    "deployment/.run/completion-item-choices-generation-reload-20261114.log": "5d6c9022db76ac9c94a3b6dcd09baa0ab34727318c78e2f3ead5e74d13a386f1",
+    "deployment/.run/completion-item-choices-generation-wording-reload-20261114.log": "981b83b88d33fefae72068b9fd57c5401f8131dd98c433367495dc91cc2de348",
+    "deployment/.run/completion-item-choices-graph-after-20261114.json": "dfafd775905e297d39397cf81072eb154a2206da35e213aab2351866b52f7397",
+    "deployment/.run/completion-item-choices-integration-20261114.log": "581c932f995b26aabbef3a9a6dc82847bdf6b07043769961844bea1d1d2ce6fb",
+    "deployment/.run/completion-item-choices-live-20261114.json": "71e2c175fd7e85b7666311a3feecd49da2cc44fefeac09254c66842fc81f4a6e",
+    "deployment/.run/completion-item-choices-live-add-0-20261114.log": "2d4a133f9e7cc8be39caa35860fa33919e25d486ef2edf1f317d4fad8fe36c1f",
+    "deployment/.run/completion-item-choices-live-add-fixed-0-20261114.log": "5cd8ae7a620a34a861cab244592ec0cb7e07397c22e2bfef16ac297a0ff11dfb",
+    "deployment/.run/completion-item-choices-live-add-fixed-1-20261114.log": "4efc5606f76a527058b8df6150176a7742757670913c1a56c4deaefbf77aa015",
+    "deployment/.run/completion-item-choices-live-add-fixed-2-20261114.log": "eff5cb2ab7947f4ec99103771e3eed75653d5f34e97910f0c6712a2d78c78efb",
+    "deployment/.run/completion-item-choices-live-add-fixed-3-20261114.log": "2d4a133f9e7cc8be39caa35860fa33919e25d486ef2edf1f317d4fad8fe36c1f",
+    "deployment/.run/completion-item-choices-live-add-fixed-3-resume-20261114.log": "ab72d33fc1d3ee84c2c0cd2a43348879abf889ec1526945e658277ba89c07901",
+    "deployment/.run/completion-item-choices-live-cleanup-20261114.log": "d18121d197aa78e252c68348c3e39b5e79a830bbcb4cee4310444c1ca2d257df",
+    "deployment/.run/completion-item-choices-live-direct-0-20261114.log": "715fa7d944d9b4e0cbd1ed7202407073c6a053de5a5d0787f241039720ad26fc",
+    "deployment/.run/completion-item-choices-live-direct-1-20261114.log": "2682bf7e7d42784cfc0cc0c04b3f5ddaaa74be29ccc420c27921acd2abc9345d",
+    "deployment/.run/completion-item-choices-live-direct-fixed-0-20261114.log": "2682bf7e7d42784cfc0cc0c04b3f5ddaaa74be29ccc420c27921acd2abc9345d",
+    "deployment/.run/completion-item-choices-live-direct-fixed-0-harness-fixed-20261114.log": "2cabe047193eceaf106ccb1be6b1812658ce691dc1a6c21e0b74993d138cff47",
+    "deployment/.run/completion-item-choices-live-direct-fixed-1-20261114.log": "e8f7f61e95cdd8c41fe478216823e94ccb3567cab46c463b6f016a9f45b568b6",
+    "deployment/.run/completion-item-choices-live-direct-fixed-2-20261114.log": "38e453d23cbca806e2ffbe66764e70b187a1868d77b59aeaa55977ec585698d1",
+    "deployment/.run/completion-item-choices-live-first-diagnosis-20261114.json": "9761a7741590efbb72c9908fc0a73de7dc08996080bb7c682badd0551a060dd9",
+    "deployment/.run/completion-item-choices-offline-final-20261114.log": "75b7acf119dfe50fb63bca89bc2585327c89ed1c1c55a885bfba5b32ff15d3d7",
+    "deployment/.run/completion-item-choices-old-reproduction-20261114.log": "d629e7a64e10e59ef88482af37eb5847eba542519a21abd10097e2ead251df64",
+    "deployment/.run/completion-item-choices-pause-fallback-before-browser-20261114.png": "b151dd6911c79e92899aa782b2aea22ea425bcd50a56c8079430b3634021ed06",
+    "deployment/.run/completion-item-choices-pause-fallback-before-browser-20261114.txt": "65661ab1e1304f2f289cee6634b339b8796d7c8a551657fa45945361ecebb01a",
+    "deployment/.run/completion-item-choices-pause-final-tests-20261114.log": "47077bb2f3ecfcd5720853130d4e3b8e3ffb5083ae18f410dbe1e9a733637687",
+    "deployment/.run/completion-item-choices-preinstall-20261114.json": "f1aa9f308fa56c848e3216612c4f97ccea5af5067ee04bdc2d1bf7dbfaed1af6",
+    "deployment/.run/completion-item-choices-readwording-tests-20261114.log": "ccfc04a063a5d7aac0ca202d2ed57ad9e743a67e03708d4a66e5efaa1cda298d",
+    "deployment/.run/completion-item-choices-scheduler-checkout-reload-20261114.log": "b17a6d2e3b066e79022ac25e23398a2658be07caa5fcc2ac289f6db1bd52dbd6",
+    "deployment/.run/completion-item-choices-scheduler-pause-reload-20261114.log": "bbd3dd31c4d945c66198fdcf4bafca55af4b1731bbae85eb2ecf3dcc8832d56d",
+    "deployment/.run/completion-item-choices-scheduler-reload-20261114.log": "46f84db6c7a9eb2820e93af69e4541d6eada241c56fcf7674afff1266d60540c",
+    "deployment/.run/completion-item-choices-scheduler-wording-reload-20261114.log": "1d86993d70a8d05ccc9fce235e7b2e27224c46d3ddabab21a351833a4bfb5009",
+    "deployment/.run/completion-item-choices-second-20261114.log": "c3ad4208cf0b7cf0988f05761ae0b4505fbd22132359dfc6b4fc059135b3d42a"
+  }
+}
