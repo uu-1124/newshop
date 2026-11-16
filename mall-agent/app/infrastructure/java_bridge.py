@@ -9,6 +9,7 @@ from uuid import uuid4
 import httpx
 
 from app.domain.identity import DomainError, Principal
+from app.infrastructure.performance_timing import current_timing, phase
 
 
 def sign(method: str, target: str, body: bytes, timestamp: str, nonce: str, secret: str) -> str:
@@ -48,8 +49,12 @@ class JavaBridge:
                 ).get_secret_value(),
             ),
         }
+        timing = current_timing()
+        if timing is not None:
+            headers["X-Agent-Parent-Request-ID"] = timing.request_id
         try:
-            response = await self.client.get(target, headers=headers)
+            with phase("java_bridge_ms"):
+                response = await self.client.get(target, headers=headers)
             data = response.json()
         except (httpx.HTTPError, ValueError):
             raise DomainError("JAVA_UNAVAILABLE", "商城服务暂不可用", 503) from None
