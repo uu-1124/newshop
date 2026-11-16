@@ -25,6 +25,31 @@ class AgentCartSecurityTest {
         assertFalse(verifier.signed(request,new byte[0]));assertTrue(verifier.signed(request,body));assertFalse(verifier.signed(request,body));
         request.setRequestURI("/agent-bridge/v1/operations");assertFalse(verifier.signed(request,body));
     }
+    @SuppressWarnings("unchecked")
+    @org.junit.jupiter.api.parallel.ResourceLock(org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES)
+    @Test void nonceReplayNullAndRedisFailureRemainDeniedWithObservationOnOrOff()throws Exception{
+        String property="mall.agent.bridge.observability.enabled",previous=System.getProperty(property);
+        var redis=mock(StringRedisTemplate.class);ValueOperations<String,String> values=mock(ValueOperations.class);
+        when(redis.opsForValue()).thenReturn(values);
+        var verifier=new AgentCartSecurity(bridge,confirm,reconcile,redis,json);
+        try {
+            for(String enabled:List.of("false","true")) {
+                System.setProperty(property,enabled);
+                doReturn(false,(Boolean)null).doThrow(new org.springframework.dao.QueryTimeoutException("private diagnostic must not be logged"))
+                        .when(values).setIfAbsent(anyString(),eq("1"),any(Duration.class));
+                var request=new MockHttpServletRequest("GET","/agent-bridge/v1/orders");
+                String timestamp=java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC).format(Instant.now()),nonce=UUID.randomUUID().toString();
+                String payload=String.join("\n","GET","/mall-portal/agent-bridge/v1/orders",AgentCartSecurity.sha(new byte[0]),timestamp,nonce);
+                request.addHeader("X-Agent-Timestamp",timestamp);request.addHeader("X-Agent-Nonce",nonce);
+                request.addHeader("X-Request-ID",UUID.randomUUID().toString());
+                request.addHeader("X-Agent-Signature","v1:"+Base64.getUrlEncoder().withoutPadding().encodeToString(AgentCartSecurity.hmac(bridge,payload.getBytes(StandardCharsets.UTF_8))));
+                for(int attempt=0;attempt<3;attempt++)assertFalse(verifier.signed(request,new byte[0]));
+            }
+        } finally {
+            if(previous==null)System.clearProperty(property);else System.setProperty(property,previous);
+        }
+        verify(values,times(6)).setIfAbsent(anyString(),eq("1"),eq(Duration.ofSeconds(300)));
+    }
     @Test void executionAndReconciliationReceiptsCannotSubstituteForEachOther()throws Exception{
         var verifier=new AgentCartSecurity(bridge,confirm,reconcile,mock(StringRedisTemplate.class),json);String op=UUID.randomUUID().toString(),hash="a".repeat(64);
         Map<String,Object> claims=new HashMap<>(Map.of("purpose","reconcile_only","audience","mall-portal-agent-cart","operation_no",op,"action_id",op,"action_type","ADD_CART","member_id","1","parameters_hash",hash,"key_id","v1","control_epoch",1));claims.put("confirmed_at",Instant.now().toString());claims.put("confirmation_audit_id",UUID.randomUUID().toString());claims.put("issued_at",Instant.now().getEpochSecond());claims.put("expires_at",Instant.now().plusSeconds(300).getEpochSecond());
