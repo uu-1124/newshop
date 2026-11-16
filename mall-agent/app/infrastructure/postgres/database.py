@@ -10,15 +10,6 @@ from sqlalchemy import text
 from sqlalchemy.exc import TimeoutError as PoolTimeout
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.infrastructure.performance_timing import (
-    add_database_time,
-    finish_acquisition,
-    install_engine_timing,
-    queue_timing_configuration,
-    queue_timing_supported,
-    start_acquisition,
-)
-
 
 def json_default(value):
     if isinstance(value, datetime):
@@ -37,13 +28,8 @@ def digest(value) -> str:
 
 
 class Database:
-    def __init__(self, url: str, performance_timing_enabled=False):
-        pool_options, self._queue_timing_reason = queue_timing_configuration(performance_timing_enabled)
-        self.engine = create_async_engine(
-            url, pool_size=5, max_overflow=2, hide_parameters=True, **pool_options
-        )
-        if performance_timing_enabled:
-            install_engine_timing(self.engine)
+    def __init__(self, url: str):
+        self.engine = create_async_engine(url, pool_size=5, max_overflow=2, hide_parameters=True)
         self._waits = deque(maxlen=300)
         self._timeouts = 0
 
@@ -61,30 +47,12 @@ class Database:
     @asynccontextmanager
     async def connection(self, isolation=None):
         started = time.perf_counter()
-        acquisition = start_acquisition(
-            queue_timing_supported(self.engine),
-            getattr(self, "_queue_timing_reason", "engine_not_instrumented"),
-        )
-        release_started = None
         try:
-            try:
-                async with self.engine.connect() as conn:
-                    finish_acquisition(acquisition)
-                    self._waits.append(max(0, round((time.perf_counter() - started) * 1000)))
-                    try:
-                        if isolation:
-                            isolation_started = time.perf_counter()
-                            try:
-                                conn = await conn.execution_options(isolation_level=isolation)
-                            finally:
-                                add_database_time("isolation_config_ms", isolation_started)
-                        yield conn
-                    finally:
-                        release_started = time.perf_counter()
-            finally:
-                finish_acquisition(acquisition)
-                if release_started is not None:
-                    add_database_time("connection_release_ms", release_started)
+            async with self.engine.connect() as conn:
+                self._waits.append(max(0, round((time.perf_counter() - started) * 1000)))
+                if isolation:
+                    conn = await conn.execution_options(isolation_level=isolation)
+                yield conn
         except PoolTimeout:
             self._timeouts += 1
             raise
@@ -92,16 +60,8 @@ class Database:
     @asynccontextmanager
     async def transaction(self, snapshot=False):
         async with self.connection("REPEATABLE READ" if snapshot else None) as conn:
-            end_started = None
-            try:
-                async with conn.begin():
-                    try:
-                        yield conn
-                    finally:
-                        end_started = time.perf_counter()
-            finally:
-                if end_started is not None:
-                    add_database_time("transaction_end_ms", end_started)
+            async with conn.begin():
+                yield conn
 
 
 async def one(conn, sql, **params):
