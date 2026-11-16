@@ -109,8 +109,6 @@ async def test_prepared_fixture_artifacts_are_consumable_by_the_real_benchmark_c
             return {"items": [{"id": str(a["id"]), "version": 1} for a in accounts.values()]}
         if path == module.MEMBER + "/conversations":
             return {"id": str(uuid4()), "version": 1, "title": body["title"]}
-        if method == "GET" and "/conversations/" in path:
-            return {"event_cursor": "1000"}
         if path.endswith("/handoff"):
             return {"id": str(uuid4()), "version": 1}
         if path.endswith("/claim"):
