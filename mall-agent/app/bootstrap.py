@@ -25,7 +25,10 @@ from app.infrastructure.wakeups import NotificationBindings
 
 class Services:
     def __init__(self, settings):
-        self.db = Database(settings.database_url.get_secret_value())
+        self.db = Database(
+            settings.database_url.get_secret_value(),
+            performance_timing_enabled=settings.performance_timing_enabled,
+        )
         self.bridge = JavaBridge(settings)
         self.auth = RuntimeAuth(settings.auth_ttl_seconds)
         self.cursors = Cursors(settings.cursor_secret.get_secret_value())

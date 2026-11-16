@@ -28,6 +28,7 @@ from app.application.catalog import CatalogDetail, CatalogQuery
 from app.application.orders import OrderRead, query_orders
 from app.bootstrap import Services
 from app.domain.identity import DomainError
+from app.infrastructure.performance_timing import HEADER, RUN_HEADER, finish_request, phase, start_request
 from app.infrastructure.postgres.database import one
 from app.infrastructure.request_metrics import record_request
 from app.settings import get_settings
@@ -64,12 +65,32 @@ def create_app(settings=None):
             request.state.request_id = str(UUID(request.headers.get("X-Request-ID", str(uuid4()))))
         except ValueError:
             request.state.request_id = str(uuid4())
-        response = await call_next(request)
-        await record_request(request, response.status_code, started)
-        response.headers["X-Request-ID"] = request.state.request_id
-        if request.url.path.startswith("/mall-agent/v1/"):
-            response.headers["Cache-Control"] = "private, no-store"
-        return response
+        timing, token = start_request(
+            settings.performance_timing_enabled, request.headers.get(RUN_HEADER), request.state.request_id
+        )
+        try:
+            with phase("handler_ms"):
+                response = await call_next(request)
+            await record_request(request, response.status_code, started)
+            response.headers["X-Request-ID"] = request.state.request_id
+            if request.url.path.startswith("/mall-agent/v1/"):
+                response.headers["Cache-Control"] = "private, no-store"
+            if timing is not None:
+                route = request.scope.get("route")
+                try:
+                    header = timing.header(
+                        getattr(route, "operation_id", None),
+                        response.status_code,
+                        response.headers.get("content-type", "").startswith("text/event-stream"),
+                    )
+                except Exception:
+                    log.warning("performance timing header unavailable")
+                    header = None
+                if header is not None:
+                    response.headers[HEADER] = header
+            return response
+        finally:
+            finish_request(timing, token)
 
     @app.exception_handler(DomainError)
     async def domain_error(request, exc):
