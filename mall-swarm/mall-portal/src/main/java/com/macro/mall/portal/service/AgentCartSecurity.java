@@ -2,10 +2,6 @@ package com.macro.mall.portal.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.macro.mall.common.log.BridgeSignatureObservation;
-import com.macro.mall.common.log.BridgeSignatureObservation.Guard;
-import com.macro.mall.common.log.BridgeSignatureObservation.Phase;
-import com.macro.mall.common.log.BridgeSignatureObservation.Outcome;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,28 +28,20 @@ public class AgentCartSecurity {
         this.redis=redis; this.json=json;
     }
     public boolean signed(HttpServletRequest request, byte[] body) {
-        try (var observation = BridgeSignatureObservation.start(request, Guard.CART)) {
-            observation.phase(Phase.INPUT);
-            try {
-                String timestamp=request.getHeader("X-Agent-Timestamp"), nonce=request.getHeader("X-Agent-Nonce");
-                String signature=request.getHeader("X-Agent-Signature");
-                if (bridge.length()<32 || body.length>32768 || timestamp==null || nonce==null || signature==null
-                        || !timestamp.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z")
-                        || !signature.matches("v1:[A-Za-z0-9_-]{43}") || UUID.fromString(nonce).version()!=4
-                        || !UUID.fromString(nonce).toString().equals(nonce)
-                        || Duration.between(Instant.parse(timestamp),Instant.now()).abs().getSeconds()>60) return observation.result(false, Outcome.INPUT_REJECTED);
-                observation.phase(Phase.MAC);
-                String target="/mall-portal"+request.getRequestURI();
-                if(request.getQueryString()!=null) target+="?"+request.getQueryString();
-                String canonical=String.join("\n",request.getMethod(),target,sha(body),timestamp,nonce);
-                if(!MessageDigest.isEqual(hmac(bridge,canonical.getBytes(StandardCharsets.UTF_8)),Base64.getUrlDecoder().decode(signature.substring(3))))return observation.result(false, Outcome.MAC_MISMATCH);
-                observation.phase(Phase.NONCE);
-                Boolean nonceResult = redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:"+nonce,"1",Duration.ofSeconds(300));
-                boolean accepted = Boolean.TRUE.equals(nonceResult);
-                return observation.result(accepted, accepted ? Outcome.ACCEPTED
-                        : Boolean.FALSE.equals(nonceResult) ? Outcome.NONCE_REPLAY : Outcome.NONCE_RESULT_UNKNOWN);
-            } catch(Exception ex) { observation.error(ex); return false; }
-        }
+        try {
+            String timestamp=request.getHeader("X-Agent-Timestamp"), nonce=request.getHeader("X-Agent-Nonce");
+            String signature=request.getHeader("X-Agent-Signature");
+            if (bridge.length()<32 || body.length>32768 || timestamp==null || nonce==null || signature==null
+                    || !timestamp.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z")
+                    || !signature.matches("v1:[A-Za-z0-9_-]{43}") || UUID.fromString(nonce).version()!=4
+                    || !UUID.fromString(nonce).toString().equals(nonce)
+                    || Duration.between(Instant.parse(timestamp),Instant.now()).abs().getSeconds()>60) return false;
+            String target="/mall-portal"+request.getRequestURI();
+            if(request.getQueryString()!=null) target+="?"+request.getQueryString();
+            String canonical=String.join("\n",request.getMethod(),target,sha(body),timestamp,nonce);
+            if(!MessageDigest.isEqual(hmac(bridge,canonical.getBytes(StandardCharsets.UTF_8)),Base64.getUrlDecoder().decode(signature.substring(3))))return false;
+            return Boolean.TRUE.equals(redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:"+nonce,"1",Duration.ofSeconds(300)));
+        } catch(Exception ex) { return false; }
     }
     public JsonNode receipt(String encoded, String purpose, String operation, String hash, Long memberId) {
         try {

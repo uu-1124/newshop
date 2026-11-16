@@ -53,34 +53,6 @@ class AgentMemberBridgeTest {
         verifyNoInteractions(members, products, redis);
     }
 
-    @SuppressWarnings("unchecked")
-    @org.junit.jupiter.api.parallel.ResourceLock(org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES)
-    @Test void nonceReplayNullAndRedisFailureRemainForbiddenWithObservationOnOrOff() throws Exception {
-        String property = "mall.agent.bridge.observability.enabled", previous = System.getProperty(property);
-        ValueOperations<String, String> values = mock(ValueOperations.class);
-        when(redis.opsForValue()).thenReturn(values);
-        try {
-            for (String enabled : List.of("false", "true")) {
-                System.setProperty(property, enabled);
-                doReturn(false, (Boolean) null)
-                        .doThrow(new org.springframework.dao.QueryTimeoutException("private diagnostic must not be logged"))
-                        .when(values).setIfAbsent(anyString(), eq("1"), any(java.time.Duration.class));
-                var request = new MockHttpServletRequest("GET", "/agent-bridge/v1/identity");
-                request.addHeader("X-Request-ID", UUID.randomUUID().toString());
-                sign(request, Instant.now().toString());
-                for (int attempt = 0; attempt < 3; attempt++) {
-                    var response = controller.identity(request);
-                    assertEquals(403, response.getStatusCode().value());
-                    assertEquals("BRIDGE_SIGNATURE_INVALID", response.getBody().get("code"));
-                }
-            }
-        } finally {
-            if (previous == null) System.clearProperty(property); else System.setProperty(property, previous);
-        }
-        verify(values, times(6)).setIfAbsent(anyString(), eq("1"), eq(java.time.Duration.ofSeconds(125)));
-        verifyNoInteractions(members, products);
-    }
-
     @Test void validMemberSearchUsesTrustedCatalogAndCanonicalFilter() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/agent-bridge/v1/products");
         sign(request, Instant.now().toString());

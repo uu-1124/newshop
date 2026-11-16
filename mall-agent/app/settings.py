@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     retention_enabled: bool = False
     backups_enabled: bool = False
     observability_enabled: bool = False
-    performance_timing_enabled: bool = False
     confirmation_secret: SecretStr = SecretStr("")
     reconciliation_secret: SecretStr = SecretStr("")
     action_encryption_key: SecretStr = SecretStr("")

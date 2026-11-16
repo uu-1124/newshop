@@ -95,30 +95,6 @@ class AgentStaffBridgeTest {
         verifyNoInteractions(admins);
     }
 
-    @org.junit.jupiter.api.parallel.ResourceLock(org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES)
-    @Test void nonceReplayNullAndRedisFailureRemainForbiddenWithObservationOnOrOff() throws Exception {
-        String property = "mall.agent.bridge.observability.enabled", previous = System.getProperty(property);
-        try {
-            for (String enabled : List.of("false", "true")) {
-                System.setProperty(property, enabled);
-                doReturn(false, (Boolean) null)
-                        .doThrow(new org.springframework.dao.QueryTimeoutException("private diagnostic must not be logged"))
-                        .when(values).setIfAbsent(anyString(), eq("1"), any(Duration.class));
-                var request = signed("/mall-admin", Instant.now());
-                request.addHeader("X-Request-ID", UUID.randomUUID().toString());
-                for (int attempt = 0; attempt < 3; attempt++) {
-                    var response = controller.identity(request);
-                    assertEquals(403, response.getStatusCode().value());
-                    assertEquals("BRIDGE_SIGNATURE_INVALID", response.getBody().get("code"));
-                }
-            }
-        } finally {
-            if (previous == null) System.clearProperty(property); else System.setProperty(property, previous);
-        }
-        verify(values, times(6)).setIfAbsent(anyString(), eq("1"), eq(Duration.ofSeconds(125)));
-        verifyNoInteractions(admins);
-    }
-
     @Test void disabledStaffAndAnonymousCannotAuthenticate() throws Exception {
         try (MockedStatic<StpUtil> auth = mockStatic(StpUtil.class)) {
             auth.when(StpUtil::isLogin).thenReturn(false);

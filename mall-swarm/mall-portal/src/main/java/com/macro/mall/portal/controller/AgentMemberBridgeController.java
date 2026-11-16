@@ -1,9 +1,5 @@
 package com.macro.mall.portal.controller;
 
-import com.macro.mall.common.log.BridgeSignatureObservation;
-import com.macro.mall.common.log.BridgeSignatureObservation.Guard;
-import com.macro.mall.common.log.BridgeSignatureObservation.Phase;
-import com.macro.mall.common.log.BridgeSignatureObservation.Outcome;
 import com.macro.mall.model.PmsProduct;
 import com.macro.mall.model.UmsMember;
 import com.macro.mall.portal.service.PmsPortalProductService;
@@ -127,35 +123,26 @@ public class AgentMemberBridgeController {
     }
 
     private boolean signed(HttpServletRequest request) {
-        try (var observation = BridgeSignatureObservation.start(request, Guard.MEMBER)) {
-            observation.phase(Phase.INPUT);
-            String timestamp = request.getHeader("X-Agent-Timestamp");
-            String nonce = request.getHeader("X-Agent-Nonce");
-            String signature = request.getHeader("X-Agent-Signature");
-            if (secret.length() < 32 || timestamp == null || !timestamp.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z")
-                    || nonce == null || signature == null || !signature.matches("v1:[A-Za-z0-9_-]{43}")) return observation.result(false, Outcome.INPUT_REJECTED);
-            try {
-                if (!UUID.fromString(nonce).toString().equals(nonce)) return observation.result(false, Outcome.INPUT_REJECTED);
-                if (Duration.between(Instant.parse(timestamp), Instant.now()).abs().compareTo(Duration.ofSeconds(60)) > 0) return observation.result(false, Outcome.INPUT_REJECTED);
-                observation.phase(Phase.MAC);
-                String target = "/mall-portal" + request.getRequestURI();
-                if (request.getQueryString() != null) target += "?" + request.getQueryString();
-                String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(new byte[0]));
-                String canonical = String.join("\n", request.getMethod(), target, hash, timestamp, nonce);
-                Mac mac = Mac.getInstance("HmacSHA256");
-                mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-                byte[] actual = Base64.getUrlDecoder().decode(signature.substring(3));
-                if (!MessageDigest.isEqual(mac.doFinal(canonical.getBytes(StandardCharsets.UTF_8)), actual)) return observation.result(false, Outcome.MAC_MISMATCH);
-                observation.phase(Phase.NONCE);
-                Boolean nonceResult = redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:" + nonce,
-                        "1", Duration.ofSeconds(125));
-                boolean accepted = Boolean.TRUE.equals(nonceResult);
-                return observation.result(accepted, accepted ? Outcome.ACCEPTED
-                        : Boolean.FALSE.equals(nonceResult) ? Outcome.NONCE_REPLAY : Outcome.NONCE_RESULT_UNKNOWN);
-            } catch (Exception ex) {
-                observation.error(ex);
-                return false;
-            }
+        String timestamp = request.getHeader("X-Agent-Timestamp");
+        String nonce = request.getHeader("X-Agent-Nonce");
+        String signature = request.getHeader("X-Agent-Signature");
+        if (secret.length() < 32 || timestamp == null || !timestamp.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z")
+                || nonce == null || signature == null || !signature.matches("v1:[A-Za-z0-9_-]{43}")) return false;
+        try {
+            if (!UUID.fromString(nonce).toString().equals(nonce)) return false;
+            if (Duration.between(Instant.parse(timestamp), Instant.now()).abs().compareTo(Duration.ofSeconds(60)) > 0) return false;
+            String target = "/mall-portal" + request.getRequestURI();
+            if (request.getQueryString() != null) target += "?" + request.getQueryString();
+            String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(new byte[0]));
+            String canonical = String.join("\n", request.getMethod(), target, hash, timestamp, nonce);
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] actual = Base64.getUrlDecoder().decode(signature.substring(3));
+            if (!MessageDigest.isEqual(mac.doFinal(canonical.getBytes(StandardCharsets.UTF_8)), actual)) return false;
+            return Boolean.TRUE.equals(redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:" + nonce,
+                    "1", Duration.ofSeconds(125)));
+        } catch (Exception ex) {
+            return false;
         }
     }
 
