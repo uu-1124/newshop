@@ -277,6 +277,7 @@ async def prepare(folder):
             raise RuntimeError("Fixture buyers are not distinct")
         focus = state["buyers"][9]
         cid = focus["conversation_id"]
+        watermark = (await api(clients[-1], MEMBER + f"/conversations/{cid}"))["event_cursor"]
         routes = [
             {
                 "name": "member_list",
@@ -318,13 +319,17 @@ async def prepare(folder):
             {
                 "name": b["actor_key"],
                 "actor_key": b["actor_key"],
-                "path": MEMBER + f"/conversations/{b['conversation_id']}/events",
+                "path": MEMBER + f"/conversations/{b['conversation_id']}/events?after={watermark}",
                 "expected_owner_cid": b["conversation_id"],
             }
             for b in state["buyers"]
         ]
         streams += [
-            {"name": s["actor_key"], "actor_key": s["actor_key"], "path": ADMIN + "/events"}
+            {
+                "name": s["actor_key"],
+                "actor_key": s["actor_key"],
+                "path": ADMIN + f"/events?after={watermark}",
+            }
             for s in state["staff"]
         ]
         save(folder / "routes.json", routes)

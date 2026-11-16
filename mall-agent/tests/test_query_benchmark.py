@@ -2,7 +2,7 @@ import asyncio
 import json
 from collections import Counter
 from datetime import UTC, datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import httpx
 import pytest
@@ -370,3 +370,57 @@ def test_private_auth_validation_does_not_echo_values(tmp_path):
     with pytest.raises(benchmark.PlanError) as error:
         benchmark.load_authorizations(path, {"member0"})
     assert secret not in str(error.value)
+
+
+@pytest.mark.asyncio
+async def test_sse_uses_the_same_routing_tag_and_records_heartbeat_liveness_without_private_text(
+    tmp_path, monkeypatch
+):
+    run_id = str(uuid4())
+    cid = str(uuid4())
+    stream = benchmark.Stream(
+        "member0", "member0", f"/mall-agent/v1/member/conversations/{cid}/events?after=12", cid
+    )
+    sent = []
+    read_timeouts = []
+
+    class HeartbeatThenTimeout(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            yield b": heartbeat\n\n"
+            raise httpx.ReadTimeout("private transport detail must not be retained")
+
+    def reply(request):
+        sent.append(request)
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"}, stream=HeartbeatThenTimeout()
+        )
+
+    original = httpx.AsyncClient
+
+    def client(**kwargs):
+        read_timeouts.append(kwargs["timeout"].read)
+        return original(transport=httpx.MockTransport(reply), **kwargs)
+
+    monkeypatch.setattr(benchmark.httpx, "AsyncClient", client)
+    evidence = benchmark.Evidence(tmp_path / "streams.jsonl")
+    stop = asyncio.Event()
+    monitor = benchmark.StreamMonitor(
+        "http://127.0.0.1",
+        [stream],
+        {"member0": "Bearer test-private-token"},
+        evidence,
+        stop,
+        30,
+        run_id=run_id,
+    )
+    await monitor.consume(stream)
+    monitor.sample()
+    evidence.close()
+    state = monitor.states[stream.name]
+    assert sent[0].headers["X-Performance-Run"] == run_id
+    assert str(UUID(sent[0].headers["X-Request-ID"])) == state["request_id"]
+    assert read_timeouts == [90]
+    assert state["lines_received"] == 2 and state["last_line_at"] is not None
+    assert stop.is_set() and state["error"] == "stream_transport_or_protocol_error"
+    output = json.dumps(monitor.summary()) + evidence.path.read_text(encoding="utf-8")
+    assert "private transport detail" not in output and "test-private-token" not in output
