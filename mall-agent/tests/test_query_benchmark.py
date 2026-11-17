@@ -229,6 +229,52 @@ def test_phase_header_is_correlated_whitelisted_and_never_fills_unknown_queue_wi
     )
 
 
+def test_bridge_diagnostics_keep_upstream_status_and_reject_unbounded_or_private_fields():
+    run_id, request_id = str(uuid4()), str(uuid4())
+    call = {
+        "bridge_request_id": str(uuid4()),
+        "operation": "MEMBER_ORDERS",
+        "upstream_http_status": 500,
+        "upstream_code": "OTHER",
+        "error_type": "NONE",
+        "elapsed_ms": 3010.5,
+    }
+    value = timing(run_id, request_id) | {
+        "java_bridge_calls": [call], "java_bridge_calls_overflow": 0,
+    }
+    parsed, state = benchmark.parse_performance_timing(
+        json.dumps(value), run_id, request_id, "listConversations", 200
+    )
+    assert state == "observed" and parsed["java_bridge_calls"][0]["upstream_http_status"] == 500
+    timeout = call | {"upstream_http_status": None, "upstream_code": "NONE", "error_type": "READ_TIMEOUT"}
+    assert benchmark.parse_performance_timing(
+        json.dumps(value | {"java_bridge_calls": [timeout]}), run_id, request_id, "listConversations", 200
+    )[1] == "observed"
+    bad_calls = [
+        call | {"path": "/private-account"},
+        call | {"bridge_request_id": "private-token"},
+        call | {"operation": "/private-query"},
+        call | {"upstream_http_status": True},
+        call | {"upstream_code": True},
+        call | {"upstream_code": {"private": "body"}},
+        call | {"upstream_code": "private-message"},
+        call | {"error_type": "private-error-message"},
+        call | {"elapsed_ms": float("nan")},
+    ]
+    invalid = [value | {"java_bridge_calls": [item]} for item in bad_calls]
+    invalid.extend([
+        value | {"java_bridge_calls": [call] * 5},
+        value | {"java_bridge_calls_overflow": True},
+        value | {"java_bridge_calls_overflow": -1},
+        timing(run_id, request_id) | {"java_bridge_calls": []},
+        timing(run_id, request_id) | {"java_bridge_calls_overflow": 0},
+    ])
+    for bad in invalid:
+        assert benchmark.parse_performance_timing(
+            json.dumps(bad), run_id, request_id, "listConversations", 200
+        ) == (None, "invalid")
+
+
 @pytest.mark.parametrize(
     ("queue_supported", "queue_reason"),
     [(None, None), (True, None), (False, "sqlalchemy_version_unsupported")],
@@ -262,6 +308,45 @@ def test_actual_request_timing_header_remains_compatible_without_database_access
     if incomplete:
         assert parsed["db"]["physical_connect_ms"] is None
         assert parsed["db"]["checkout_residual_ms"] is None
+
+
+def test_actual_bridge_header_round_trips_the_bounded_optional_extension():
+    run_id, request_id = str(uuid4()), str(uuid4())
+    actual = RequestTiming(run_id, request_id)
+    for _ in range(5):
+        actual.record_java_bridge_call(
+            bridge_request_id=str(uuid4()),
+            operation="MEMBER_ORDERS",
+            upstream_http_status=503,
+            upstream_code="BRIDGE_NONCE_UNAVAILABLE",
+            error_type="NONE",
+            elapsed_ms=3100.25,
+        )
+    raw = actual.header("listConversations", 503)
+    parsed, state = benchmark.parse_performance_timing(raw, run_id, request_id, "listConversations", 503)
+    assert state == "observed" and len(parsed["java_bridge_calls"]) == 4
+    assert parsed["java_bridge_calls_overflow"] == 1
+    assert parsed["java_bridge_calls"][0]["upstream_http_status"] == 503
+    assert parsed["java_bridge_calls"][0]["upstream_code"] == "BRIDGE_NONCE_UNAVAILABLE"
+
+
+def test_bridge_producer_bounds_match_the_runner_and_never_discard_the_existing_header():
+    run_id, request_id = str(uuid4()), str(uuid4())
+    actual = RequestTiming(run_id, request_id)
+    metadata = {
+        "bridge_request_id": str(uuid4()), "operation": "MEMBER_ORDERS",
+        "upstream_http_status": None, "upstream_code": "NONE", "error_type": "READ_TIMEOUT",
+    }
+    actual.record_java_bridge_call(**metadata, elapsed_ms=3600000.001)
+    assert actual.java_bridge_calls == []
+    for _ in range(4):
+        actual.record_java_bridge_call(**metadata, elapsed_ms=3600000)
+    actual.java_bridge_calls_overflow = 3600000
+    actual.record_java_bridge_call(**metadata, elapsed_ms=1)
+    raw = actual.header("listConversations", 503)
+    parsed, state = benchmark.parse_performance_timing(raw, run_id, request_id, "listConversations", 503)
+    assert state == "observed" and parsed["java_bridge_calls_overflow"] == 3600000
+    assert all(item["elapsed_ms"] == 3600000 for item in parsed["java_bridge_calls"])
 
 
 @pytest.mark.asyncio
@@ -326,6 +411,66 @@ async def test_timeout_is_retained_and_a_missing_b_header_is_a_failure(tmp_path)
     summary = benchmark.summarize_routes(evidence.records, [route], 10, {"history": 2})["history"]
     assert summary["completed"] == summary["errors"] == 2 and summary["timeouts"] == 1
     assert summary["latency_ms"]["samples"] == 2 and summary["success_latency_ms"]["samples"] == 0
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("status", "body", "expected_code", "expected_error"),
+    [
+        (503, {"code": "JAVA_BRIDGE_REJECTED"}, "JAVA_BRIDGE_REJECTED", "http_status"),
+        (403, {"code": "FORBIDDEN"}, "FORBIDDEN", "http_status"),
+        (500, {"code": 500}, 500, "http_status"),
+        (503, {"code": "private-account-secret"}, "OTHER", "http_status"),
+        (503, ["private-account-secret"], "NON_OBJECT", "http_status"),
+        (200, {"code": "FORBIDDEN"}, "FORBIDDEN", "api_envelope"),
+    ],
+)
+async def test_failed_request_retains_only_safe_outer_code_and_still_stops(
+    tmp_path, status, body, expected_code, expected_error
+):
+    run_id = str(uuid4())
+    secret = "private-account-secret"
+    route = benchmark.Route("history", "member0", "/mall-agent/v1/member/conversations", "listConversations")
+
+    def handler(request):
+        header = timing(run_id, request.headers["X-Request-ID"]) | {"status_code": status}
+        envelope = body | {"message": secret, "data": {"token": secret}} if isinstance(body, dict) else body
+        return httpx.Response(
+            status, json=envelope, headers={"X-Performance-Timing": json.dumps(header)}
+        )
+
+    evidence = benchmark.Evidence(tmp_path / "requests.jsonl")
+    stop = asyncio.Event()
+    try:
+        async with httpx.AsyncClient(
+            base_url="http://127.0.0.1", transport=httpx.MockTransport(handler)
+        ) as client:
+            now = benchmark.time.monotonic()
+            await benchmark.query_request(
+                client, route, benchmark.Arrival(0, route, now, now, False), run_id, "B", evidence, stop
+            )
+    finally:
+        evidence.close()
+    record = evidence.records[0]
+    assert stop.is_set() and record["outcome"] == "error" and record["status_code"] == status
+    assert record["error"] == expected_error and record["api_error_code"] == expected_code
+    assert record["timing_state"] == "observed"
+    assert secret not in evidence.path.read_text(encoding="utf-8")
+
+
+def test_outer_error_observation_handles_invalid_or_oversize_json_without_exposing_it():
+    assert benchmark.safe_api_error_code(httpx.Response(503, content=b"private-invalid-json")) == "INVALID_JSON"
+    assert benchmark.safe_api_error_code(
+        httpx.Response(503, content=b"x" * 2097153)
+    ) == "RESPONSE_TOO_LARGE"
+
+    class Unavailable:
+        content = b""
+
+        def json(self):
+            raise RuntimeError("private-diagnostic-failure")
+
+    assert benchmark.safe_api_error_code(Unavailable()) == "UNAVAILABLE"
 
 
 @pytest.mark.asyncio
