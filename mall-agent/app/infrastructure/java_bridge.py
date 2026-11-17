@@ -12,67 +12,6 @@ from app.domain.identity import DomainError, Principal
 from app.infrastructure.performance_timing import current_timing, phase
 
 
-def _bridge_observation_started(timing):
-    if timing is None:
-        return None
-    try:
-        return time.perf_counter()
-    except Exception:
-        return None
-
-
-def _record_bridge_observation(timing, started, bridge_request_id, path, response, data, error=None):
-    """Observe HTTP plus JSON elapsed time, without URLs, payloads or error text."""
-    if timing is None or started is None:
-        return
-    try:
-        error_type = "NONE"
-        if error is not None:
-            classes = (
-                (httpx.ConnectTimeout, "CONNECT_TIMEOUT"),
-                (httpx.ReadTimeout, "READ_TIMEOUT"),
-                (httpx.WriteTimeout, "WRITE_TIMEOUT"),
-                (httpx.PoolTimeout, "POOL_TIMEOUT"),
-                (httpx.TimeoutException, "TIMEOUT_OTHER"),
-                (httpx.ConnectError, "CONNECT_ERROR"),
-                (httpx.ReadError, "READ_ERROR"),
-                (httpx.WriteError, "WRITE_ERROR"),
-                (httpx.CloseError, "CLOSE_ERROR"),
-                (httpx.RemoteProtocolError, "REMOTE_PROTOCOL_ERROR"),
-                (httpx.LocalProtocolError, "LOCAL_PROTOCOL_ERROR"),
-                (httpx.ProxyError, "PROXY_ERROR"),
-                (httpx.UnsupportedProtocol, "UNSUPPORTED_PROTOCOL"),
-                (httpx.TooManyRedirects, "TOO_MANY_REDIRECTS"),
-                (ValueError, "INVALID_JSON"),
-            )
-            error_type = next(
-                (name for error_class, name in classes if isinstance(error, error_class)), "HTTP_ERROR_OTHER"
-            )
-            if error_type == "INVALID_JSON" and response is None:
-                error_type = "HTTP_ERROR_OTHER"
-        if response is None or error_type == "INVALID_JSON":
-            code = "NONE"
-        elif isinstance(data, dict):
-            code = data.get("code", "NONE")
-        else:
-            code = "NON_OBJECT"
-        timing.record_java_bridge_call(
-            bridge_request_id=bridge_request_id,
-            operation={
-                "/mall-portal/agent-bridge/v1/identity": "MEMBER_IDENTITY",
-                "/mall-portal/agent-bridge/v1/orders": "MEMBER_ORDERS",
-                "/mall-admin/agent-bridge/v1/identity": "STAFF_IDENTITY",
-            }.get(path, "OTHER"),
-            upstream_http_status=response.status_code if response is not None else None,
-            upstream_code=code,
-            error_type=error_type,
-            elapsed_ms=(time.perf_counter() - started) * 1000,
-        )
-    except Exception:
-        # Observation/clock/sink failures are omitted; original branches stay intact.
-        return
-
-
 def sign(method: str, target: str, body: bytes, timestamp: str, nonce: str, secret: str) -> str:
     canonical = "\n".join([method.upper(), target, hashlib.sha256(body).hexdigest(), timestamp, nonce])
     return "v1:" + base64.urlsafe_b64encode(
@@ -113,18 +52,12 @@ class JavaBridge:
         timing = current_timing()
         if timing is not None:
             headers["X-Agent-Parent-Request-ID"] = timing.request_id
-        observation_started = _bridge_observation_started(timing)
-        response = None
         try:
             with phase("java_bridge_ms"):
                 response = await self.client.get(target, headers=headers)
             data = response.json()
-        except (httpx.HTTPError, ValueError) as error:
-            _record_bridge_observation(
-                timing, observation_started, headers["X-Request-ID"], path, response, None, error
-            )
+        except (httpx.HTTPError, ValueError):
             raise DomainError("JAVA_UNAVAILABLE", "商城服务暂不可用", 503) from None
-        _record_bridge_observation(timing, observation_started, headers["X-Request-ID"], path, response, data)
         if response.status_code == 401 or data.get("code") == 401:
             raise DomainError("AUTH_EXPIRED", "请重新登录商城", 401)
         if response.status_code == 403 or data.get("code") == 403:

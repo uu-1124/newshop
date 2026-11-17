@@ -22,7 +22,6 @@ from app.application.attachments import MAX_IMAGE_BYTES
 from app.application.conversations import owned
 from app.domain.identity import DomainError
 from app.infrastructure.postgres.database import encoded, one, rows
-from app.infrastructure.stream_observation import observe_stream_domain_end
 
 
 def register_member_routes(app, settings):
@@ -369,8 +368,7 @@ def register_member_routes(app, settings):
                         heartbeat = time.monotonic()
                     notification_version = await svc.notifications.wait(notification_version)
                     pending, watermark = await batch(cursor)
-            except DomainError as error:
-                observe_stream_domain_end(request, "MEMBER_EVENTS", error)
+            except DomainError:
                 # Closing forces a fresh authenticated HTTP request/snapshot; no hidden infinite stream.
                 return
 

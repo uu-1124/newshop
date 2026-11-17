@@ -47,24 +47,6 @@ QUEUE_REASONS = {
     "sqlalchemy_version_unsupported",
     "queue_adapter_unsupported",
 }
-BRIDGE_OPERATIONS = {"MEMBER_IDENTITY", "MEMBER_ORDERS", "STAFF_IDENTITY", "OTHER"}
-BRIDGE_HTTP_CODES = {200, 400, 401, 403, 404, 409, 422, 500, 502, 503, 504}
-BRIDGE_CODES = {
-    "OK", "BRIDGE_NONCE_UNAVAILABLE", "BRIDGE_SIGNATURE_INVALID", "AUTH_EXPIRED",
-    "AUTH_REQUIRED", "FORBIDDEN", "JAVA_UNAVAILABLE", "JAVA_BRIDGE_REJECTED",
-    "AUTH_SERVICE_UNAVAILABLE", "RETURN_RULE_UNAVAILABLE", "OTHER", "NONE", "NON_OBJECT",
-}
-BRIDGE_ERROR_TYPES = {
-    "NONE", "INVALID_JSON", "CONNECT_TIMEOUT", "READ_TIMEOUT", "WRITE_TIMEOUT",
-    "POOL_TIMEOUT", "TIMEOUT_OTHER", "CONNECT_ERROR", "READ_ERROR", "WRITE_ERROR",
-    "CLOSE_ERROR", "REMOTE_PROTOCOL_ERROR", "LOCAL_PROTOCOL_ERROR", "PROXY_ERROR",
-    "UNSUPPORTED_PROTOCOL", "TOO_MANY_REDIRECTS", "HTTP_ERROR_OTHER",
-}
-API_ERROR_CODES = {
-    "OK", "AUTH_EXPIRED", "AUTH_REQUIRED", "FORBIDDEN", "JAVA_UNAVAILABLE",
-    "JAVA_BRIDGE_REJECTED", "BRIDGE_NONCE_UNAVAILABLE", "INTERNAL_ERROR",
-    "FEATURE_NOT_ACTIVE", "BUSINESS_CONTEXT_REJECTED", "VALIDATION_ERROR",
-}
 
 
 class PlanError(ValueError):
@@ -348,42 +330,6 @@ class Evidence:
         self.handle.close()
 
 
-def validate_bridge_calls(value):
-    # This optional extension accepts only metadata; paths, bodies, messages and
-    # arbitrary error strings must never enter the public request evidence.
-    fields = {"java_bridge_calls", "java_bridge_calls_overflow"}
-    if not fields.intersection(value):
-        return
-    if not fields <= set(value):
-        raise ValueError()
-    calls = value["java_bridge_calls"]
-    if not isinstance(calls, list) or len(calls) > 4:
-        raise ValueError()
-    bounded_number(value["java_bridge_calls_overflow"], 0, 3600000, "Invalid bridge count", integer=True)
-    for call in calls:
-        if not isinstance(call, dict) or set(call) != {
-            "bridge_request_id", "operation", "upstream_http_status", "upstream_code",
-            "error_type", "elapsed_ms",
-        }:
-            raise ValueError()
-        rid = call["bridge_request_id"]
-        if not isinstance(rid, str) or len(rid) != 36 or str(UUID(rid)) != rid:
-            raise ValueError()
-        if not isinstance(call["operation"], str) or call["operation"] not in BRIDGE_OPERATIONS:
-            raise ValueError()
-        if call["upstream_http_status"] is not None:
-            bounded_number(call["upstream_http_status"], 100, 599, "Invalid bridge status", integer=True)
-        code = call["upstream_code"]
-        if not (
-            (type(code) is int and code in BRIDGE_HTTP_CODES)
-            or (isinstance(code, str) and code in BRIDGE_CODES)
-        ):
-            raise ValueError()
-        if not isinstance(call["error_type"], str) or call["error_type"] not in BRIDGE_ERROR_TYPES:
-            raise ValueError()
-        bounded_number(call["elapsed_ms"], 0, 3600000, "Invalid bridge duration")
-
-
 def parse_performance_timing(raw, run_id, request_id, operation, status):
     if raw is None:
         return None, "unobserved"
@@ -411,9 +357,7 @@ def parse_performance_timing(raw, run_id, request_id, operation, status):
         if (
             not isinstance(value, dict)
             or not required <= set(value)
-            or set(value) - required - {
-                "pool_queue_in_checkout_residual", "java_bridge_calls", "java_bridge_calls_overflow"
-            }
+            or set(value) - required - {"pool_queue_in_checkout_residual"}
             or value["schema_version"] != 1
         ):
             raise ValueError()
@@ -442,7 +386,6 @@ def parse_performance_timing(raw, run_id, request_id, operation, status):
             raise ValueError()
         for key in ("total_ms", "handler_ms", "metrics_write_ms", "java_bridge_ms"):
             bounded_number(value[key], 0, 3600000, "Invalid timing")
-        validate_bridge_calls(value)
         db = value["db"]
         allowed = {name + suffix for name in DB_TIMINGS for suffix in ("_ms", "_count")} | {
             "pool_queue_supported",
@@ -673,31 +616,12 @@ class StreamMonitor:
         }
 
 
-def safe_api_error_code(response):
-    """Retain only a fixed error enum; diagnostic parsing cannot change a result."""
-    try:
-        if len(response.content) > 2097152:
-            return "RESPONSE_TOO_LARGE"
-        envelope = response.json()
-        if not isinstance(envelope, dict):
-            return "NON_OBJECT"
-        code = envelope.get("code")
-        if type(code) is int and code in BRIDGE_HTTP_CODES:
-            return code
-        return code if isinstance(code, str) and code in API_ERROR_CODES else "OTHER"
-    except ValueError:
-        return "INVALID_JSON"
-    except Exception:
-        return "UNAVAILABLE"
-
-
 async def query_request(client, route, arrival, run_id, variant, evidence, stop):
     request_id = str(uuid4())
     trace = Trace()
     started = time.monotonic()
     status = None
     outcome, error, timing, coverage = "error", None, None, "unobserved"
-    api_error_code = None
     try:
         response = await client.get(
             route.path,
@@ -716,8 +640,6 @@ async def query_request(client, route, arrival, run_id, variant, evidence, stop)
                     error = "api_envelope"
             except ValueError:
                 error = "api_envelope"
-        if status != 200 or error == "api_envelope":
-            api_error_code = safe_api_error_code(response)
         timing, coverage = parse_performance_timing(
             response.headers.get("X-Performance-Timing"), run_id, request_id, route.expected_operation, status
         )
@@ -756,7 +678,6 @@ async def query_request(client, route, arrival, run_id, variant, evidence, stop)
                 "status_code": status,
                 "outcome": outcome,
                 "error": error,
-                "api_error_code": api_error_code,
                 "server_timing": timing,
                 "timing_state": coverage,
                 "client_trace": trace.result(),
