@@ -12,7 +12,6 @@ from app.application.handoffs import visible_conversation
 from app.domain.identity import DomainError
 from app.infrastructure.postgres.database import encoded, one, rows
 from app.infrastructure.staff_auth import require_permission
-from app.infrastructure.stream_observation import observe_stream_domain_end
 
 
 async def staff_event_batch(svc, position, current, conversation_id=None):
@@ -135,8 +134,7 @@ def register_staff_events(app):
                         heartbeat = time.monotonic()
                     notification = await svc.notifications.wait(notification)
                     pending, watermark = await staff_event_batch(svc, cursor, current, conversation_id)
-            except DomainError as error:
-                observe_stream_domain_end(request, "STAFF_EVENTS", error)
+            except DomainError:
                 return
 
         return StreamingResponse(
