@@ -27,7 +27,7 @@ class AgentCartSecurityTest {
     }
     @SuppressWarnings("unchecked")
     @org.junit.jupiter.api.parallel.ResourceLock(org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES)
-    @Test void nonceReplayNullAndRedisFailureRemainDeniedWithObservationOnOrOff()throws Exception{
+    @Test void nonceReplayAndNullRemainDeniedWhileRedisFailureIsUnavailableWithObservationOnOrOff()throws Exception{
         String property="mall.agent.bridge.observability.enabled",previous=System.getProperty(property);
         var redis=mock(StringRedisTemplate.class);ValueOperations<String,String> values=mock(ValueOperations.class);
         when(redis.opsForValue()).thenReturn(values);
@@ -43,7 +43,10 @@ class AgentCartSecurityTest {
                 request.addHeader("X-Agent-Timestamp",timestamp);request.addHeader("X-Agent-Nonce",nonce);
                 request.addHeader("X-Request-ID",UUID.randomUUID().toString());
                 request.addHeader("X-Agent-Signature","v1:"+Base64.getUrlEncoder().withoutPadding().encodeToString(AgentCartSecurity.hmac(bridge,payload.getBytes(StandardCharsets.UTF_8))));
-                for(int attempt=0;attempt<3;attempt++)assertFalse(verifier.signed(request,new byte[0]));
+                for(int attempt=0;attempt<2;attempt++)assertFalse(verifier.signed(request,new byte[0]));
+                var unavailable=assertThrows(com.macro.mall.common.exception.BridgeNonceUnavailableException.class,
+                        ()->verifier.signed(request,new byte[0]));
+                assertEquals(org.springframework.dao.QueryTimeoutException.class,unavailable.getCause().getClass());
             }
         } finally {
             if(previous==null)System.clearProperty(property);else System.setProperty(property,previous);
