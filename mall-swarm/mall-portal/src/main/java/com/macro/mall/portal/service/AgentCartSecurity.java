@@ -3,12 +3,14 @@ package com.macro.mall.portal.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.macro.mall.common.log.BridgeSignatureObservation;
+import com.macro.mall.common.exception.BridgeNonceUnavailableException;
 import com.macro.mall.common.log.BridgeSignatureObservation.Guard;
 import com.macro.mall.common.log.BridgeSignatureObservation.Phase;
 import com.macro.mall.common.log.BridgeSignatureObservation.Outcome;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -48,11 +50,18 @@ public class AgentCartSecurity {
                 String canonical=String.join("\n",request.getMethod(),target,sha(body),timestamp,nonce);
                 if(!MessageDigest.isEqual(hmac(bridge,canonical.getBytes(StandardCharsets.UTF_8)),Base64.getUrlDecoder().decode(signature.substring(3))))return observation.result(false, Outcome.MAC_MISMATCH);
                 observation.phase(Phase.NONCE);
-                Boolean nonceResult = redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:"+nonce,"1",Duration.ofSeconds(300));
+                Boolean nonceResult;
+                try {
+                    nonceResult = redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:"+nonce,"1",Duration.ofSeconds(300));
+                } catch (DataAccessException ex) {
+                    observation.error(ex);
+                    throw new BridgeNonceUnavailableException(ex);
+                }
                 boolean accepted = Boolean.TRUE.equals(nonceResult);
                 return observation.result(accepted, accepted ? Outcome.ACCEPTED
                         : Boolean.FALSE.equals(nonceResult) ? Outcome.NONCE_REPLAY : Outcome.NONCE_RESULT_UNKNOWN);
-            } catch(Exception ex) { observation.error(ex); return false; }
+            } catch(BridgeNonceUnavailableException ex) { throw ex; }
+            catch(Exception ex) { observation.error(ex); return false; }
         }
     }
     public JsonNode receipt(String encoded, String purpose, String operation, String hash, Long memberId) {
