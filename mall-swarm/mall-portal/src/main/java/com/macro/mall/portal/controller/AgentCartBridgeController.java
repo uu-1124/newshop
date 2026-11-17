@@ -3,6 +3,7 @@ package com.macro.mall.portal.controller;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.macro.mall.common.exception.BridgeNonceUnavailableException;
 import com.macro.mall.model.UmsMember;
 import com.macro.mall.portal.service.*;
 import com.macro.mall.portal.util.StpMemberUtil;
@@ -32,6 +33,7 @@ public class AgentCartBridgeController {
         }catch(com.macro.mall.order.AgentAfterSaleStore.Rejected ex){code=ex.code;status=ex.status;}
         catch(AgentCartService.Rejected ex){code=ex.code;if(status==200)status=code.equals("AUTH_EXPIRED")?401:code.equals("CONFIRMATION_INVALID")?403:409;}
         catch(IllegalArgumentException|java.io.IOException ex){code="VALIDATION_ERROR";status=422;}
+        catch(BridgeNonceUnavailableException ex){throw ex;}
         catch(Exception ex){code="JAVA_UNAVAILABLE";status=503;}
         Map<String,Object> out=new LinkedHashMap<>();out.put("code",code);out.put("message",code.equals("OK")?"成功":"商城操作暂不可用，请刷新核对");out.put("data",data);String rid;try{rid=UUID.fromString(request.getHeader("X-Request-ID")).toString();}catch(Exception ex){rid=UUID.randomUUID().toString();}out.put("request_id",rid);return ResponseEntity.status(status).body(out);
     }
