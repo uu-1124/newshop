@@ -47,13 +47,6 @@ async def test_bridge_observation_keeps_authentication_rejection_and_success_sem
         header = timing.header("memberMe", status)
         observed = json.loads(header)
         assert observed["java_bridge_ms"] >= 0
-        assert observed["java_bridge_calls_overflow"] == 0
-        call = observed["java_bridge_calls"][0]
-        assert call["bridge_request_id"] == seen[0].headers["X-Request-ID"]
-        assert call["operation"] == "MEMBER_IDENTITY"
-        assert call["upstream_http_status"] == status
-        assert call["upstream_code"] == ("OK" if status == 200 else status)
-        assert call["error_type"] == "NONE" and call["elapsed_ms"] >= 0
         assert seen[0].headers["Authorization"] == "Bearer private-demo-token"
         assert "X-Agent-Signature" in seen[0].headers
         assert seen[0].headers["X-Agent-Parent-Request-ID"] == timing.request_id

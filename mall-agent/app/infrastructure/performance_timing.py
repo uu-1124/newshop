@@ -6,7 +6,6 @@ Checkout residual includes queueing and setup; it is not a pure queue measuremen
 """
 
 import json
-import math
 import re
 import time
 from contextlib import contextmanager
@@ -21,46 +20,6 @@ from sqlalchemy.util.queue import AsyncAdaptedQueue
 
 HEADER = "X-Performance-Timing"
 RUN_HEADER = "X-Performance-Run"
-JAVA_BRIDGE_OPERATIONS = frozenset({"MEMBER_IDENTITY", "MEMBER_ORDERS", "STAFF_IDENTITY", "OTHER"})
-JAVA_BRIDGE_NUMERIC_CODES = frozenset({200, 400, 401, 403, 404, 409, 422, 500, 502, 503, 504})
-JAVA_BRIDGE_STRING_CODES = frozenset(
-    {
-        "OK",
-        "BRIDGE_NONCE_UNAVAILABLE",
-        "BRIDGE_SIGNATURE_INVALID",
-        "AUTH_EXPIRED",
-        "AUTH_REQUIRED",
-        "FORBIDDEN",
-        "JAVA_UNAVAILABLE",
-        "JAVA_BRIDGE_REJECTED",
-        "AUTH_SERVICE_UNAVAILABLE",
-        "RETURN_RULE_UNAVAILABLE",
-        "OTHER",
-        "NONE",
-        "NON_OBJECT",
-    }
-)
-JAVA_BRIDGE_ERROR_TYPES = frozenset(
-    {
-        "NONE",
-        "INVALID_JSON",
-        "CONNECT_TIMEOUT",
-        "READ_TIMEOUT",
-        "WRITE_TIMEOUT",
-        "POOL_TIMEOUT",
-        "TIMEOUT_OTHER",
-        "CONNECT_ERROR",
-        "READ_ERROR",
-        "WRITE_ERROR",
-        "CLOSE_ERROR",
-        "REMOTE_PROTOCOL_ERROR",
-        "LOCAL_PROTOCOL_ERROR",
-        "PROXY_ERROR",
-        "UNSUPPORTED_PROTOCOL",
-        "TOO_MANY_REDIRECTS",
-        "HTTP_ERROR_OTHER",
-    }
-)
 _OPERATION = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,79}\Z")
 _DB_FIELDS = (
     "acquire_ms",
@@ -89,8 +48,6 @@ class RequestTiming:
     incomplete_connects: int = 0
     queue_supported: bool | None = None
     queue_reason: str | None = None
-    java_bridge_calls: list = field(default_factory=list)
-    java_bridge_calls_overflow: int = 0
 
     def add(self, name, elapsed, *, database=False):
         if self.closed:
@@ -100,46 +57,6 @@ class RequestTiming:
         if database:
             count = name.removesuffix("_ms") + "_count"
             self.counts[count] = self.counts.get(count, 0) + 1
-
-    def record_java_bridge_call(
-        self, *, bridge_request_id, operation, upstream_http_status, upstream_code, error_type, elapsed_ms
-    ):
-        """Keep only bounded fixed metadata; a failed observation is silently omitted."""
-        try:
-            if self.closed:
-                return
-            if len(self.java_bridge_calls) >= 4:
-                self.java_bridge_calls_overflow = min(self.java_bridge_calls_overflow + 1, 3600000)
-                return
-            if not isinstance(bridge_request_id, str) or len(bridge_request_id) != 36:
-                return
-            canonical = str(UUID(bridge_request_id))
-            if canonical != bridge_request_id:
-                return
-            if type(elapsed_ms) not in (int, float) or not math.isfinite(elapsed_ms) or not 0 <= elapsed_ms <= 3600000:
-                return
-            status = upstream_http_status
-            if type(status) is not int or not 100 <= status <= 599:
-                status = None
-            if type(upstream_code) is int and upstream_code in JAVA_BRIDGE_NUMERIC_CODES:
-                code = upstream_code
-            elif type(upstream_code) is str and upstream_code in JAVA_BRIDGE_STRING_CODES:
-                code = upstream_code
-            else:
-                code = "OTHER"
-            self.java_bridge_calls.append(
-                {
-                    "bridge_request_id": canonical,
-                    "operation": operation if operation in JAVA_BRIDGE_OPERATIONS else "OTHER",
-                    "upstream_http_status": status,
-                    "upstream_code": code,
-                    "error_type": error_type if error_type in JAVA_BRIDGE_ERROR_TYPES else "HTTP_ERROR_OTHER",
-                    "elapsed_ms": round(elapsed_ms, 3),
-                }
-            )
-        except Exception:
-            # Optional diagnostics never replace a business response or exception.
-            return
 
     def header(self, operation, status_code, streaming=False):
         elapsed = max(0, (time.perf_counter() - self.started) * 1000)
@@ -176,9 +93,6 @@ class RequestTiming:
             "checkout_residual_includes_setup": True,
             "pool_queue_in_checkout_residual": True,
         }
-        if self.java_bridge_calls or self.java_bridge_calls_overflow:
-            payload["java_bridge_calls"] = self.java_bridge_calls
-            payload["java_bridge_calls_overflow"] = self.java_bridge_calls_overflow
         result = json.dumps(payload, ensure_ascii=True, separators=(",", ":"), allow_nan=False)
         return result if len(result) <= 4096 else None
 
