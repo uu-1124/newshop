@@ -1,7 +1,6 @@
 package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.log.BridgeSignatureObservation;
-import com.macro.mall.common.exception.BridgeNonceUnavailableException;
 import com.macro.mall.common.log.BridgeSignatureObservation.Guard;
 import com.macro.mall.common.log.BridgeSignatureObservation.Phase;
 import com.macro.mall.common.log.BridgeSignatureObservation.Outcome;
@@ -14,7 +13,6 @@ import com.macro.mall.portal.util.StpMemberUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -149,19 +147,11 @@ public class AgentMemberBridgeController {
                 byte[] actual = Base64.getUrlDecoder().decode(signature.substring(3));
                 if (!MessageDigest.isEqual(mac.doFinal(canonical.getBytes(StandardCharsets.UTF_8)), actual)) return observation.result(false, Outcome.MAC_MISMATCH);
                 observation.phase(Phase.NONCE);
-                Boolean nonceResult;
-                try {
-                    nonceResult = redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:" + nonce,
-                            "1", Duration.ofSeconds(125));
-                } catch (DataAccessException ex) {
-                    observation.error(ex);
-                    throw new BridgeNonceUnavailableException(ex);
-                }
+                Boolean nonceResult = redis.opsForValue().setIfAbsent("mall-agent:bridge:nonce:v1:" + nonce,
+                        "1", Duration.ofSeconds(125));
                 boolean accepted = Boolean.TRUE.equals(nonceResult);
                 return observation.result(accepted, accepted ? Outcome.ACCEPTED
                         : Boolean.FALSE.equals(nonceResult) ? Outcome.NONCE_REPLAY : Outcome.NONCE_RESULT_UNKNOWN);
-            } catch (BridgeNonceUnavailableException ex) {
-                throw ex;
             } catch (Exception ex) {
                 observation.error(ex);
                 return false;

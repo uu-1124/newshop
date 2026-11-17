@@ -96,7 +96,7 @@ class AgentStaffBridgeTest {
     }
 
     @org.junit.jupiter.api.parallel.ResourceLock(org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES)
-    @Test void nonceReplayAndNullRemainForbiddenWhileRedisFailureIsUnavailableWithObservationOnOrOff() throws Exception {
+    @Test void nonceReplayNullAndRedisFailureRemainForbiddenWithObservationOnOrOff() throws Exception {
         String property = "mall.agent.bridge.observability.enabled", previous = System.getProperty(property);
         try {
             for (String enabled : List.of("false", "true")) {
@@ -106,16 +106,11 @@ class AgentStaffBridgeTest {
                         .when(values).setIfAbsent(anyString(), eq("1"), any(Duration.class));
                 var request = signed("/mall-admin", Instant.now());
                 request.addHeader("X-Request-ID", UUID.randomUUID().toString());
-                for (int attempt = 0; attempt < 2; attempt++) {
+                for (int attempt = 0; attempt < 3; attempt++) {
                     var response = controller.identity(request);
                     assertEquals(403, response.getStatusCode().value());
                     assertEquals("BRIDGE_SIGNATURE_INVALID", response.getBody().get("code"));
                 }
-                var unavailable = assertThrows(
-                        com.macro.mall.common.exception.BridgeNonceUnavailableException.class,
-                        () -> controller.identity(request));
-                assertEquals(org.springframework.dao.QueryTimeoutException.class,
-                        unavailable.getCause().getClass());
             }
         } finally {
             if (previous == null) System.clearProperty(property); else System.setProperty(property, previous);
