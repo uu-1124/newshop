@@ -61,6 +61,37 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(safe[0]["cpu_seconds"], 3)
         self.assertEqual(problems[0]["reason"], "PYTHON_TESTS")
 
+    def test_tool_host_task_text_does_not_hide_its_actual_interpreter_children(self):
+        # The observed false positive was this tool host, not a Python process.
+        # Keep real child detection unchanged, including uncommon interpreters
+        # and command options; do not attempt to parse Python's CLI here.
+        commands = [
+            ('python -m pytest -x', 'python.exe', 'PYTHON_TESTS'),
+            ('pypy3.exe --check-hash-based-pycs always -m pytest', 'pypy3.exe', 'PYTHON_TESTS'),
+            ('python D:/newshop/mall-agent/scripts/accept_capacity.py --duration 900', 'python.exe', 'OTHER_ACCEPTANCE'),
+            ('python -B -m scripts.accept_capacity --duration 900', 'python.exe', 'OTHER_ACCEPTANCE'),
+            ('python -m app.workers.generation', 'python.exe', None),
+            ('java org.codehaus.plexus.classworlds.launcher.Launcher package', 'java.exe', 'MAVEN'),
+            ('cmd /c npm run build', 'cmd.exe', 'FRONTEND_BUILD_OR_TEST'),
+        ]
+        records = []
+        for index, (command, child_name, expected) in enumerate(commands):
+            with self.subTest(command=command):
+                self.assertEqual(CONTROL.interference_reason(child_name, command), expected)
+                for host in ('codex-computer-use.exe', 'codex-code-mode-host.exe', 'node_repl.exe'):
+                    self.assertIsNone(CONTROL.interference_reason(host, command))
+            records.append({'ProcessId': index + 100, 'Name': child_name, 'CommandLine': command})
+        records.append({'ProcessId': 42, 'Name': 'codex-computer-use.exe',
+                        'CommandLine': 'task text accept_capacity.py --password=private-value',
+                        'KernelModeTime': '10000000', 'WorkingSetSize': '4096'})
+        safe, problems = CONTROL.redact_processes(records)
+        self.assertEqual(len(safe), len(records))
+        self.assertEqual(safe[-1]['cpu_seconds'], 1)
+        self.assertEqual(safe[-1]['working_set_bytes'], 4096)
+        self.assertNotIn(42, [row['pid'] for row in problems])
+        self.assertEqual(len(problems), 6)
+        self.assertNotIn('private-value', json.dumps([safe, problems]))
+
     def test_backup_schedule_exposes_journal_window_and_keeps_input_unchanged(self):
         policy = {"enabled": True, "daily_hour_utc": 19, "journal_interval_minutes": 15}
         original = deepcopy(policy)

@@ -20,6 +20,12 @@ def utc():
 def interference_reason(name, command):
     """Classify command lines in memory; arguments never enter returned evidence."""
     name, command = name.lower(), command.lower()
+    # These tool hosts carry task/source text in their arguments. A script name
+    # inside that text is not an invocation. Their real interpreter/build child
+    # processes remain independently inventoried by the unchanged rules below;
+    # tool-host CPU and memory are still retained in the resource evidence.
+    if name in {"codex-computer-use.exe", "codex-code-mode-host.exe", "node_repl.exe"}:
+        return None
     patterns = {
         "PYTHON_TESTS": [
             r"(?:^|\s)-m\s+(?:pytest|unittest)(?:\s|$)",
@@ -37,7 +43,8 @@ def interference_reason(name, command):
             r'(?:^|[\\/\s"])(?:backup-agent-consistent|restore-agent-isolated)\.py(?:"|\s|$)'
         ],
         "OTHER_ACCEPTANCE": [
-            r'(?:^|[\\/\s"])(?:accept_capacity|evaluate_[a-z_]+|smoke_[a-z_]+)\.py(?:"|\s|$)'
+            r'(?:^|[\\/\s"])(?:accept_capacity|evaluate_[a-z_]+|smoke_[a-z_]+)\.py(?:"|\s|$)',
+            r'(?:^|\s)-m\s+(?:scripts\.)?(?:accept_capacity|evaluate_[a-z_]+|smoke_[a-z_]+)(?:\s|$)',
         ],
     }
     if name in {"node", "node.exe"}:
