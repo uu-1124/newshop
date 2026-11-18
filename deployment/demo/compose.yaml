@@ -190,6 +190,10 @@ services:
       discovery.type: single-node
       xpack.security.enabled: 'false'
       xpack.ml.enabled: 'false'
+      # Demo indexes are small; keep allocation and write guards based on free space.
+      cluster.routing.allocation.disk.watermark.low: 3gb
+      cluster.routing.allocation.disk.watermark.high: 2gb
+      cluster.routing.allocation.disk.watermark.flood_stage: 1gb
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     volumes: [elasticsearch:/usr/share/elasticsearch/data]
     healthcheck:
