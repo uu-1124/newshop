@@ -41,7 +41,7 @@ jobs:
         if: failure()
         run: |
           docker compose --env-file demo.env ps -a
-          docker compose --env-file demo.env logs --tail=100 search-init search pg-init object-init agent gateway
+          docker compose --env-file demo.env logs --tail=100 search-init search elasticsearch pg-init object-init agent gateway
       - name: Remove the runner's disposable demo project
         if: always()
         run: |

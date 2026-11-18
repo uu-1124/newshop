@@ -246,7 +246,10 @@ services:
 
   search:
     <<: *java
-    environment: { <<: *java-env, MALL_SERVICE: search }
+    environment:
+      <<: *java-env
+      MALL_SERVICE: search
+      SPRING_ELASTICSEARCH_SOCKET_TIMEOUT: 180s
 
   monitor:
     <<: *java
