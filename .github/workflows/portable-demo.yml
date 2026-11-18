@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   fresh-install:
@@ -37,6 +38,31 @@ jobs:
         run: docker compose --env-file demo.env up --no-build -d --wait --wait-timeout 480
       - name: Exercise the storefront, admin, search, uploads and support
         run: python3 -u smoke.py
+      - name: Publish tested demo images to private GitHub Packages
+        if: github.repository == 'uu-1124/newshop' && github.ref == 'refs/heads/codex/portable-demo'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          trap 'docker logout ghcr.io >/dev/null' EXIT
+          manifest=$(mktemp)
+          for spec in 'JAVA newshop-demo/java:1' 'AGENT newshop-demo/agent:1' 'MYSQL newshop-demo/mysql:8.0.35-1' 'SEARCH newshop-demo/elasticsearch:8.18.0-ik' 'WEB newshop-demo/web:1'; do
+            read -r key source <<< "$spec"
+            name="ghcr.io/$GITHUB_REPOSITORY_OWNER/newshop-demo-${key,,}"
+            tag="$name:sha-$GITHUB_SHA"
+            docker tag "$source" "$tag"
+            docker push "$tag"
+            ref=$(docker image inspect "$tag" --format '{{range .RepoDigests}}{{println .}}{{end}}' | grep -E "^${name}@sha256:[0-9a-f]{64}$")
+            printf 'DEMO_%s_IMAGE=%s\n' "$key" "$ref" >> "$manifest"
+          done
+          {
+            echo '### Verified private image references'
+            echo 'Use these entries with the Compose file from this commit.'
+            printf '%s\n' '```dotenv'
+            cat "$manifest"
+            printf '%s\n' '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Show service status on failure
         if: failure()
         run: |

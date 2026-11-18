@@ -2,9 +2,11 @@ name: newshop-demo
 
 x-build: &build
   context: ../..
+  labels:
+    org.opencontainers.image.source: https://github.com/uu-1124/newshop
 
 x-java: &java
-  image: newshop-demo/java:1
+  image: ${DEMO_JAVA_IMAGE:-newshop-demo/java:1}
   build:
     <<: *build
     dockerfile: deployment/demo/java.Dockerfile
@@ -45,7 +47,7 @@ x-java-env: &java-env
   TZ: Asia/Shanghai
 
 x-agent: &agent
-  image: newshop-demo/agent:1
+  image: ${DEMO_AGENT_IMAGE:-newshop-demo/agent:1}
   build:
     <<: *build
     dockerfile: deployment/demo/agent.Dockerfile
@@ -98,7 +100,7 @@ x-agent-env: &agent-env
 
 services:
   mysql:
-    image: newshop-demo/mysql:8.0.35-1
+    image: ${DEMO_MYSQL_IMAGE:-newshop-demo/mysql:8.0.35-1}
     build:
       <<: *build
       dockerfile: deployment/demo/mysql.Dockerfile
@@ -182,7 +184,7 @@ services:
       retries: 60
 
   elasticsearch:
-    image: newshop-demo/elasticsearch:8.18.0-ik
+    image: ${DEMO_SEARCH_IMAGE:-newshop-demo/elasticsearch:8.18.0-ik}
     build:
       <<: *build
       dockerfile: deployment/demo/search.Dockerfile
@@ -310,7 +312,7 @@ services:
     command: [python, -m, app.workers.outbox]
 
   web:
-    image: newshop-demo/web:1
+    image: ${DEMO_WEB_IMAGE:-newshop-demo/web:1}
     build:
       <<: *build
       dockerfile: deployment/demo/web.Dockerfile

@@ -1,6 +1,6 @@
 # Newshop 独立演示
 
-买家端、后台和业务接口都从当前 Git 提交的源码构建。中间件和构建镜像固定到版本和镜像摘要，中文搜索插件校验 SHA-256。镜像在本机生成，不需要访问原服务器，也不需要私有镜像仓库。本项目使用独立 Docker 卷；已有部署的订单、账号、密钥及知识库数据不会导入。
+买家端、后台和业务接口都从当前 Git 提交的源码构建。中间件和构建镜像固定到版本和镜像摘要，中文搜索插件校验 SHA-256。可以在本机编译，也可以拉取 GitHub Actions 验收后发布的私有镜像。两种方式都不需要访问原服务器。本项目使用独立 Docker 卷；已有部署的订单、账号、密钥及知识库数据不会导入。
 
 ## 克隆和启动
 
@@ -36,6 +36,15 @@ if (-not (Test-Path demo.env)) {
 ```sh
 docker compose --env-file demo.env up --build -d --wait --wait-timeout 480
 ```
+
+也可以跳过编译：从对应提交的「Portable demo」成功运行摘要取得五个 `DEMO_*_IMAGE` 摘要引用，加到 `demo.env`。用自己的 GitHub 用户名和具备 `read:packages` 权限的经典令牌登录 `ghcr.io`；账户还需要有这五个私有包的读取权限。然后运行：
+
+```sh
+docker compose --env-file demo.env pull
+docker compose --env-file demo.env up --no-build -d --wait --wait-timeout 480
+```
+
+请使用验收摘要所对应的 Git 提交，以便镜像与启动脚本保持一致。发布的镜像目前面向 `linux/amd64`。
 
 | 入口 | 地址 | 演示账号 |
 | --- | --- | --- |
