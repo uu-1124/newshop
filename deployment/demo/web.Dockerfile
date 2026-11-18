@@ -1,18 +1,18 @@
-FROM node:22.16.0-bookworm-slim AS shop
+FROM node:22.16.0-bookworm-slim@sha256:048ed02c5fd52e86fda6fbd2f6a76cf0d4492fd6c6fee9e2c463ed5108da0e34 AS shop
 WORKDIR /src
 COPY mall-app-web/package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 COPY mall-app-web/ ./
 RUN VITE_API_BASE_URL=/mall-portal VITE_AGENT_GATEWAY_URL=/ VITE_USE_ALIPAY=false npm run build:h5
 
-FROM node:22.16.0-bookworm-slim AS admin
+FROM node:22.16.0-bookworm-slim@sha256:048ed02c5fd52e86fda6fbd2f6a76cf0d4492fd6c6fee9e2c463ed5108da0e34 AS admin
 WORKDIR /src
 COPY mall-admin-web/package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 COPY mall-admin-web/ ./
 RUN VITE_BASE_SERVER_URL=/mall-admin VITE_USE_OSS=false npm run build
 
-FROM nginx:1.28.0-alpine
+FROM nginx:1.28.0-alpine@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284
 COPY --from=shop /src/dist/build/h5 /srv/shop
 COPY --from=admin /src/dist /srv/admin
 COPY deployment/demo/assets /srv/shared/demo-assets

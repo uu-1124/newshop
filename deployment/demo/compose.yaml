@@ -117,7 +117,7 @@ services:
       retries: 60
 
   postgres:
-    image: postgres:16.11-alpine
+    image: postgres:16.11-alpine@sha256:4327b9fd295502f326f44153a1045a7170ddbfffed1c3829798328556cfd09e2
     environment:
       POSTGRES_DB: mall_agent
       POSTGRES_USER: agent_owner
@@ -130,7 +130,7 @@ services:
       retries: 30
 
   redis:
-    image: redis:7.4.5-alpine
+    image: redis:7.4.5-alpine@sha256:bb186d083732f669da90be8b0f975a37812b15e913465bb14d845db72a4e3e08
     environment:
       REDISCLI_AUTH: ${DEMO_REDIS_PASSWORD}
     command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDISCLI_AUTH"']
@@ -142,7 +142,7 @@ services:
       retries: 30
 
   mongo:
-    image: mongo:7.0.20
+    image: mongo:7.0.20@sha256:b85a0d9de31547b2ecad89803d74d126ba94ba4656f19d3264e14ed0d69b3e19
     volumes: [mongo:/data/db]
     healthcheck:
       test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand({ping: 1}).ok ? 0 : 1)"]
@@ -151,7 +151,7 @@ services:
       retries: 30
 
   rabbitmq:
-    image: rabbitmq:3.13.7-management-alpine
+    image: rabbitmq:3.13.7-management-alpine@sha256:606d8c0d6b3c18d1da9afc53bc7cdb2a8d5486df91b5a9830e9e07626c9ae281
     environment:
       RABBITMQ_DEFAULT_USER: mall
       RABBITMQ_DEFAULT_PASS: ${DEMO_RABBIT_PASSWORD}
@@ -164,7 +164,7 @@ services:
       retries: 30
 
   nacos:
-    image: nacos/nacos-server:v2.5.1
+    image: nacos/nacos-server:v2.5.1@sha256:8987908cb94ed5f9d30522a64493d35732a6c05f216d667a7addb022f3d92e80
     environment:
       MODE: standalone
       NACOS_AUTH_ENABLE: 'false'
@@ -199,7 +199,7 @@ services:
       retries: 60
 
   minio:
-    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z@sha256:1dce27c494a16bae114774f1cec295493f3613142713130c2d22dd5696be6ad3
     command: [server, /data]
     environment:
       MINIO_ROOT_USER: demoadmin
@@ -208,7 +208,7 @@ services:
     volumes: [minio:/data]
 
   object-init:
-    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z@sha256:1dce27c494a16bae114774f1cec295493f3613142713130c2d22dd5696be6ad3
     depends_on: [minio]
     environment:
       MINIO_PASSWORD: ${DEMO_MINIO_PASSWORD}
@@ -268,7 +268,7 @@ services:
     command: [python, /app/agent-init.py]
 
   search-init:
-    image: python:3.13.5-slim-bookworm
+    image: python:3.13.5-slim-bookworm@sha256:4c2cf9917bd1cbacc5e9b07320025bdb7cdf2df7b0ceaccb55e9dd7e30987419
     depends_on: [search]
     volumes: [./search-init.py:/demo/search-init.py:ro]
     command: [python, -u, /demo/search-init.py]
@@ -325,7 +325,7 @@ services:
       retries: 20
 
   vector-etcd:
-    image: quay.io/coreos/etcd:v3.5.25
+    image: quay.io/coreos/etcd:v3.5.25@sha256:52f17f7e56e4f7239f0320dbfcbcc24721163d7d78ae710b466af3254ccf6366
     profiles: [knowledge]
     command: [etcd, --advertise-client-urls=http://vector-etcd:2379, --listen-client-urls=http://0.0.0.0:2379, --data-dir=/etcd]
     volumes: [vector-etcd:/etcd]
@@ -336,7 +336,7 @@ services:
       retries: 30
 
   vector-objects:
-    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z@sha256:1dce27c494a16bae114774f1cec295493f3613142713130c2d22dd5696be6ad3
     profiles: [knowledge]
     command: [server, /data]
     environment:
@@ -350,7 +350,7 @@ services:
       retries: 30
 
   vector-volume-init:
-    image: milvusdb/milvus:v3.0.5
+    image: milvusdb/milvus:v3.0.5@sha256:b9b79b4a284b41cd12d60abc418310f84621fa4c977d409b38f501519a7ccf8a
     profiles: [knowledge]
     user: '0:0'
     network_mode: none
@@ -359,7 +359,7 @@ services:
     volumes: [vector-index:/var/lib/milvus]
 
   milvus:
-    image: milvusdb/milvus:v3.0.5
+    image: milvusdb/milvus:v3.0.5@sha256:b9b79b4a284b41cd12d60abc418310f84621fa4c977d409b38f501519a7ccf8a
     profiles: [knowledge]
     command: [milvus, run, standalone]
     environment:
