@@ -12,4 +12,4 @@ FROM eclipse-temurin:17.0.16_8-jre-jammy@sha256:e90fd2b084488c0ffdd22610d44c1579
 WORKDIR /app
 COPY --from=build /out/ ./
 USER 10001:10001
-ENTRYPOINT ["sh", "-c", "exec java -XX:MaxRAMPercentage=70 -jar /app/${MALL_SERVICE}.jar"]
+ENTRYPOINT ["sh", "-c", "exec java -XX:ActiveProcessorCount=2 -Xms64m -Xmx384m -jar /app/${MALL_SERVICE}.jar"]

@@ -20,9 +20,6 @@ x-java: &java
 
 x-java-env: &java-env
   SPRING_PROFILES_ACTIVE: deploy
-  SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR: nacos:8848
-  SPRING_CLOUD_NACOS_CONFIG_ENABLED: 'false'
-  SPRING_CLOUD_NACOS_CONFIG_IMPORT_CHECK_ENABLED: 'false'
   SPRING_BOOT_ADMIN_CLIENT_ENABLED: 'false'
   SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
   SPRING_DATASOURCE_USERNAME: mall
@@ -38,7 +35,10 @@ x-java-env: &java-env
   SPRING_RABBITMQ_USERNAME: mall
   SPRING_RABBITMQ_PASSWORD: ${DEMO_RABBIT_PASSWORD:?Generate demo.env before starting}
   SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
-  SPRING_APPLICATION_JSON: '{"sa-token":{"jwt-secret-key":"${DEMO_JWT:?Generate demo.env before starting}"}}'
+  SPRING_APPLICATION_JSON: >-
+    {"spring":{"cloud":{"nacos":{"discovery":{"server-addr":"nacos:8848"},
+    "config":{"enabled":false,"import-check":{"enabled":false}}}}},
+    "sa-token":{"jwt-secret-key":"${DEMO_JWT:?Generate demo.env before starting}"}}
   MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
   MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: never
   LOGSTASH_ENABLEINNERLOG: 'false'
