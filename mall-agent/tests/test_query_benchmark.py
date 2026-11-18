@@ -97,7 +97,7 @@ def test_plan_requires_bounded_read_queries_thirteen_distinct_authenticated_stre
     assert len(routes) == 1 and len(streams) == 13
     for change in [
         {"base_url": "https://private-token@example.com"},
-        {"base_url": "http://113.249.103.102"},
+        {"base_url": "http://192.0.2.10"},
         {"samples_per_route": 999},
         {"rate_per_second": float("nan")},
         {"streams": plan["streams"][:-1]},

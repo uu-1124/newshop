@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     job_lease_seconds: int = Field(30, ge=5, le=300)
     job_timeout_seconds: int = Field(60, ge=1, le=600)
     job_retry_base_seconds: float = Field(2, ge=0.1, le=60)
-    dialog_base_url: str = "https://fushengyunsuan.cn/v1"
+    dialog_base_url: str = "https://api.openai.com/v1"
     dialog_api_key: SecretStr = SecretStr("")
     dialog_model: str = "gpt-6.1-sol"
     ali_compatible_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"

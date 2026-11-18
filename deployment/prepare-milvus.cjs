@@ -123,7 +123,7 @@ subprocess.run(['docker','compose','-f',base+'/compose.yaml','up','-d'],check=Tr
 print('Isolated vector stack started; health and authenticated data operations must still be verified',flush=True)
 `;
 const ssh = JSON.parse(fs.readFileSync(path.join(__dirname, '.dev-ssh.json')));
-if (ssh.host !== '113.249.103.102') throw new Error('Unexpected server');
+if (!ssh.host || !ssh.username) throw new Error('Missing SSH target in .dev-ssh.json');
 const client = new Client();
 client.on('ready', () => client.exec('python3 -', (err, stream) => {
   if (err) throw new Error('Vector provisioning SSH failed');

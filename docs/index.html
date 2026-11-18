@@ -2473,9 +2473,9 @@ COMMIT</code></pre>
 <p>TTS 初始候选 <code>qwen-audio-3.1-tts-flash</code> 请求失败，已固定为同一阿里云账户实际验证通过的 <code>qwen3-tts-flash</code>，没有将不可用候选记为通过。视觉问题需要在阿里云控制台恢复相应可用额度或调整该账户限制后重验；本轮没有修改计费设置。</p>
 <h2 id="heading-3">端点与秘密配置</h2>
 <div class="table-scroll"><table><thead><tr><th>用途</th><th>Base URL</th><th>适配器追加的路径</th></tr></thead><tbody>
-<tr><td>GPT</td><td>https://fushengyunsuan.cn/v1</td><td>/responses</td></tr>
-<tr><td>阿里云兼容接口</td><td>https://ws-kuguh4ge3hu6zqel.cn-beijing.maas.aliyuncs.com/compatible-mode/v1</td><td>/embeddings、/chat/completions</td></tr>
-<tr><td>阿里云原生重排</td><td>https://ws-kuguh4ge3hu6zqel.cn-beijing.maas.aliyuncs.com/api/v1</td><td>/services/rerank/text-rerank/text-rerank</td></tr>
+<tr><td>GPT</td><td>https://<YOUR_LLM_ENDPOINT>/v1</td><td>/responses</td></tr>
+<tr><td>阿里云兼容接口</td><td>https://<YOUR_ALIYUN_WORKSPACE>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1</td><td>/embeddings、/chat/completions</td></tr>
+<tr><td>阿里云原生重排</td><td>https://<YOUR_ALIYUN_WORKSPACE>.cn-beijing.maas.aliyuncs.com/api/v1</td><td>/services/rerank/text-rerank/text-rerank</td></tr>
 <tr><td>阿里云原生 TTS</td><td>同上</td><td>/services/aigc/multimodal-generation/generation</td></tr>
 </tbody></table></div>
 <p>仅主机名不能直接替代 Base URL；兼容接口和原生接口按能力分别使用。密钥存放于本机 <code>mall-agent/.env</code>，已被 Git 忽略并限制 Windows ACL；模板为 <code>mall-agent/.env.example</code>。数据库、签名桥接等配置继续由本机管理器从原有受忽略配置注入。模型秘密不写入 SQL、图检查点或模型公开快照，数据库只保存秘密版本引用。</p>
@@ -2566,7 +2566,7 @@ $env:PYTHONUTF8=&#x27;1&#x27;
 <tr><td>语音识别</td><td>qwen3-asr-flash</td><td>阿里云适配器已通过；录音/转写确认业务未接通</td></tr>
 <tr><td>语音合成</td><td>qwen3-tts-flash</td><td>阿里云适配器已通过；页面播报业务未接通</td></tr>
 </tbody></table></div>
-<p>GPT Base URL 为 <code>https://fushengyunsuan.cn/v1</code>，适配器追加 <code>/responses</code>。图片使用校验后的 JPEG 字节，作为 <code>input_image</code> 发送；不把本机 URL 提交给供应商。旧阿里云视觉配置的不可变版本保留，当前 VISION 版本已改为 GPT，复用 GPT 密钥引用并独立记录 VISION 用量。</p>
+<p>GPT Base URL 为 <code>https://<YOUR_LLM_ENDPOINT>/v1</code>，适配器追加 <code>/responses</code>。图片使用校验后的 JPEG 字节，作为 <code>input_image</code> 发送；不把本机 URL 提交给供应商。旧阿里云视觉配置的不可变版本保留，当前 VISION 版本已改为 GPT，复用 GPT 密钥引用并独立记录 VISION 用量。</p>
 <p>官方视觉文档入口本次请求返回 403，兼容结论依据指定代理的实际响应与应用验收，不推定其他代理或型号也支持。</p>
 <h2 id="heading-4">附件与图状态边界</h2>
 <div class="table-scroll"><table><thead><tr><th>项目</th><th>本轮实现</th></tr></thead><tbody>

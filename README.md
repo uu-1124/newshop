@@ -12,14 +12,14 @@
 
 | 功能 | 地址 | 演示账号 |
 | --- | --- | --- |
-| 买家端，支持前端热更新 | http://127.0.0.1:5173/ | `member` / `MallDemo2026!` |
-| 管理后台，支持前端热更新 | http://127.0.0.1:5100/ | `admin` / `MallDemo2026!` |
+| 买家端，支持前端热更新 | http://127.0.0.1:5173/ | `member` / 见本机 `deployment/secrets.json` 的 `demoPassword` |
+| 管理后台，支持前端热更新 | http://127.0.0.1:5100/ | `admin` / 见本机 `deployment/secrets.json` 的 `demoPassword` |
 | 员工人工接待 | http://127.0.0.1:5100/#/agent/service | 使用后台登录态，专用接待角色 |
 | 员工知识管理 | http://127.0.0.1:5100/#/agent/knowledge | 使用后台登录态，新增专用知识角色 |
 | 员工订单售后与演示物流 | http://127.0.0.1:5100/#/agent/operations | 使用后台登录态，专用售后/物流权限 |
 | 智能体架构演示 | http://127.0.0.1:5173/#/pages/agent/chat | 使用买家登录态 |
 | 后端网关 | http://127.0.0.1:8201/ | 业务接口需要登录令牌 |
-| Spring Boot Admin | http://127.0.0.1:8101/ | 官方内存账号 `macro` / `123456`，仅本机监听 |
+| Spring Boot Admin | http://127.0.0.1:8101/ | 上游默认内存账号，凭据见本机 `deployment/secrets.json` 的 `monitor`，仅本机监听 |
 | Nacos | http://127.0.0.1:18848/nacos/ | 开发环境内部控制台 |
 | MinIO 控制台 | http://127.0.0.1:19001/ | 见本机 `deployment/secrets.json` |
 
@@ -57,7 +57,9 @@ JDK 17：`D:\develop\jdk-17`；Maven：`D:\develop\maven`；Node 22：`D:\develo
 
 ## 服务器与连接
 
-服务器 `113.249.103.102` 的 `/opt/mall-swarm/` 保留以下 7 个中间件容器及其数据：MySQL 8、Redis 7、MongoDB 7、RabbitMQ 3、Nacos 2、Elasticsearch 8.18（IK 8.18）、MinIO。另在 `/opt/mall-agent/` 部署独立 PostgreSQL 16，在 `/opt/mall-agent-vector/` 部署 Milvus、etcd 和专用 MinIO 三容器栈。聊天图片使用商城 MinIO 中的独立私有桶，详情见 11。
+服务器 `<YOUR_SERVER_IP>` 的 `/opt/mall-swarm/` 保留以下 7 个中间件容器及其数据：MySQL 8、Redis 7、MongoDB 7、RabbitMQ 3、Nacos 2、Elasticsearch 8.18（IK 8.18）、MinIO。另在 `/opt/mall-agent/` 部署独立 PostgreSQL 16，在 `/opt/mall-agent-vector/` 部署 Milvus、etcd 和专用 MinIO 三容器栈。聊天图片使用商城 MinIO 中的独立私有桶，详情见 11。
+
+仓库不保存服务器地址与登录凭据。本机连接信息写在 `deployment/.dev-ssh.json`（已被 Git 忽略），格式见 `deployment/.dev-ssh.example.json`。
 
 中间件只绑定服务器 `127.0.0.1`，通过已有 SSH 22 端口转发到本机，无需开放公网 80 或 9000 端口。
 

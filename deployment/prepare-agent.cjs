@@ -18,7 +18,7 @@ else {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2), { mode: 0o600 });
 }
 const ssh = JSON.parse(fs.readFileSync(path.join(root, '.dev-ssh.json')));
-if (ssh.host !== '113.249.103.102') throw new Error('Unexpected server');
+if (!ssh.host || !ssh.username) throw new Error('Missing SSH target in .dev-ssh.json');
 const compose = `name: mall-agent
 services:
   postgres:

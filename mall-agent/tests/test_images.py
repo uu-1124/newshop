@@ -62,6 +62,7 @@ async def test_gpt_vision_uses_gpt_route_and_keeps_bytes_out_of_observation():
         bridge_secret="test",
         broker_secret="test",
         cursor_secret="test",
+        dialog_base_url="https://api.openai.com/v1",
         dialog_api_key="private-unit-key",
     )
     calls = []
@@ -78,7 +79,7 @@ async def test_gpt_vision_uses_gpt_route_and_keeps_bytes_out_of_observation():
 
     def handler(request):
         body = json.loads(request.content)
-        assert request.url.host == "fushengyunsuan.cn"
+        assert request.url.host == "api.openai.com"
         assert body["model"] == "gpt-6.1-sol"
         assert body["input"][0]["content"][1]["image_url"].startswith("data:image/jpeg;base64,")
         assert body["tools"] == []

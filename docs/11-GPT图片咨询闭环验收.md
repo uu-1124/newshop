@@ -35,7 +35,7 @@ Milvus 已部署并通过向量基础验收，继续承担后续知识检索的�
 | 语音识别 | qwen3-asr-flash | 阿里云适配器已通过；录音/转写确认业务未接通 |
 | 语音合成 | qwen3-tts-flash | 阿里云适配器已通过；页面播报业务未接通 |
 
-GPT Base URL 为 `https://fushengyunsuan.cn/v1`，适配器追加 `/responses`。图片使用校验后的 JPEG 字节，作为 `input_image` 发送；不把本机 URL 提交给供应商。旧阿里云视觉配置的不可变版本保留，当前 VISION 版本已改为 GPT，复用 GPT 密钥引用并独立记录 VISION 用量。
+GPT Base URL 为 `https://<YOUR_LLM_ENDPOINT>/v1`，适配器追加 `/responses`。图片使用校验后的 JPEG 字节，作为 `input_image` 发送；不把本机 URL 提交给供应商。旧阿里云视觉配置的不可变版本保留，当前 VISION 版本已改为 GPT，复用 GPT 密钥引用并独立记录 VISION 用量。
 
 官方视觉文档入口本次请求返回 403，兼容结论依据指定代理的实际响应与应用验收，不推定其他代理或型号也支持。
 
