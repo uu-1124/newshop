@@ -1,0 +1,9 @@
+common:
+  security:
+    authorizationEnabled: true
+etcd:
+  rootPath: newshop-demo
+minio:
+  rootPath: newshop-demo
+mq:
+  type: woodpecker

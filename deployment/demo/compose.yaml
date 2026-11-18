@@ -1,0 +1,410 @@
+name: newshop-demo
+
+x-build: &build
+  context: ../..
+
+x-java: &java
+  image: newshop-demo/java:1
+  build:
+    <<: *build
+    dockerfile: deployment/demo/java.Dockerfile
+  restart: unless-stopped
+  mem_limit: 768m
+  depends_on:
+    mysql: { condition: service_healthy }
+    redis: { condition: service_healthy }
+    mongo: { condition: service_healthy }
+    rabbitmq: { condition: service_healthy }
+    nacos: { condition: service_healthy }
+    elasticsearch: { condition: service_healthy }
+
+x-java-env: &java-env
+  SPRING_PROFILES_ACTIVE: deploy
+  SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR: nacos:8848
+  SPRING_CLOUD_NACOS_CONFIG_ENABLED: 'false'
+  SPRING_CLOUD_NACOS_CONFIG_IMPORT_CHECK_ENABLED: 'false'
+  SPRING_BOOT_ADMIN_CLIENT_ENABLED: 'false'
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+  SPRING_DATASOURCE_USERNAME: mall
+  SPRING_DATASOURCE_PASSWORD: ${DEMO_MYSQL_PASSWORD:?Generate demo.env before starting}
+  SPRING_DATASOURCE_DRUID_INITIAL_SIZE: '1'
+  SPRING_DATASOURCE_DRUID_MIN_IDLE: '1'
+  SPRING_DATASOURCE_DRUID_MAX_ACTIVE: '10'
+  SPRING_DATA_REDIS_HOST: redis
+  SPRING_DATA_REDIS_PASSWORD: ${DEMO_REDIS_PASSWORD:?Generate demo.env before starting}
+  SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/mall-port
+  SPRING_RABBITMQ_HOST: rabbitmq
+  SPRING_RABBITMQ_VIRTUAL_HOST: /mall
+  SPRING_RABBITMQ_USERNAME: mall
+  SPRING_RABBITMQ_PASSWORD: ${DEMO_RABBIT_PASSWORD:?Generate demo.env before starting}
+  SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+  SPRING_APPLICATION_JSON: '{"sa-token":{"jwt-secret-key":"${DEMO_JWT:?Generate demo.env before starting}"}}'
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: never
+  LOGSTASH_ENABLEINNERLOG: 'false'
+  TZ: Asia/Shanghai
+
+x-agent: &agent
+  image: newshop-demo/agent:1
+  build:
+    <<: *build
+    dockerfile: deployment/demo/agent.Dockerfile
+  restart: unless-stopped
+  depends_on:
+    pg-init: { condition: service_completed_successfully }
+    object-init: { condition: service_completed_successfully }
+    redis: { condition: service_healthy }
+    rabbitmq: { condition: service_healthy }
+
+x-agent-env: &agent-env
+  AGENT_DATABASE_URL: postgresql+psycopg://mall_agent:${DEMO_POSTGRES_PASSWORD:?Generate demo.env before starting}@postgres:5432/mall_agent
+  AGENT_GATEWAY_URL: http://gateway:8201
+  AGENT_BROKER_URL: http://agent:8099
+  AGENT_BUILD: portable-demo
+  AGENT_BRIDGE_SECRET: ${DEMO_BRIDGE:?Generate demo.env before starting}
+  AGENT_STAFF_BRIDGE_SECRET: ${DEMO_STAFF_BRIDGE:?Generate demo.env before starting}
+  AGENT_BROKER_SECRET: ${DEMO_BROKER:?Generate demo.env before starting}
+  AGENT_CURSOR_SECRET: ${DEMO_CURSOR:?Generate demo.env before starting}
+  AGENT_CONFIRMATION_SECRET: ${DEMO_CONFIRM:?Generate demo.env before starting}
+  AGENT_RECONCILIATION_SECRET: ${DEMO_RECONCILE:?Generate demo.env before starting}
+  AGENT_ACTION_ENCRYPTION_KEY: ${DEMO_ENVELOPE:?Generate demo.env before starting}
+  AGENT_ACTIONS_ENABLED: 'true'
+  AGENT_ORDERS_ENABLED: 'true'
+  AGENT_HANDOFFS_ENABLED: 'true'
+  AGENT_GOVERNANCE_ENABLED: 'true'
+  AGENT_RETENTION_ENABLED: 'true'
+  AGENT_NOTIFICATIONS_ENABLED: 'true'
+  AGENT_NOTIFICATION_NAMESPACE: mall-agent-demo
+  AGENT_REDIS_URL: redis://:${DEMO_REDIS_PASSWORD}@redis:6379/1
+  AGENT_RABBIT_URL: amqp://mall:${DEMO_RABBIT_PASSWORD}@rabbitmq:5672/%2Fmall
+  AGENT_ATTACHMENTS_ENABLED: 'true'
+  AGENT_OBJECTS_ENDPOINT: minio:9000
+  AGENT_OBJECTS_ACCESS_KEY: demoagent
+  AGENT_OBJECTS_SECRET_KEY: ${DEMO_OBJECTS_PASSWORD:?Generate demo.env before starting}
+  AGENT_PROVIDER: ${DEMO_AI_PROVIDER:-fixture}
+  AGENT_DIALOG_BASE_URL: ${DEMO_AI_URL:-https://api.openai.com/v1}
+  AGENT_DIALOG_MODEL: ${DEMO_AI_MODEL:-gpt-5-mini}
+  AGENT_DIALOG_API_KEY: ${DEMO_AI_KEY:-}
+  AGENT_VISION_ENABLED: ${DEMO_VISION_ENABLED:-false}
+  AGENT_VISION_MODEL: ${DEMO_VISION_MODEL:-gpt-5-mini}
+  AGENT_ALI_API_KEY: ${DEMO_ALI_KEY:-}
+  AGENT_KNOWLEDGE_ENABLED: ${DEMO_KNOWLEDGE_ENABLED:-false}
+  AGENT_MILVUS_URI: http://milvus:19530
+  AGENT_MILVUS_DATABASE: mall_agent
+  AGENT_MILVUS_READER_USER: mall_agent_reader
+  AGENT_MILVUS_READER_PASSWORD: ${DEMO_VECTOR_READER}
+  AGENT_MILVUS_BUILDER_USER: mall_agent_builder
+  AGENT_MILVUS_BUILDER_PASSWORD: ${DEMO_VECTOR_BUILDER}
+
+services:
+  mysql:
+    image: newshop-demo/mysql:8.0.35-1
+    build:
+      <<: *build
+      dockerfile: deployment/demo/mysql.Dockerfile
+    environment:
+      MYSQL_DATABASE: mall
+      MYSQL_USER: mall
+      MYSQL_PASSWORD: ${DEMO_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DEMO_MYSQL_ROOT:?Generate demo.env before starting}
+      TZ: Asia/Shanghai
+    command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
+    volumes: [mysql:/var/lib/mysql]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql -h 127.0.0.1 -umall mall -Nse "SELECT id FROM ums_member WHERE username = ''demo-buyer''" | grep -qx 1']
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  postgres:
+    image: postgres:16.11-alpine
+    environment:
+      POSTGRES_DB: mall_agent
+      POSTGRES_USER: agent_owner
+      POSTGRES_PASSWORD: ${DEMO_POSTGRES_ROOT:?Generate demo.env before starting}
+    volumes: [postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD, pg_isready, -h, 127.0.0.1, -U, agent_owner, -d, mall_agent]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7.4.5-alpine
+    environment:
+      REDISCLI_AUTH: ${DEMO_REDIS_PASSWORD}
+    command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDISCLI_AUTH"']
+    volumes: [redis:/data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  mongo:
+    image: mongo:7.0.20
+    volumes: [mongo:/data/db]
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand({ping: 1}).ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  rabbitmq:
+    image: rabbitmq:3.13.7-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: mall
+      RABBITMQ_DEFAULT_PASS: ${DEMO_RABBIT_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: /mall
+    volumes: [rabbitmq:/var/lib/rabbitmq]
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, check_running]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+
+  nacos:
+    image: nacos/nacos-server:v2.5.1
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: 'false'
+      NACOS_AUTH_TOKEN: ${DEMO_JWT}
+      NACOS_AUTH_IDENTITY_KEY: demo-nacos
+      NACOS_AUTH_IDENTITY_VALUE: ${DEMO_CURSOR}
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+      JVM_XMN: 128m
+    volumes: [nacos:/home/nacos/data]
+    healthcheck:
+      test: [CMD, curl, -fsS, http://localhost:8848/nacos/v1/console/health/readiness]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  elasticsearch:
+    image: newshop-demo/elasticsearch:8.18.0-ik
+    build:
+      <<: *build
+      dockerfile: deployment/demo/search.Dockerfile
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: 'false'
+      xpack.ml.enabled: 'false'
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    volumes: [elasticsearch:/usr/share/elasticsearch/data]
+    healthcheck:
+      test: [CMD, curl, -fsS, 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=3s']
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  minio:
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    command: [server, /data]
+    environment:
+      MINIO_ROOT_USER: demoadmin
+      MINIO_ROOT_PASSWORD: ${DEMO_MINIO_PASSWORD:?Generate demo.env before starting}
+      MINIO_BROWSER: 'off'
+    volumes: [minio:/data]
+
+  object-init:
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    depends_on: [minio]
+    environment:
+      MINIO_PASSWORD: ${DEMO_MINIO_PASSWORD}
+      AGENT_PASSWORD: ${DEMO_OBJECTS_PASSWORD}
+    volumes:
+      - ./objects.sh:/demo/objects.sh:ro
+      - ./agent-objects.json:/demo/agent-objects.json:ro
+    entrypoint: [sh, /demo/objects.sh]
+
+  admin:
+    <<: *java
+    environment:
+      <<: *java-env
+      MALL_SERVICE: admin
+      MALL_AGENT_STAFF_BRIDGE_SECRET: ${DEMO_STAFF_BRIDGE}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_PUBLICBASEURL: ''
+      MINIO_ACCESSKEY: demoadmin
+      MINIO_SECRETKEY: ${DEMO_MINIO_PASSWORD}
+
+  auth:
+    <<: *java
+    environment: { <<: *java-env, MALL_SERVICE: auth }
+
+  portal:
+    <<: *java
+    environment:
+      <<: *java-env
+      MALL_SERVICE: portal
+      MALL_AGENT_BRIDGE_SECRET: ${DEMO_BRIDGE}
+      MALL_AGENT_CONFIRM_SECRET: ${DEMO_CONFIRM}
+      MALL_AGENT_RECONCILE_SECRET: ${DEMO_RECONCILE}
+      MALL_AGENT_ACTIONS_ENABLED: 'true'
+      MALL_AGENT_ORDERS_ENABLED: 'true'
+
+  search:
+    <<: *java
+    environment: { <<: *java-env, MALL_SERVICE: search }
+
+  monitor:
+    <<: *java
+    profiles: [monitor]
+    environment: { <<: *java-env, MALL_SERVICE: monitor }
+
+  gateway:
+    <<: *java
+    environment: { <<: *java-env, MALL_SERVICE: gateway, MALL_AGENT_HTTP_URL: 'http://agent:8099' }
+
+  pg-init:
+    <<: *agent
+    restart: 'no'
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      AGENT_MIGRATION_URL: postgresql+psycopg://agent_owner:${DEMO_POSTGRES_ROOT}@postgres:5432/mall_agent
+      DEMO_POSTGRES_PASSWORD: ${DEMO_POSTGRES_PASSWORD}
+    command: [python, /app/agent-init.py]
+
+  search-init:
+    image: python:3.13.5-slim-bookworm
+    depends_on: [search]
+    volumes: [./search-init.py:/demo/search-init.py:ro]
+    command: [python, -u, /demo/search-init.py]
+
+  agent:
+    <<: *agent
+    environment: *agent-env
+    healthcheck:
+      test: [CMD, python, -c, "from urllib.request import urlopen; urlopen('http://127.0.0.1:8099/readyz', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+  generation:
+    <<: *agent
+    environment: *agent-env
+    command: [python, -m, app.workers.generation]
+
+  scheduler:
+    <<: *agent
+    environment: *agent-env
+    command: [python, -m, app.workers.scheduler]
+
+  jobs:
+    <<: *agent
+    environment: *agent-env
+    command: [python, -m, app.workers.jobs]
+
+  outbox:
+    <<: *agent
+    environment: *agent-env
+    command: [python, -m, app.workers.outbox]
+
+  web:
+    image: newshop-demo/web:1
+    build:
+      <<: *build
+      dockerfile: deployment/demo/web.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      search-init: { condition: service_completed_successfully }
+      agent: { condition: service_healthy }
+      gateway: { condition: service_started }
+      admin: { condition: service_started }
+      portal: { condition: service_started }
+      auth: { condition: service_started }
+    ports:
+      - 127.0.0.1:${DEMO_SHOP_PORT:-18180}:80
+      - 127.0.0.1:${DEMO_ADMIN_PORT:-18181}:81
+    healthcheck:
+      test: [CMD, wget, -qO, /dev/null, http://127.0.0.1/demo-health]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  vector-etcd:
+    image: quay.io/coreos/etcd:v3.5.25
+    profiles: [knowledge]
+    command: [etcd, --advertise-client-urls=http://vector-etcd:2379, --listen-client-urls=http://0.0.0.0:2379, --data-dir=/etcd]
+    volumes: [vector-etcd:/etcd]
+    healthcheck:
+      test: [CMD, etcdctl, endpoint, health]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  vector-objects:
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    profiles: [knowledge]
+    command: [server, /data]
+    environment:
+      MINIO_ROOT_USER: demovector
+      MINIO_ROOT_PASSWORD: ${DEMO_VECTOR_OBJECTS}
+    volumes: [vector-objects:/data]
+    healthcheck:
+      test: [CMD, mc, ready, local]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  vector-volume-init:
+    image: milvusdb/milvus:v3.0.5
+    profiles: [knowledge]
+    user: '0:0'
+    network_mode: none
+    entrypoint: [/bin/sh, -c]
+    command: ['chown -R $$(id -u milvus):$$(id -g milvus) /var/lib/milvus']
+    volumes: [vector-index:/var/lib/milvus]
+
+  milvus:
+    image: milvusdb/milvus:v3.0.5
+    profiles: [knowledge]
+    command: [milvus, run, standalone]
+    environment:
+      ETCD_ENDPOINTS: vector-etcd:2379
+      MINIO_ADDRESS: vector-objects:9000
+      MINIO_ACCESS_KEY_ID: demovector
+      MINIO_SECRET_ACCESS_KEY: ${DEMO_VECTOR_OBJECTS}
+      MINIO_REGION: us-east-1
+      COMMON_SECURITY_AUTHORIZATIONENABLED: 'true'
+      MQ_TYPE: woodpecker
+    volumes:
+      - vector-index:/var/lib/milvus
+      - ./milvus.yaml:/milvus/configs/user.yaml:ro
+    depends_on:
+      vector-etcd: { condition: service_healthy }
+      vector-objects: { condition: service_healthy }
+      vector-volume-init: { condition: service_completed_successfully }
+    healthcheck:
+      test: [CMD, curl, -fsS, http://localhost:9091/healthz]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  vector-init:
+    <<: *agent
+    profiles: [knowledge]
+    restart: 'no'
+    depends_on:
+      milvus: { condition: service_healthy }
+    environment:
+      DEMO_VECTOR_ROOT: ${DEMO_VECTOR_ROOT}
+      DEMO_VECTOR_READER: ${DEMO_VECTOR_READER}
+      DEMO_VECTOR_BUILDER: ${DEMO_VECTOR_BUILDER}
+    volumes: [./vector-init.py:/demo/vector-init.py:ro]
+    command: [python, /demo/vector-init.py]
+
+volumes:
+  mysql:
+  postgres:
+  redis:
+  mongo:
+  rabbitmq:
+  nacos:
+  elasticsearch:
+  minio:
+  vector-etcd:
+  vector-objects:
+  vector-index:

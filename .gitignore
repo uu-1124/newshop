@@ -19,6 +19,7 @@ deployment/minio-runtime/minio
 deployment/minio-runtime/minio.sha256
 mall-agent/.venv/
 mall-agent/.env
+deployment/demo/demo.env
 mall-agent/.pytest_cache/
 mall-agent/.ruff_cache/
 **/__pycache__/

@@ -1,0 +1,46 @@
+name: Portable demo
+
+on:
+  push:
+    paths:
+      - '.dockerignore'
+      - '.github/workflows/portable-demo.yml'
+      - 'deployment/demo/**'
+      - 'deployment/init/**'
+      - 'mall-agent/**'
+      - 'mall-swarm/**'
+      - 'mall-admin-web/**'
+      - 'mall-app-web/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fresh-install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: deployment/demo
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Prepare local credentials and kernel setting
+        run: |
+          umask 077
+          python3 generate-env.py > demo.env
+          sudo sysctl -w vm.max_map_count=262144
+          docker compose --env-file demo.env config --quiet
+      - name: Build and start from an empty database
+        run: docker compose --env-file demo.env up --build -d --wait --wait-timeout 480
+      - name: Exercise the storefront, admin, search, uploads and support
+        run: python3 -u smoke.py
+      - name: Show service status on failure
+        if: failure()
+        run: docker compose --env-file demo.env ps -a
+      - name: Remove the runner's disposable demo project
+        if: always()
+        run: |
+          if test -f demo.env; then
+            docker compose --env-file demo.env down --volumes --remove-orphans
+          fi
