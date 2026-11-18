@@ -1,13 +1,13 @@
 # Newshop 独立演示
 
-买家端、后台和业务接口都从当前 Git 提交的源码构建。中间件和构建镜像固定到版本和镜像摘要，中文搜索插件校验 SHA-256。可以在本机编译，也可以拉取 GitHub Actions 验收后发布的私有镜像。两种方式都不需要访问原服务器。本项目使用独立 Docker 卷；已有部署的订单、账号、密钥及知识库数据不会导入。
+买家端、后台和业务接口都从当前 Git 提交的源码构建。中间件和构建镜像固定到版本和镜像摘要，中文搜索插件校验 SHA-256。可以在本机编译，也可以拉取 GitHub Actions 验收后发布的私有镜像。两种方式都不需要访问原服务器。本项目使用独立 Docker 卷。默认从空的演示数据启动；要把已有部署的订单、账号、知识库和上传文件带过来，见[迁移到另一台服务器](#迁移到另一台服务器)。
 
 ## 克隆和启动
 
 仓库所有者先给演示者私有仓库读取权限。演示者需要 Git 和 Docker Compose v2，Docker 切到 Linux 容器；建议使用 x86-64 环境，给 Docker 至少 8 GB 内存和 20 GB 可用磁盘。首次构建需要联网获取公开镜像和项目依赖。ARM 环境暂无启动验收记录。
 
 ```sh
-git clone --branch codex/portable-demo https://github.com/uu-1124/newshop.git
+git clone --branch main https://github.com/uu-1124/newshop.git
 cd newshop/deployment/demo
 ```
 
@@ -57,7 +57,17 @@ docker compose --env-file demo.env up --no-build -d --wait --wait-timeout 480
 
 ## 接入自己的模型
 
-默认 `DEMO_AI_PROVIDER=fixture`：可以试商品咨询、流式测试回复和人工接待；测试回复不会发给外部模型，也不会替用户执行 Agent 交易。普通商城订单仍可操作。启用真实对话前，在 `demo.env` 改成以下设置，然后重跑启动命令：
+默认 `DEMO_AI_PROVIDER=fixture`：可以试商品咨询、流式测试回复和人工接待；测试回复不会发给外部模型，也不会替用户执行 Agent 交易。普通商城订单仍可操作。
+
+启用真实对话用一条命令，不必手改文件：
+
+```sh
+python enable-ai.py --url https://你的端点/v1 --model 端点支持的模型名 --key 你的密钥
+# 再加视觉、知识检索：
+python enable-ai.py --url ... --model ... --key ... --vision --knowledge --ali-key 阿里云密钥
+```
+
+脚本会写回 `demo.env`（仅本人可读），并打印对应的启动命令。等价的手工配置如下，然后重跑启动命令：
 
 ```dotenv
 DEMO_AI_PROVIDER=openai_responses
@@ -75,6 +85,24 @@ docker compose --env-file demo.env --profile knowledge up --build -d --wait --wa
 ```
 
 建议在首次启动真实模式前设置好模型。真实模式已初始化后，模型版本由数据库管理；修改环境变量里的模型名不会替换后台已激活的模型版本。项目保留模拟支付、退款和物流；生产备份服务及外部监控不在本演示范围内。
+
+## 迁移到另一台服务器
+
+新机器从空库启动只有演示种子数据。要带走会话、订单、知识文档和上传文件，用备份脚本做一次完整导出：
+
+```sh
+python backup.py
+```
+
+它先停栈保证 MySQL、PostgreSQL、MinIO、MongoDB、Milvus 处于一致状态，写入 `backups/<时间戳>/`（含 dumps、卷归档、`manifest.json` 校验和），然后自动把栈重新拉起来。加 `--keep-running` 可以不停机，但存在写入不一致的风险。
+
+把整个备份目录和**生成它的那份 `demo.env`** 一起复制到新机器：
+
+```sh
+python restore.py backups/20261118T120000Z
+```
+
+恢复会先停栈、只启数据库、导入 dumps、替换对象与向量卷，再拉起全套并跑 `smoke.py`。`manifest.json` 记录了密钥指纹；如果新机器用的是重新生成的 `demo.env`，脚本会提示旧的加密操作行和附件将无法读取——需要这些数据时务必复用原 `demo.env`。
 
 ## 验收和停止
 
